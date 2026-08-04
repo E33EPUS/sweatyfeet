@@ -76,8 +76,8 @@ public final class SweatyFeetHandler {
         SweatData data = boots.get(ModDataComponents.SWEAT.get());
 
         if (data == null) {
-            // 未汗化：穿满 1 级时长触发汗化
-            if (totalTicks == lvl1()) {
+            // 未汗化：穿满 1 级时长触发汗化（>= 而不是 ==：中途改小配置时累计时长可能已跳过阈值）
+            if (totalTicks >= lvl1()) {
                 sweatify(player, boots);
             }
         } else {
@@ -87,12 +87,10 @@ public final class SweatyFeetHandler {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
             }
             // 3 级后继续穿 30 秒 → 真菌感染；穿着期间持续刷新，不脱靴不清
-            if (SfConfig.INSTANCE.enable_fungus && totalTicks == lvl3() + fungusDelay()) {
-                player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
-            } else if (SfConfig.INSTANCE.enable_fungus
-                && totalTicks > lvl3() + fungusDelay()
+            if (SfConfig.INSTANCE.enable_fungus
+                && totalTicks >= lvl3() + fungusDelay()
                 && totalTicks % REFRESH_INTERVAL == 0) {
-                refreshEffect(player, ModEffects.FOOT_FUNGUS, 0);
+                player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
             }
         }
     }
