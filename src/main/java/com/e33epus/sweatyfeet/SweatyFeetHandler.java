@@ -65,10 +65,9 @@ public final class SweatyFeetHandler {
 
         ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
         if (!boots.is(ItemTags.FOOT_ARMOR)) {
-            // 没穿靴子：计时清零 + 脱鞋即愈
+            // 脱鞋：只清计时，不手动移除 debuff —— 让效果自然走完剩余时长
+            // （真菌的减速属性修饰符随效果结束自动移除）
             WEAR_TICKS.remove(player.getUUID());
-            player.removeEffect(ModEffects.SWEATY_FEET);
-            player.removeEffect(ModEffects.FOOT_FUNGUS);
             return;
         }
 
@@ -123,7 +122,7 @@ public final class SweatyFeetHandler {
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide || !player.isCrouching()) {
+        if (!player.isCrouching()) {
             return;
         }
 
@@ -141,6 +140,14 @@ public final class SweatyFeetHandler {
             return;
         }
 
+        // 双端都取消：客户端若只 return，会继续 Item.use → ArmorItem.use → swapWithEquipmentSlot
+        // 把主手汗靴【预测性】穿到脚上，产生"幽灵汗靴"，随后被服务端同步纠正消失
+        event.setCanceled(true);
+        if (player.level().isClientSide) {
+            return;
+        }
+
+        // 以下仅服务端执行
         offhand.consume(1, player);
         ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
         if (!player.getInventory().add(bottle)) {
@@ -155,12 +162,10 @@ public final class SweatyFeetHandler {
             main.remove(DataComponents.CUSTOM_NAME);
         }
 
-        // 倒汗 = 缓解：清零计时 + 移除全部脚部 debuff
+        // 倒汗 = 主动缓解：清零计时 + 移除脚部 debuff
         WEAR_TICKS.remove(player.getUUID());
         player.removeEffect(ModEffects.SWEATY_FEET);
         player.removeEffect(ModEffects.FOOT_FUNGUS);
-
-        event.setCanceled(true);
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满汗液的xxx」+ 挂汗脚 1 级 */
