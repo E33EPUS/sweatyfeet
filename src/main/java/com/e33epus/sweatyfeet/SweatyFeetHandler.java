@@ -14,7 +14,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -61,10 +60,6 @@ public final class SweatyFeetHandler {
         return SfConfig.INSTANCE.fungus_delay_seconds * 20;
     }
 
-    private static int fungusTicks() {
-        return SfConfig.INSTANCE.fungus_seconds * 20;
-    }
-
     private static int effectTicks() {
         return SfConfig.INSTANCE.effect_seconds * 20;
     }
@@ -75,9 +70,6 @@ public final class SweatyFeetHandler {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        // 脚滑：双端都要跑（客户端保手感，服务端保权威，衰减一致无纠偏）
-        applySlide(player);
-
         if (player.level().isClientSide) {
             return;
         }
@@ -92,7 +84,8 @@ public final class SweatyFeetHandler {
                     continue;
                 }
                 if (other.distanceToSqr(player) <= rangeSq) {
-                    other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
+                    // 传染也给无限时长：真菌只能被花露水/倒汗消除，不会自然消失
+                    other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
                 }
             }
         }
@@ -141,11 +134,12 @@ public final class SweatyFeetHandler {
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, effectTicks(), 0, false, true));
                 }
             }
-            // 3 级后继续穿 30 秒 → 真菌感染；穿着期间持续刷新，不脱靴不清
+            // 3 级后继续穿 30 秒 → 真菌感染（无限时长：只能被花露水/倒汗消除，脱鞋不消失）
             if (SfConfig.INSTANCE.enable_fungus
                 && totalTicks >= lvl3() + fungusDelay()
+                && !player.hasEffect(ModEffects.FOOT_FUNGUS)
                 && totalTicks % REFRESH_INTERVAL == 0) {
-                player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
+                player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
             }
         }
 
@@ -155,30 +149,9 @@ public final class SweatyFeetHandler {
             player.displayClientMessage(Component.literal("SF tick=" + totalTicks + " lvl=" + lvl), true);
         }
         // Debug：强制真菌（方便测真菌表现，不看 3 级时长）
-        if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0) {
-            player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
+        if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0 && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
+            player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
         }
-    }
-
-    /**
-     * 脚滑（汗脚 2 级起）：不依赖按键检测（服务端拿不到 input），
-     * 直接对水平动量乘保留系数 → 松键后速度衰减变慢 = 滑行。
-     * 双端对称执行，服务端权威 + 客户端预测一致。
-     */
-    private static void applySlide(Player player) {
-        if (!SfConfig.INSTANCE.slide_enabled) {
-            return;
-        }
-        MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
-        if (sf == null || sf.getAmplifier() < 1) {
-            return;
-        }
-        if (!player.onGround()) {
-            return;
-        }
-        double retention = SfConfig.INSTANCE.slide_retention_percent / 100.0;
-        Vec3 d = player.getDeltaMovement();
-        player.setDeltaMovement(d.x * retention, d.y, d.z * retention);
     }
 
     /**
@@ -217,7 +190,9 @@ public final class SweatyFeetHandler {
             player.removeEffect(ModEffects.SWEATY_FEET);
             DEGRADE_TICKS.remove(id);
         } else {
-            // 降级重挂：效果时长与倒计时同步（一个阶段），保证状态机与效果一致
+            // 降级重挂：必须 remove 再 add —— 原版 MobEffectInstance.update 对"同 amp 更短时长/更低 amp"
+            // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
+            player.removeEffect(ModEffects.SWEATY_FEET);
             player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
             DEGRADE_TICKS.put(id, next.ticksLeft());
         }

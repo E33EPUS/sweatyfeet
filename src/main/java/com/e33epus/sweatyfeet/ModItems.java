@@ -32,7 +32,23 @@ public final class ModItems {
         CREATIVE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.sweatyfeet"))
             .icon(() -> new ItemStack(SWEAT_BOTTLE.get()))
-            .displayItems((params, output) -> output.accept(new ItemStack(SWEAT_BOTTLE.get())))
+            .displayItems((params, output) -> {
+                // 汗液瓶 1/2/3 级（带等级组件）
+                for (int lvl = 1; lvl <= 3; lvl++) {
+                    ItemStack bottle = new ItemStack(SWEAT_BOTTLE.get());
+                    bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
+                    output.accept(bottle);
+                }
+                // 饮品（速度/力量，带类型组件）
+                ItemStack speed = new ItemStack(SWEAT_DRINK.get());
+                speed.set(ModDataComponents.DRINK_TYPE.get(), "speed");
+                output.accept(speed);
+                ItemStack strength = new ItemStack(SWEAT_DRINK.get());
+                strength.set(ModDataComponents.DRINK_TYPE.get(), "strength");
+                output.accept(strength);
+                // 花露水
+                output.accept(new ItemStack(FLORAL_WATER.get()));
+            })
             .build());
 
     private ModItems() {
