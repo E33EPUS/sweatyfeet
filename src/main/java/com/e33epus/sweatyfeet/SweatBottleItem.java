@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
 /**
@@ -30,6 +31,12 @@ public class SweatBottleItem extends Item implements ProjectileItem {
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 32;
+    }
+
+    /** 必须返回 DRINK 才有原版"仰头喝"动画（动画由 getUseAnimation 决定，与物品标签/组件无关） */
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
 
     @Override

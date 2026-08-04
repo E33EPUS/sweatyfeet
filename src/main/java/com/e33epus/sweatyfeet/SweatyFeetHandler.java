@@ -82,7 +82,7 @@ public final class SweatyFeetHandler {
             }
         } else {
             // 已汗化：按总时长推进汗脚等级
-            int amplifier = totalTicks >= lvl3() ? 2 : (totalTicks >= lvl2() ? 1 : 0);
+            int amplifier = computeAmplifier(totalTicks, lvl2(), lvl3());
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
             }
@@ -93,6 +93,30 @@ public final class SweatyFeetHandler {
                 player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
             }
         }
+
+        // Debug：action bar 实时显示穿戴 tick 与汗脚等级（肉眼验证计时）
+        if (SfConfig.INSTANCE.debug_show_ticks && totalTicks % 20 == 0) {
+            int lvl = data == null ? -1 : computeAmplifier(totalTicks, lvl2(), lvl3()) + 1;
+            player.displayClientMessage(Component.literal("SF tick=" + totalTicks + " lvl=" + lvl), true);
+        }
+        // Debug：强制真菌（方便测真菌表现，不看 3 级时长）
+        if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0) {
+            player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
+        }
+    }
+
+    /**
+     * 纯逻辑：按累计穿戴 tick 计算汗脚效果等级（amplifier）。
+     * 与物品/事件解耦，供单元测试锁定等级推进边界（防回归）。
+     */
+    static int computeAmplifier(int totalTicks, int lvl2Ticks, int lvl3Ticks) {
+        if (totalTicks >= lvl3Ticks) {
+            return 2;
+        }
+        if (totalTicks >= lvl2Ticks) {
+            return 1;
+        }
+        return 0;
     }
 
     /** 主手汗靴 + 副手玻璃瓶 + 潜行右键 → 倒汗，靴子还原，产出汗液瓶 */

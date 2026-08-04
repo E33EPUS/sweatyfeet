@@ -44,4 +44,10 @@ public class SfConfig implements ConfigData {
     public int sweat_particle_scale = 1;
     @ConfigEntry.Category("visual")
     public boolean sneeze_particles = true;
+
+    @ConfigEntry.Category("debug")
+    public boolean debug_show_ticks = false;
+    @ConfigEntry.Category("debug")
+    @ConfigEntry.Gui.Tooltip
+    public boolean debug_force_fungus = false;
 }

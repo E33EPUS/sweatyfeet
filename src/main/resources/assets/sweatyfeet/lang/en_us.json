@@ -21,5 +21,9 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "Poison from drinking (s)",
     "text.autoconfig.sweatyfeet.option.sweat_particles": "Sweat particles",
     "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "Sweat particle scale",
-    "text.autoconfig.sweatyfeet.option.sneeze_particles": "Sneeze particles"
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "Sneeze particles",
+    "text.autoconfig.sweatyfeet.category.debug": "Debug",
+    "text.autoconfig.sweatyfeet.option.debug_show_ticks": "Show wear ticks (action bar)",
+    "text.autoconfig.sweatyfeet.option.debug_force_fungus": "Force fungus (debug)",
+    "text.autoconfig.sweatyfeet.option.debug_force_fungus.@Tooltip": "While enabled, fungus triggers immediately while wearing boots, skipping the level-3 wait"
 }

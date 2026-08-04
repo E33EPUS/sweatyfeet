@@ -21,5 +21,9 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "喝汗液瓶中毒时长（秒）",
     "text.autoconfig.sweatyfeet.option.sweat_particles": "冒汗粒子",
     "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "冒汗粒子数量倍数",
-    "text.autoconfig.sweatyfeet.option.sneeze_particles": "喷嚏粒子"
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "喷嚏粒子",
+    "text.autoconfig.sweatyfeet.category.debug": "调试",
+    "text.autoconfig.sweatyfeet.option.debug_show_ticks": "显示穿戴计时（action bar）",
+    "text.autoconfig.sweatyfeet.option.debug_force_fungus": "强制触发真菌（调试用）",
+    "text.autoconfig.sweatyfeet.option.debug_force_fungus.@Tooltip": "开启后穿靴即挂真菌感染，跳过 3 级等待，用于测试真菌表现"
 }
