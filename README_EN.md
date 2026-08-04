@@ -159,9 +159,6 @@ gradlew build
 
 # Unit tests (every mechanic has a regression test)
 gradlew test -PrunTests
-
-# Regenerate pixel textures (sweaty feet / fungus effect icons)
-python make_textures.py
 ```
 
 **Windows gotcha**: if the global gradle proxy `127.0.0.1:26561` is not running, build with `-Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=` or disable the proxy in the user-level `gradle.properties`.

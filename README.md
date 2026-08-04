@@ -159,9 +159,6 @@ gradlew build
 
 # 单元测试（e33chat 哲学：每个功能有测试兜底）
 gradlew test -PrunTests
-
-# 重新生成像素贴图（汗脚/真菌效果图标）
-python make_textures.py
 ```
 
 **环境坑**（Windows）：gradle 全局代理 `127.0.0.1:26561` 未开启时，构建需追加 `-Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=` 或临时关闭用户级 gradle.properties 代理。
