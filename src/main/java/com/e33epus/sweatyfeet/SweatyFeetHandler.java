@@ -97,6 +97,8 @@ public final class SweatyFeetHandler {
             degradeSweatyFeet(player);
             // 洗脚：赤脚泡水满 wash_seconds 清汗脚（跳过降级）；真菌泡水洗不掉
             handleWashOff(player);
+            // 散臭：赤脚 + 有汗脚 → 附近玩家持续反胃（穿鞋防臭，洗脚/降级完不臭）
+            spreadFootSmell(player);
             return;
         }
 
@@ -151,6 +153,34 @@ public final class SweatyFeetHandler {
         // Debug：强制真菌（方便测真菌表现，不看 3 级时长）
         if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0 && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
             player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
+        }
+    }
+
+    /**
+     * 散臭：赤脚 + 身上有汗脚效果（降级中）→ 附近玩家持续反胃。
+     * 自己不受影响（自己闻不到自己脚臭）；汗脚等级越高反胃越强。
+     * 穿鞋/泡水洗脚/降级完成后效果消失 → 停止散臭。
+     */
+    private static void spreadFootSmell(Player player) {
+        if (!SfConfig.INSTANCE.smell_enabled) {
+            return;
+        }
+        MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
+        if (sf == null) {
+            return;
+        }
+        if (player.tickCount % 20 != 0) {
+            return; // 每秒刷新一次
+        }
+        double rangeSq = (double) SfConfig.INSTANCE.smell_range * SfConfig.INSTANCE.smell_range;
+        for (Player other : player.level().players()) {
+            if (other == player || other.hasEffect(MobEffects.CONFUSION)) {
+                continue;
+            }
+            if (other.distanceToSqr(player) <= rangeSq) {
+                // 反胃 3 秒，amplifier = 汗脚等级（越臭反胃越强）
+                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, sf.getAmplifier(), false, true));
+            }
         }
     }
 

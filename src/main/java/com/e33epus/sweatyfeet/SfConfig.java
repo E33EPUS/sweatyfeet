@@ -29,8 +29,6 @@ public class SfConfig implements ConfigData {
     @ConfigEntry.Category("fungus")
     public int fungus_delay_seconds = 30;
     @ConfigEntry.Category("fungus")
-    public int fungus_seconds = 60;
-    @ConfigEntry.Category("fungus")
     @ConfigEntry.Gui.Tooltip
     public boolean fungus_damage_enabled = true;
     @ConfigEntry.Category("fungus")
@@ -43,6 +41,12 @@ public class SfConfig implements ConfigData {
     public int fungus_infection_range = 3;
     @ConfigEntry.Category("fungus")
     public int fungus_infection_interval_seconds = 3;
+    @ConfigEntry.Category("fungus")
+    @ConfigEntry.Gui.Tooltip
+    public boolean smell_enabled = true;
+    @ConfigEntry.Category("fungus")
+    @ConfigEntry.Gui.Tooltip
+    public int smell_range = 5;
 
     @ConfigEntry.Category("durations")
     public int effect_seconds = 300;
