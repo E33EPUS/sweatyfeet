@@ -34,8 +34,15 @@ public final class SweatyFeetHandler {
     /** 脱鞋后降级倒计时（玩家 → 当前等级剩余 tick）；穿鞋即清，暂停降级 */
     private static final Map<UUID, Integer> DEGRADE_TICKS = new HashMap<>();
 
+    /** 赤脚连续泡水 tick（玩家 → 连续 tick）；断水/穿鞋清零，满 wash_seconds 清汗脚 */
+    private static final Map<UUID, Integer> WASH_TICKS = new HashMap<>();
+
     private static int degradeTicks() {
         return SfConfig.INSTANCE.degrade_seconds * 20;
+    }
+
+    private static int washTicks() {
+        return SfConfig.INSTANCE.wash_seconds * 20;
     }
 
     private static int lvl1() {
@@ -95,11 +102,14 @@ public final class SweatyFeetHandler {
             // 脱鞋：清穿戴计时，汗脚走"按级降级"（每级 60 秒递减，3→2→1→消除）
             WEAR_TICKS.remove(player.getUUID());
             degradeSweatyFeet(player);
+            // 洗脚：赤脚泡水满 wash_seconds 清汗脚（跳过降级）；真菌泡水洗不掉
+            handleWashOff(player);
             return;
         }
 
-        // 穿鞋（含汗靴）：降级暂停，回到冻结/重新计时
+        // 穿鞋（含汗靴）：降级/洗脚暂停，回到冻结/重新计时
         DEGRADE_TICKS.remove(player.getUUID());
+        WASH_TICKS.remove(player.getUUID());
 
         int totalTicks = WEAR_TICKS.merge(player.getUUID(), 1, Integer::sum);
         SweatData data = boots.get(ModDataComponents.SWEAT.get());
@@ -169,6 +179,25 @@ public final class SweatyFeetHandler {
         double retention = SfConfig.INSTANCE.slide_retention_percent / 100.0;
         Vec3 d = player.getDeltaMovement();
         player.setDeltaMovement(d.x * retention, d.y, d.z * retention);
+    }
+
+    /**
+     * 洗脚：赤脚泡水连续满 wash_seconds 清汗脚（跳过降级直接消除）。
+     * 只清汗脚不清真菌——真菌只能用花露水治（泡水洗不掉）。
+     * 连续计时：断水清零，防"沾一下水就算洗"。
+     */
+    private static void handleWashOff(Player player) {
+        if (!player.isInWater()) {
+            WASH_TICKS.remove(player.getUUID());
+            return;
+        }
+        UUID id = player.getUUID();
+        int consecutive = WASH_TICKS.merge(id, 1, Integer::sum);
+        if (consecutive >= washTicks() && player.hasEffect(ModEffects.SWEATY_FEET)) {
+            player.removeEffect(ModEffects.SWEATY_FEET);
+            DEGRADE_TICKS.remove(id);
+            WASH_TICKS.remove(id);
+        }
     }
 
     /**

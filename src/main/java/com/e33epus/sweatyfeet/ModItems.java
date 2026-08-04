@@ -21,6 +21,10 @@ public final class ModItems {
     public static final DeferredItem<SweatDrinkItem> SWEAT_DRINK =
         ITEMS.register("sweat_drink", rl -> new SweatDrinkItem(new Item.Properties().stacksTo(16)));
 
+    /** 花露水：真菌唯一快捷解药，右键喷在身上清真菌（水瓶+铃兰+萤石粉合成） */
+    public static final DeferredItem<SweatRepellentItem> FLORAL_WATER =
+        ITEMS.register("floral_water", rl -> new SweatRepellentItem(new Item.Properties().stacksTo(16)));
+
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
         DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SweatyFeet.MOD_ID);
 
