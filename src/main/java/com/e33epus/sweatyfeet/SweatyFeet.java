@@ -1,9 +1,12 @@
 package com.e33epus.sweatyfeet;
 
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +22,15 @@ public class SweatyFeet {
         ModEntities.register(modBus);
         ModItems.register(modBus);
 
-        // 把 Cloth Config 生成的配置界面挂到 Mods 列表的 Config 按钮。
-        // 不判 dist：registerExtensionPoint 只是存 Supplier，服务端不调用 createScreen，安全。
+        // 客户端：Cloth Config 注册（官方要求 init 时注册、服务端禁用 AutoConfig）
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            initClientConfig(container);
+        }
+    }
+
+    private static void initClientConfig(ModContainer container) {
+        AutoConfig.register(SfConfig.class, GsonConfigSerializer::new);
+        SfConfig.INSTANCE = AutoConfig.getConfigHolder(SfConfig.class).getConfig();
         container.registerExtensionPoint(IConfigScreenFactory.class,
             (modContainer, parent) -> {
                 try {

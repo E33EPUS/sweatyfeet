@@ -1,21 +1,18 @@
 package com.e33epus.sweatyfeet;
 
-import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 
 /**
- * Sweaty Feet 配置。Cloth Config AutoConfig 注解驱动：
- * - 游戏内 GUI 在 Mods 列表 → Sweaty Feet → Config 按钮（IConfigScreenFactory 挂载）
- * - 磁盘持久化 config/sweatyfeet.json（Gson）
- * - 逻辑代码读 INSTANCE 字段，改完保存立即生效（字段实时读取）
+ * Sweaty Feet 配置。Cloth Config AutoConfig 注解驱动（GUI 在 Mods 列表 → Config 按钮）。
+ * 注意：注册动作放在 SweatyFeet 构造的 Dist.CLIENT 分支里（官方要求 init 时注册、服务端禁用 AutoConfig），
+ * 这里只存字段默认值；客户端启动时 INSTANCE 会被替换为 AutoConfig 管理的实例。
  */
 @Config(name = SweatyFeet.MOD_ID)
 public class SfConfig implements ConfigData {
-    /** 双端注册并加载（服务端也要读计时参数），GUI 生成在客户端入口做 */
-    public static final SfConfig INSTANCE = AutoConfig.register(SfConfig.class, GsonConfigSerializer::new).getConfig();
+    /** 配置实例：客户端启动时由 AutoConfig 填充；专用服务器进程保持默认值兜底 */
+    public static SfConfig INSTANCE = new SfConfig();
 
     @ConfigEntry.Category("timing")
     @ConfigEntry.BoundedDiscrete(min = 1, max = 86400)
