@@ -31,6 +31,13 @@ public final class SweatyFeetHandler {
     /** 玩家总穿戴 tick（服务端内存态，脱鞋/下线即清，不跨会话） */
     private static final Map<UUID, Integer> WEAR_TICKS = new HashMap<>();
 
+    /** 脱鞋后降级倒计时（玩家 → 当前等级剩余 tick）；穿鞋即清，暂停降级 */
+    private static final Map<UUID, Integer> DEGRADE_TICKS = new HashMap<>();
+
+    private static int degradeTicks() {
+        return SfConfig.INSTANCE.degrade_seconds * 20;
+    }
+
     private static int lvl1() {
         return SfConfig.INSTANCE.level1_seconds * 20;
     }
@@ -85,11 +92,14 @@ public final class SweatyFeetHandler {
 
         ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
         if (!boots.is(ItemTags.FOOT_ARMOR)) {
-            // 脱鞋：只清计时，不手动移除 debuff —— 让效果自然走完剩余时长
-            // （真菌的减速属性修饰符随效果结束自动移除）
+            // 脱鞋：清穿戴计时，汗脚走"按级降级"（每级 60 秒递减，3→2→1→消除）
             WEAR_TICKS.remove(player.getUUID());
+            degradeSweatyFeet(player);
             return;
         }
+
+        // 穿鞋（含汗靴）：降级暂停，回到冻结/重新计时
+        DEGRADE_TICKS.remove(player.getUUID());
 
         int totalTicks = WEAR_TICKS.merge(player.getUUID(), 1, Integer::sum);
         SweatData data = boots.get(ModDataComponents.SWEAT.get());
@@ -159,6 +169,45 @@ public final class SweatyFeetHandler {
         double retention = SfConfig.INSTANCE.slide_retention_percent / 100.0;
         Vec3 d = player.getDeltaMovement();
         player.setDeltaMovement(d.x * retention, d.y, d.z * retention);
+    }
+
+    /**
+     * 脱鞋后的汗脚降级：每级倒计时 degrade_seconds，到头降一级重新计时，
+     * 1 级到头则彻底消除。原版效果机制做不到（到头直接消失），这里手动管理。
+     */
+    private static void degradeSweatyFeet(Player player) {
+        MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
+        if (sf == null) {
+            DEGRADE_TICKS.remove(player.getUUID());
+            return;
+        }
+        UUID id = player.getUUID();
+        int left = DEGRADE_TICKS.getOrDefault(id, degradeTicks());
+        DegradeResult next = nextDegradeState(sf.getAmplifier(), left, degradeTicks());
+        if (next.amplifier() < 0) {
+            player.removeEffect(ModEffects.SWEATY_FEET);
+            DEGRADE_TICKS.remove(id);
+        } else {
+            // 降级重挂：效果时长与倒计时同步（一个阶段），保证状态机与效果一致
+            player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
+            DEGRADE_TICKS.put(id, next.ticksLeft());
+        }
+    }
+
+    /**
+     * 纯逻辑：降级状态机的单步推进。amplifier=-1 表示已到 1 级末尾，应移除效果。
+     * 供单元测试锁定"3→2→1→消除"的降级链路。
+     */
+    static DegradeResult nextDegradeState(int amplifier, int ticksLeft, int degradeTicks) {
+        if (ticksLeft > 1) {
+            return new DegradeResult(amplifier, ticksLeft - 1);
+        }
+        int nextAmp = amplifier - 1;
+        return nextAmp < 0 ? new DegradeResult(-1, 0) : new DegradeResult(nextAmp, degradeTicks);
+    }
+
+    /** 降级状态（amplifier = 下一个效果等级，-1 = 移除） */
+    record DegradeResult(int amplifier, int ticksLeft) {
     }
 
     /**

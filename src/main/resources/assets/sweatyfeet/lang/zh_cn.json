@@ -35,6 +35,8 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "三级汗液瓶中毒时长（秒）",
     "text.autoconfig.sweatyfeet.option.bottle_nausea_seconds": "二级汗液瓶反胃时长（秒）",
     "text.autoconfig.sweatyfeet.option.drink_buff_seconds": "饮品 buff 时长（秒）",
+    "text.autoconfig.sweatyfeet.option.degrade_seconds": "汗脚降级每级时长（秒）",
+    "text.autoconfig.sweatyfeet.option.degrade_seconds.@Tooltip": "脱鞋后汗脚按级递减：3级→2级→1级→消除，每级走完这个秒数",
     "text.autoconfig.sweatyfeet.category.movement": "移动效果",
     "text.autoconfig.sweatyfeet.option.slide_enabled": "汗脚2级起脚滑",
     "text.autoconfig.sweatyfeet.option.slide_enabled.@Tooltip": "松键后保留部分动量滑行（类似冰面但更好控制）",

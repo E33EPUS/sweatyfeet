@@ -72,4 +72,39 @@ class SweatyFeetHandlerTest {
     void drinkTypeDefaultsToSpeed() {
         assertEquals("speed", SweatDrinkItem.readType(net.minecraft.world.item.ItemStack.EMPTY));
     }
+
+    @Test
+    void degradeCountsDownSameLevel() {
+        // 3 级（amp 2）脱鞋：倒计时中，等级不变
+        SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(2, 60, 60);
+        assertEquals(2, r.amplifier());
+        assertEquals(59, r.ticksLeft());
+    }
+
+    @Test
+    void degradeStepsDownOneLevelAtZero() {
+        // 3 级（amp 2）倒计时到头 → 降 2 级（amp 1），重置一个阶段
+        SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(2, 1, 60);
+        assertEquals(1, r.amplifier());
+        assertEquals(60, r.ticksLeft());
+    }
+
+    @Test
+    void degradeRemovesAtLevelOneEnd() {
+        // 1 级（amp 0）倒计时到头 → 移除（-1）
+        SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(0, 1, 60);
+        assertEquals(-1, r.amplifier());
+        assertEquals(0, r.ticksLeft());
+    }
+
+    @Test
+    void degradeFullChainFromLevelThree() {
+        // 完整链路：3 级(amp2) 60 tick → 2 级(amp1) 60 tick → 1 级(amp0) 60 tick → 移除
+        var r = SweatyFeetHandler.nextDegradeState(2, 1, 60); // → 2级
+        assertEquals(1, r.amplifier());
+        r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 1级
+        assertEquals(0, r.amplifier());
+        r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 移除
+        assertEquals(-1, r.amplifier());
+    }
 }

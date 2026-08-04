@@ -35,6 +35,8 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "Level-3 bottle poison (s)",
     "text.autoconfig.sweatyfeet.option.bottle_nausea_seconds": "Level-2 bottle nausea (s)",
     "text.autoconfig.sweatyfeet.option.drink_buff_seconds": "Drink buff duration (s)",
+    "text.autoconfig.sweatyfeet.option.degrade_seconds": "Degrade duration per level (s)",
+    "text.autoconfig.sweatyfeet.option.degrade_seconds.@Tooltip": "After removing boots, sweaty feet degrades level by level (III→II→I→gone), each level lasting this many seconds",
     "text.autoconfig.sweatyfeet.category.movement": "Movement",
     "text.autoconfig.sweatyfeet.option.slide_enabled": "Slide from sweaty feet lvl 2",
     "text.autoconfig.sweatyfeet.option.slide_enabled.@Tooltip": "Retains momentum after releasing keys (ice-like, but easier to control)",
