@@ -60,7 +60,7 @@ public class SfConfig implements ConfigData {
     public boolean slide_enabled = true;
     @ConfigEntry.Category("movement")
     @ConfigEntry.Gui.Tooltip
-    public int slide_retention_percent = 93;
+    public int slide_retention_percent = 98;
 
     @ConfigEntry.Category("visual")
     public boolean sweat_particles = true;

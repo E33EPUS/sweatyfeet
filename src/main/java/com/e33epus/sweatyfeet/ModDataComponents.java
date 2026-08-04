@@ -18,14 +18,17 @@ public final class ModDataComponents {
         DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, SweatyFeet.MOD_ID);
 
     public static final Codec<SweatData> SWEAT_CODEC = RecordCodecBuilder.create(inst -> inst.group(
+        Codec.INT.optionalFieldOf("level", 0).forGetter(SweatData::level),
         ComponentSerialization.CODEC.optionalFieldOf("original_name")
             .forGetter(d -> Optional.ofNullable(d.originalName()))
-    ).apply(inst, name -> new SweatData(name.orElse(null))));
+    ).apply(inst, (lvl, name) -> new SweatData(lvl, name.orElse(null))));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SweatData> SWEAT_STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.INT,
+        SweatData::level,
         ByteBufCodecs.optional(ComponentSerialization.STREAM_CODEC),
         d -> Optional.ofNullable(d.originalName()),
-        name -> new SweatData(name.orElse(null))
+        (lvl, name) -> new SweatData(lvl, name.orElse(null))
     );
 
     public static final Supplier<DataComponentType<SweatData>> SWEAT =

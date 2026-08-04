@@ -95,13 +95,25 @@ public final class SweatyFeetHandler {
         SweatData data = boots.get(ModDataComponents.SWEAT.get());
 
         if (data == null) {
-            // 未汗化：穿满 1 级时长触发汗化（>= 而不是 ==：中途改小配置时累计时长可能已跳过阈值）
+            // 未汗化：等汗化触发；同时冻结残余汗脚效果（脱鞋残余的效果，再穿时暂停倒计时，
+            // 穿鞋期间效果不计时，只有脱鞋才走完——用户语义"穿鞋冻结/脱鞋倒计时"）
+            if (totalTicks % REFRESH_INTERVAL == 0) {
+                MobEffectInstance leftover = player.getEffect(ModEffects.SWEATY_FEET);
+                if (leftover != null) {
+                    player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), leftover.getAmplifier(), false, true));
+                }
+            }
             if (totalTicks >= lvl1()) {
                 sweatify(player, boots);
             }
         } else {
-            // 已汗化：按总时长推进汗脚等级
-            int amplifier = computeAmplifier(totalTicks, lvl2(), lvl3());
+            // 已汗化：汗靴等级固化在组件里，只升不降（脱鞋再穿汗靴等级保留）
+            // 汗脚效果等级 = 组件等级与当前穿戴进度取最大：汗靴再穿立即恢复组件等级的效果
+            int amplifier = Math.max(computeAmplifier(totalTicks, lvl2(), lvl3()), data.level());
+            if (amplifier > data.level() && totalTicks % REFRESH_INTERVAL == 0) {
+                boots.set(ModDataComponents.SWEAT.get(), data.withLevel(amplifier));
+                data = boots.get(ModDataComponents.SWEAT.get());
+            }
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
                 // 3 级：额外减速（汗脚3级 = 脚滑 + 减速）
@@ -193,8 +205,9 @@ public final class SweatyFeetHandler {
         }
 
         // 以下仅服务端执行
-        // 瓶等级 = 当前汗脚等级（1级脚→一级瓶，3级脚→三级瓶）；倒汗后计时清零，先算再清
-        int lvl = computeAmplifier(WEAR_TICKS.getOrDefault(player.getUUID(), 0), lvl2(), lvl3()) + 1;
+        // 瓶等级 = 汗靴的等级（存在 SweatData 里：汗化时靴子等级固化，倒汗时按它产瓶）
+        // 之前用 WEAR_TICKS 内存态算等级：计时随脱鞋清零，导致二级/三级汗脚只能倒出一级瓶
+        int lvl = data.level() + 1;
         offhand.consume(1, player);
         ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
         bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
@@ -220,7 +233,7 @@ public final class SweatyFeetHandler {
     private static void sweatify(Player player, ItemStack boots) {
         Component customName = boots.get(DataComponents.CUSTOM_NAME);
         Component displayName = customName != null ? customName : boots.getHoverName();
-        boots.set(ModDataComponents.SWEAT.get(), new SweatData(customName));
+        boots.set(ModDataComponents.SWEAT.get(), new SweatData(0, customName));
         boots.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweaty_boots", displayName));
         player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, true));
     }

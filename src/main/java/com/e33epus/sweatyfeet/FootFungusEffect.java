@@ -25,7 +25,9 @@ public class FootFungusEffect extends MobEffect {
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        return duration % 20 == 0; // 每秒唤醒一次，节奏判断放 applyEffectTick（tickCount 分流）
+        // 每 tick 都跑调度（applyEffectTick 内部用 tickCount 分流），
+        // 保证扣血在 duration % 3s == 0 的 tick 上必定执行（之前 % 20 唤醒会漏掉部分命中）
+        return true;
     }
 
     @Override
