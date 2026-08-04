@@ -41,6 +41,13 @@ public final class ModDataComponents {
                 .persistent(Codec.INT)
                 .networkSynchronized(ByteBufCodecs.INT));
 
+    /** 饮品类型组件：speed/strength/...（一个饮品物品，按类型变效果和名字） */
+    public static final Supplier<DataComponentType<String>> DRINK_TYPE =
+        DATA_COMPONENT_TYPES.registerComponentType("drink_type",
+            builder -> builder
+                .persistent(Codec.STRING)
+                .networkSynchronized(ByteBufCodecs.STRING_UTF8));
+
     private ModDataComponents() {
     }
 

@@ -52,6 +52,8 @@ public class SfConfig implements ConfigData {
     public int drink_poison_seconds = 3;
     @ConfigEntry.Category("durations")
     public int bottle_nausea_seconds = 10;
+    @ConfigEntry.Category("durations")
+    public int drink_buff_seconds = 30;
 
     @ConfigEntry.Category("movement")
     @ConfigEntry.Gui.Tooltip

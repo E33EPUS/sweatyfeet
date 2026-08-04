@@ -67,4 +67,9 @@ class SweatyFeetHandlerTest {
         int retention = c.slide_retention_percent;
         assertTrue(retention >= 1 && retention <= 100, "retention must be 1-100, was " + retention);
     }
+
+    @Test
+    void drinkTypeDefaultsToSpeed() {
+        assertEquals("speed", SweatDrinkItem.readType(net.minecraft.world.item.ItemStack.EMPTY));
+    }
 }

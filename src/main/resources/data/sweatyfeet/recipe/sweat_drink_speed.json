@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "sweatyfeet:sweat_bottle" },
+        { "item": "minecraft:sugar" }
+    ],
+    "result": {
+        "id": "sweatyfeet:sweat_drink",
+        "count": 1,
+        "components": {
+            "sweatyfeet:drink_type": "speed"
+        }
+    }
+}

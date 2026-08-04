@@ -17,6 +17,10 @@ public final class ModItems {
     public static final DeferredItem<SweatBottleItem> SWEAT_BOTTLE =
         ITEMS.register("sweat_bottle", rl -> new SweatBottleItem(new Item.Properties().stacksTo(16)));
 
+    /** 饮品：工作台合成汗液瓶+材料产出，类型存 DRINK_TYPE 组件 */
+    public static final DeferredItem<SweatDrinkItem> SWEAT_DRINK =
+        ITEMS.register("sweat_drink", rl -> new SweatDrinkItem(new Item.Properties().stacksTo(16)));
+
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
         DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SweatyFeet.MOD_ID);
 
