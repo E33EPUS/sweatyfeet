@@ -1,0 +1,23 @@
+{
+    "item.sweatyfeet.sweat_bottle": "汗液瓶",
+    "item.sweatyfeet.sweaty_boots": "充满汗液的%s",
+    "effect.sweatyfeet.sweaty_feet": "汗脚",
+    "effect.sweatyfeet.foot_fungus": "真菌感染",
+    "text.autoconfig.sweatyfeet.category.timing": "穿戴计时",
+    "text.autoconfig.sweatyfeet.category.fungus": "真菌感染",
+    "text.autoconfig.sweatyfeet.category.durations": "效果时长",
+    "text.autoconfig.sweatyfeet.category.visual": "表现效果",
+    "text.autoconfig.sweatyfeet.option.level1_seconds": "汗脚1级所需秒数",
+    "text.autoconfig.sweatyfeet.option.level2_seconds": "汗脚2级所需秒数",
+    "text.autoconfig.sweatyfeet.option.level3_seconds": "汗脚3级所需秒数",
+    "text.autoconfig.sweatyfeet.option.enable_fungus": "启用真菌感染",
+    "text.autoconfig.sweatyfeet.option.fungus_delay_seconds": "3级后再穿多少秒触发真菌",
+    "text.autoconfig.sweatyfeet.option.fungus_seconds": "真菌效果单次时长（秒）",
+    "text.autoconfig.sweatyfeet.option.effect_seconds": "汗脚效果单次时长（秒）",
+    "text.autoconfig.sweatyfeet.option.throw_debuff_seconds": "被汗液瓶砸中的汗脚时长（秒）",
+    "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "喝汗液瓶中毒时长（秒）",
+    "text.autoconfig.sweatyfeet.option.sweat_particles": "冒汗粒子",
+    "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "冒汗粒子数量倍数",
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "喷嚏粒子",
+    "text.autoconfig.sweatyfeet.option.sneeze_sound": "喷嚏音效"
+}

@@ -1,0 +1,23 @@
+{
+    "item.sweatyfeet.sweat_bottle": "Sweat Bottle",
+    "item.sweatyfeet.sweaty_boots": "Sweaty %s",
+    "effect.sweatyfeet.sweaty_feet": "Sweaty Feet",
+    "effect.sweatyfeet.foot_fungus": "Foot Fungus",
+    "text.autoconfig.sweatyfeet.category.timing": "Timing",
+    "text.autoconfig.sweatyfeet.category.fungus": "Fungal Infection",
+    "text.autoconfig.sweatyfeet.category.durations": "Effect Durations",
+    "text.autoconfig.sweatyfeet.category.visual": "Visuals",
+    "text.autoconfig.sweatyfeet.option.level1_seconds": "Level 1 after (s)",
+    "text.autoconfig.sweatyfeet.option.level2_seconds": "Level 2 after (s)",
+    "text.autoconfig.sweatyfeet.option.level3_seconds": "Level 3 after (s)",
+    "text.autoconfig.sweatyfeet.option.enable_fungus": "Enable fungal infection",
+    "text.autoconfig.sweatyfeet.option.fungus_delay_seconds": "Fungus delay at lvl 3 (s)",
+    "text.autoconfig.sweatyfeet.option.fungus_seconds": "Fungus effect duration (s)",
+    "text.autoconfig.sweatyfeet.option.effect_seconds": "Sweaty feet effect duration (s)",
+    "text.autoconfig.sweatyfeet.option.throw_debuff_seconds": "Hit debuff from thrown bottle (s)",
+    "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "Poison from drinking (s)",
+    "text.autoconfig.sweatyfeet.option.sweat_particles": "Sweat particles",
+    "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "Sweat particle scale",
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "Sneeze particles",
+    "text.autoconfig.sweatyfeet.option.sneeze_sound": "Sneeze sound"
+}
