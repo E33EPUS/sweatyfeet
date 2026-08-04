@@ -34,6 +34,13 @@ public final class ModDataComponents {
                 .persistent(SWEAT_CODEC)
                 .networkSynchronized(SWEAT_STREAM_CODEC));
 
+    /** 汗液瓶等级组件：1/2/3，喝的效果和名字按等级变（仿原版药水分级模式） */
+    public static final Supplier<DataComponentType<Integer>> SWEAT_LEVEL =
+        DATA_COMPONENT_TYPES.registerComponentType("sweat_level",
+            builder -> builder
+                .persistent(Codec.INT)
+                .networkSynchronized(ByteBufCodecs.INT));
+
     private ModDataComponents() {
     }
 

@@ -1,6 +1,7 @@
 package com.e33epus.sweatyfeet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,5 +49,22 @@ class SweatyFeetHandlerTest {
         assertEquals(120 * 20, c.level1_seconds * 20);
         assertEquals(240 * 20, c.level2_seconds * 20);
         assertEquals(360 * 20, c.level3_seconds * 20);
+    }
+
+    @Test
+    void bottleLevelClampsToRange() {
+        assertEquals(1, SweatBottleItem.clampLevel(0));
+        assertEquals(1, SweatBottleItem.clampLevel(1));
+        assertEquals(2, SweatBottleItem.clampLevel(2));
+        assertEquals(3, SweatBottleItem.clampLevel(3));
+        assertEquals(3, SweatBottleItem.clampLevel(99));
+        assertEquals(1, SweatBottleItem.clampLevel(-5));
+    }
+
+    @Test
+    void defaultSlideRetentionDoesNotExceedBounds() {
+        SfConfig c = new SfConfig();
+        int retention = c.slide_retention_percent;
+        assertTrue(retention >= 1 && retention <= 100, "retention must be 1-100, was " + retention);
     }
 }

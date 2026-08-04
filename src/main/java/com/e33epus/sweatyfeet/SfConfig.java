@@ -30,6 +30,19 @@ public class SfConfig implements ConfigData {
     public int fungus_delay_seconds = 30;
     @ConfigEntry.Category("fungus")
     public int fungus_seconds = 60;
+    @ConfigEntry.Category("fungus")
+    @ConfigEntry.Gui.Tooltip
+    public boolean fungus_damage_enabled = true;
+    @ConfigEntry.Category("fungus")
+    @ConfigEntry.Gui.Tooltip
+    public int fungus_damage_interval_seconds = 3;
+    @ConfigEntry.Category("fungus")
+    @ConfigEntry.Gui.Tooltip
+    public boolean fungus_infection_enabled = true;
+    @ConfigEntry.Category("fungus")
+    public int fungus_infection_range = 3;
+    @ConfigEntry.Category("fungus")
+    public int fungus_infection_interval_seconds = 3;
 
     @ConfigEntry.Category("durations")
     public int effect_seconds = 300;
@@ -37,6 +50,15 @@ public class SfConfig implements ConfigData {
     public int throw_debuff_seconds = 5;
     @ConfigEntry.Category("durations")
     public int drink_poison_seconds = 3;
+    @ConfigEntry.Category("durations")
+    public int bottle_nausea_seconds = 10;
+
+    @ConfigEntry.Category("movement")
+    @ConfigEntry.Gui.Tooltip
+    public boolean slide_enabled = true;
+    @ConfigEntry.Category("movement")
+    @ConfigEntry.Gui.Tooltip
+    public int slide_retention_percent = 93;
 
     @ConfigEntry.Category("visual")
     public boolean sweat_particles = true;

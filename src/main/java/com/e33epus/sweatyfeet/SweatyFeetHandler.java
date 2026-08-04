@@ -9,10 +9,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -59,8 +61,26 @@ public final class SweatyFeetHandler {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+        // 脚滑：双端都要跑（客户端保手感，服务端保权威，衰减一致无纠偏）
+        applySlide(player);
+
         if (player.level().isClientSide) {
             return;
+        }
+
+        // 真菌传染扩散：不依赖靴子，被传染者也能继续传染（站在感染者附近一段时间被传）
+        if (SfConfig.INSTANCE.fungus_infection_enabled
+            && player.hasEffect(ModEffects.FOOT_FUNGUS)
+            && player.tickCount % (SfConfig.INSTANCE.fungus_infection_interval_seconds * 20) == 0) {
+            double rangeSq = (double) SfConfig.INSTANCE.fungus_infection_range * SfConfig.INSTANCE.fungus_infection_range;
+            for (Player other : player.level().players()) {
+                if (other == player || other.hasEffect(ModEffects.FOOT_FUNGUS)) {
+                    continue;
+                }
+                if (other.distanceToSqr(player) <= rangeSq) {
+                    other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
+                }
+            }
         }
 
         ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
@@ -84,6 +104,10 @@ public final class SweatyFeetHandler {
             int amplifier = computeAmplifier(totalTicks, lvl2(), lvl3());
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
+                // 3 级：额外减速（汗脚3级 = 脚滑 + 减速）
+                if (amplifier >= 2) {
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, effectTicks(), 0, false, true));
+                }
             }
             // 3 级后继续穿 30 秒 → 真菌感染；穿着期间持续刷新，不脱靴不清
             if (SfConfig.INSTANCE.enable_fungus
@@ -102,6 +126,27 @@ public final class SweatyFeetHandler {
         if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0) {
             player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, fungusTicks(), 0, false, true));
         }
+    }
+
+    /**
+     * 脚滑（汗脚 2 级起）：不依赖按键检测（服务端拿不到 input），
+     * 直接对水平动量乘保留系数 → 松键后速度衰减变慢 = 滑行。
+     * 双端对称执行，服务端权威 + 客户端预测一致。
+     */
+    private static void applySlide(Player player) {
+        if (!SfConfig.INSTANCE.slide_enabled) {
+            return;
+        }
+        MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
+        if (sf == null || sf.getAmplifier() < 1) {
+            return;
+        }
+        if (!player.onGround()) {
+            return;
+        }
+        double retention = SfConfig.INSTANCE.slide_retention_percent / 100.0;
+        Vec3 d = player.getDeltaMovement();
+        player.setDeltaMovement(d.x * retention, d.y, d.z * retention);
     }
 
     /**
@@ -148,8 +193,11 @@ public final class SweatyFeetHandler {
         }
 
         // 以下仅服务端执行
+        // 瓶等级 = 当前汗脚等级（1级脚→一级瓶，3级脚→三级瓶）；倒汗后计时清零，先算再清
+        int lvl = computeAmplifier(WEAR_TICKS.getOrDefault(player.getUUID(), 0), lvl2(), lvl3()) + 1;
         offhand.consume(1, player);
         ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
+        bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
         if (!player.getInventory().add(bottle)) {
             player.drop(bottle, false);
         }
