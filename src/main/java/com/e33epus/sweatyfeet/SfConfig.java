@@ -59,7 +59,7 @@ public class SfConfig implements ConfigData {
     public int degrade_seconds = 60;
     @ConfigEntry.Category("durations")
     @ConfigEntry.Gui.Tooltip
-    public int wash_seconds = 5;
+    public int wash_seconds = 15;
 
     @ConfigEntry.Category("movement")
     @ConfigEntry.Gui.Tooltip
