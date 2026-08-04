@@ -4,6 +4,8 @@
     "item.sweatyfeet.sweaty_boots": "Sweaty %s",
     "effect.sweatyfeet.sweaty_feet": "Sweaty Feet",
     "effect.sweatyfeet.foot_fungus": "Foot Fungus",
+    "text.autoconfig.sweatyfeet.title": "Sweaty Feet Config",
+    "text.autoconfig.sweatyfeet.category.default": "Default",
     "text.autoconfig.sweatyfeet.category.timing": "Timing",
     "text.autoconfig.sweatyfeet.category.fungus": "Fungal Infection",
     "text.autoconfig.sweatyfeet.category.durations": "Effect Durations",
@@ -19,6 +21,5 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "Poison from drinking (s)",
     "text.autoconfig.sweatyfeet.option.sweat_particles": "Sweat particles",
     "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "Sweat particle scale",
-    "text.autoconfig.sweatyfeet.option.sneeze_particles": "Sneeze particles",
-    "text.autoconfig.sweatyfeet.option.sneeze_sound": "Sneeze sound"
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "Sneeze particles"
 }

@@ -4,6 +4,8 @@
     "item.sweatyfeet.sweaty_boots": "充满汗液的%s",
     "effect.sweatyfeet.sweaty_feet": "汗脚",
     "effect.sweatyfeet.foot_fungus": "真菌感染",
+    "text.autoconfig.sweatyfeet.title": "Sweaty Feet 设置",
+    "text.autoconfig.sweatyfeet.category.default": "默认",
     "text.autoconfig.sweatyfeet.category.timing": "穿戴计时",
     "text.autoconfig.sweatyfeet.category.fungus": "真菌感染",
     "text.autoconfig.sweatyfeet.category.durations": "效果时长",
@@ -19,6 +21,5 @@
     "text.autoconfig.sweatyfeet.option.drink_poison_seconds": "喝汗液瓶中毒时长（秒）",
     "text.autoconfig.sweatyfeet.option.sweat_particles": "冒汗粒子",
     "text.autoconfig.sweatyfeet.option.sweat_particle_scale": "冒汗粒子数量倍数",
-    "text.autoconfig.sweatyfeet.option.sneeze_particles": "喷嚏粒子",
-    "text.autoconfig.sweatyfeet.option.sneeze_sound": "喷嚏音效"
+    "text.autoconfig.sweatyfeet.option.sneeze_particles": "喷嚏粒子"
 }

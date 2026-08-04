@@ -25,22 +25,6 @@ def save(img, rel):
     print("saved", path)
 
 
-# ---- 汗液瓶：黄绿色药水瓶 ----
-bottle = new_img()
-CAP = (0x6B, 0x8E, 0x23, 255)
-LIQUID = (0x9A, 0xCD, 0x32, 255)
-DARK = (0x7A, 0xA8, 0x28, 255)
-HILIGHT = (0xC8, 0xE0, 0x6A, 255)
-rect(bottle, 6, 1, 9, 3, CAP)              # 瓶盖
-rect(bottle, 7, 4, 8, 5, DARK)             # 瓶颈
-rect(bottle, 5, 5, 10, 11, LIQUID)         # 瓶身
-rect(bottle, 4, 7, 5, 9, LIQUID)           # 瓶身两侧微凸
-rect(bottle, 10, 7, 11, 9, LIQUID)
-for p in [(5, 5), (10, 5), (4, 7), (5, 7), (11, 7), (10, 7), (4, 9), (5, 11), (10, 11), (11, 9)]:
-    bottle.putpixel(p, DARK)               # 轮廓
-rect(bottle, 6, 6, 6, 9, HILIGHT)          # 高光
-save(bottle, os.path.join("textures", "item", "sweat_bottle.png"))
-
 # ---- 汗脚图标：蓝色汗滴 ----
 sweat = new_img()
 BLUE = (0x41, 0xA8, 0xEF, 255)

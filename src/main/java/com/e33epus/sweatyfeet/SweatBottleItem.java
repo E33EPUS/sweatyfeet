@@ -47,6 +47,11 @@ public class SweatBottleItem extends Item implements ProjectileItem {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide) {
             entity.addEffect(new MobEffectInstance(MobEffects.POISON, SfConfig.INSTANCE.drink_poison_seconds * 20, 0));
+            // 原版喝水音效：咕嘟 + 嗝
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         stack.consume(1, entity);
         return Items.GLASS_BOTTLE.getDefaultInstance();
