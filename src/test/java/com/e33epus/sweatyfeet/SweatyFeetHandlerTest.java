@@ -47,9 +47,9 @@ class SweatyFeetHandlerTest {
 
     @Test
     void defaultConfigSecondsConvertToTicks() {
-        assertEquals(120 * 20, SfConfig.LEVEL_1_SECONDS.getDefault() * 20);
-        assertEquals(240 * 20, SfConfig.LEVEL_2_SECONDS.getDefault() * 20);
-        assertEquals(360 * 20, SfConfig.LEVEL_3_SECONDS.getDefault() * 20);
+        assertEquals(30 * 20, SfConfig.LEVEL_1_SECONDS.getDefault() * 20);
+        assertEquals(60 * 20, SfConfig.LEVEL_2_SECONDS.getDefault() * 20);
+        assertEquals(90 * 20, SfConfig.LEVEL_3_SECONDS.getDefault() * 20);
     }
 
     @Test
@@ -90,22 +90,23 @@ class SweatyFeetHandlerTest {
     }
 
     @Test
-    void degradeRemovesAtLevelOneEnd() {
-        // 1 级（amp 0）倒计时到头 → 移除（-1）
+    void degradeKeepsLevelOneInsteadOfRemoving() {
+        // 1 级（amp 0）倒计时到头 → 保留 1 级并重置满时长（汗脚只能洗脚彻底清，脱鞋永远清不干净）
         SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(0, 1, 60);
-        assertEquals(-1, r.amplifier());
-        assertEquals(0, r.ticksLeft());
+        assertEquals(0, r.amplifier());
+        assertEquals(60, r.ticksLeft());
     }
 
     @Test
     void degradeFullChainFromLevelThree() {
-        // 完整链路：3 级(amp2) 60 tick → 2 级(amp1) 60 tick → 1 级(amp0) 60 tick → 移除
+        // 完整链路：3 级(amp2) 60 tick → 2 级(amp1) 60 tick → 1 级(amp0) 60 tick → 保留 1 级
         var r = SweatyFeetHandler.nextDegradeState(2, 1, 60); // → 2级
         assertEquals(1, r.amplifier());
         r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 1级
         assertEquals(0, r.amplifier());
-        r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 移除
-        assertEquals(-1, r.amplifier());
+        r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 保留 1 级
+        assertEquals(0, r.amplifier());
+        assertEquals(60, r.ticksLeft());
     }
 
     @Test

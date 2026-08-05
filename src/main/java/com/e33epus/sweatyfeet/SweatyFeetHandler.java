@@ -59,6 +59,13 @@ public final class SweatyFeetHandler {
         return SfConfig.WASH_SECONDS.get() * 20;
     }
 
+    /** 洗脚所需 tick（随汗脚等级递增）：1 级 T_base，2 级 2×，3 级 3× */
+    private static int washTicksFor(Player player) {
+        MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
+        int amp = sf == null ? 0 : sf.getAmplifier();
+        return washTicks() * (amp + 1);
+    }
+
     private static int lvl1() {
         return SfConfig.LEVEL_1_SECONDS.get() * 20;
     }
@@ -103,15 +110,16 @@ public final class SweatyFeetHandler {
             if (!stack.is(ItemTags.FOOT_ARMOR) || !stack.has(ModDataComponents.SWEAT.get())) {
                 continue;
             }
-            // 泡洗计时（组件累加），冒水花粒子
+            // 泡洗计时随等级递增（1 级 T_base，3 级 3×）；组件累加，冒水花粒子
+            SweatData data = stack.get(ModDataComponents.SWEAT.get());
+            int need = washBootsTicks * (data.level() + 1);
             int washed = stack.getOrDefault(ModDataComponents.SWEAT_WASH_TICKS.get(), 0) + 20;
             stack.set(ModDataComponents.SWEAT_WASH_TICKS.get(), washed);
             level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP,
                 itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
                 3, 0.15, 0.1, 0.15, 0.0);
-            if (washed >= washBootsTicks) {
+            if (washed >= need) {
                 // 洗干净：去汗液 + 还原自定义名
-                SweatData data = stack.get(ModDataComponents.SWEAT.get());
                 stack.remove(ModDataComponents.SWEAT.get());
                 stack.remove(ModDataComponents.SWEAT_WASH_TICKS.get());
                 if (data != null && data.originalName() != null) {
@@ -130,9 +138,9 @@ public final class SweatyFeetHandler {
         }
         if (player.hasEffect(ModEffects.SWEATY_FEET) && player.isInWater()) {
             if (!player.getItemBySlot(EquipmentSlot.FEET).is(ItemTags.FOOT_ARMOR)) {
-                // 赤脚洗脚中：显示剩余秒数
+                // 赤脚洗脚中：显示剩余秒数（按当前等级需求）
                 int consecutive = WASH_TICKS.getOrDefault(player.getUUID(), 0);
-                int left = Math.max(0, (washTicks() - consecutive) / 20);
+                int left = Math.max(0, (washTicksFor(player) - consecutive) / 20);
                 player.displayClientMessage(
                     Component.translatable("sweatyfeet.msg.washing", left), true);
             } else {
@@ -286,7 +294,7 @@ public final class SweatyFeetHandler {
             serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.4F, 1.0F);
         }
-        if (consecutive >= washTicks() && player.hasEffect(ModEffects.SWEATY_FEET)) {
+        if (consecutive >= washTicksFor(player) && player.hasEffect(ModEffects.SWEATY_FEET)) {
             player.removeEffect(ModEffects.SWEATY_FEET);
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
@@ -330,10 +338,10 @@ public final class SweatyFeetHandler {
                 3, 0.2, 0.0, 0.2, 0.05);
             serverLevel.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.4F, 1.0F);
-            int left = Math.max(0, (washTicks() - t) / 20);
+            int left = Math.max(0, (washTicksFor(player) - t) / 20);
             player.displayClientMessage(Component.translatable("sweatyfeet.msg.washing", left), true);
         }
-        if (t >= washTicks()) {
+        if (t >= washTicksFor(player)) {
             // 洗完：清汗脚 + 盆变浑水
             player.removeEffect(ModEffects.SWEATY_FEET);
             DEGRADE_TICKS.remove(id);
@@ -358,28 +366,26 @@ public final class SweatyFeetHandler {
         UUID id = player.getUUID();
         int left = DEGRADE_TICKS.getOrDefault(id, degradeTicks());
         DegradeResult next = nextDegradeState(sf.getAmplifier(), left, degradeTicks());
-        if (next.amplifier() < 0) {
-            player.removeEffect(ModEffects.SWEATY_FEET);
-            DEGRADE_TICKS.remove(id);
-        } else {
-            // 降级重挂：必须 remove 再 add —— 原版 MobEffectInstance.update 对"同 amp 更短时长/更低 amp"
-            // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
-            player.removeEffect(ModEffects.SWEATY_FEET);
-            player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
-            DEGRADE_TICKS.put(id, next.ticksLeft());
-        }
+        // 降级重挂：必须 remove 再 add —— 原版 MobEffectInstance.update 对"同 amp 更短时长/更低 amp"
+        // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
+        player.removeEffect(ModEffects.SWEATY_FEET);
+        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
+        DEGRADE_TICKS.put(id, next.ticksLeft());
     }
 
     /**
-     * 纯逻辑：降级状态机的单步推进。amplifier=-1 表示已到 1 级末尾，应移除效果。
-     * 供单元测试锁定"3→2→1→消除"的降级链路。
+     * 纯逻辑：降级状态机的单步推进。降级到 1 级（amp 0）后保留不再消除——
+     * 汗脚只能靠洗脚（泡水/泡盆）彻底清除，脱鞋永远清不干净（文档语义）。
      */
     static DegradeResult nextDegradeState(int amplifier, int ticksLeft, int degradeTicks) {
         if (ticksLeft > 1) {
             return new DegradeResult(amplifier, ticksLeft - 1);
         }
-        int nextAmp = amplifier - 1;
-        return nextAmp < 0 ? new DegradeResult(-1, 0) : new DegradeResult(nextAmp, degradeTicks);
+        // 倒计时到头：降一级；1 级到底后重置为 1 级满时长（循环）
+        if (amplifier <= 0) {
+            return new DegradeResult(0, degradeTicks);
+        }
+        return new DegradeResult(amplifier - 1, degradeTicks);
     }
 
     /** 降级状态（amplifier = 下一个效果等级，-1 = 移除） */
@@ -448,10 +454,9 @@ public final class SweatyFeetHandler {
             main.remove(DataComponents.CUSTOM_NAME);
         }
 
-        // 倒汗 = 主动缓解：清零计时 + 移除脚部 debuff
+        // 倒汗 = 主动缓解：清零计时 + 移除脚部 debuff（真菌不可逆：倒汗清不掉，只能花露水泡脚）
         WEAR_TICKS.remove(player.getUUID());
         player.removeEffect(ModEffects.SWEATY_FEET);
-        player.removeEffect(ModEffects.FOOT_FUNGUS);
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满汗液的xxx」+ 挂汗脚 1 级 */

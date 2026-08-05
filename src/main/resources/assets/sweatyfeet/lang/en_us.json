@@ -103,5 +103,6 @@
     "sweatyfeet.msg.basin_empty": "The basin is empty!",
     "sweatyfeet.msg.no_sweat": "Your feet don't stink, why soak?",
     "sweatyfeet.msg.soak_start": "Soaking...",
-    "sweatyfeet.msg.soak_done": "Done soaking! The water is dirty now..."
+    "sweatyfeet.msg.soak_done": "Done soaking! The water is dirty now...",
+    "sweatyfeet.msg.aroma": "So mellow...? Delicious!"
 }
