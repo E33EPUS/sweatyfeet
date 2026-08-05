@@ -45,7 +45,11 @@ public final class SoakAnimationClient {
         if (layer == null) {
             return;
         }
-        boolean soaking = player.getBlockStateOn().is(ModBlocks.WASH_BASIN.get())
+        // 泡脚动画条件：赤脚 + 站在盆上 + 盆里有清水（与 3b 服务端泡脚会话语义一致：
+        // 有水才泡，洗完水变浑/被舀走就停）
+        var stateOn = player.getBlockStateOn();
+        boolean soaking = stateOn.is(ModBlocks.WASH_BASIN.get())
+            && stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.WATER
             && player.getItemBySlot(EquipmentSlot.FEET).isEmpty();
         if (soaking) {
             if (layer.getAnimation() == null) {
