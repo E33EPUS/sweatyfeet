@@ -15,6 +15,7 @@ public class SweatyFeet {
         ModEffects.register(modBus);
         ModEntities.register(modBus);
         ModItems.register(modBus);
+        ModBlocks.register(modBus);
 
         // 服务端配置（玩法逻辑全在服务端），NeoForge 内置 ModConfigSpec，零前置
         container.registerConfig(ModConfig.Type.SERVER, SfConfig.SERVER_SPEC);

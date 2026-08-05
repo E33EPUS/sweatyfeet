@@ -48,6 +48,8 @@ public final class ModItems {
                 output.accept(strength);
                 // 花露水
                 output.accept(new ItemStack(FLORAL_WATER.get()));
+                // 洗脚盆
+                output.accept(new ItemStack(ModBlocks.WASH_BASIN_ITEM.get()));
             })
             .build());
 

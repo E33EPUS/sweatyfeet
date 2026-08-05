@@ -5,7 +5,11 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -185,17 +189,27 @@ public final class SweatyFeetHandler {
     }
 
     /**
-     * 洗脚：赤脚泡水连续满 wash_seconds 清汗脚（跳过降级直接消除）。
-     * 只清汗脚不清真菌——真菌只能用花露水治（泡水洗不掉）。
-     * 连续计时：断水清零，防"沾一下水就算洗"。
+     * 洗脚：赤脚泡水或站洗脚盆上，连续满 wash_seconds 清汗脚（跳过降级直接消除）。
+     * 只清汗脚不清真菌——真菌只能用花露水治（泡水/泡盆洗不掉）。
+     * 连续计时：断水/离开盆清零，防"沾一下水就算洗"。
      */
     private static void handleWashOff(Player player) {
-        if (!player.isInWater()) {
+        boolean inWater = player.isInWater();
+        boolean onBasin = player.getBlockStateOn().is(ModBlocks.WASH_BASIN.get());
+        if (!inWater && !onBasin) {
             WASH_TICKS.remove(player.getUUID());
             return;
         }
         UUID id = player.getUUID();
         int consecutive = WASH_TICKS.merge(id, 1, Integer::sum);
+        // 泡脚表现：水花粒子 + 水声（每秒）
+        if (consecutive % 20 == 0 && player.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.SPLASH,
+                player.getX(), player.getY() + 0.1, player.getZ(),
+                3, 0.2, 0.0, 0.2, 0.05);
+            serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.4F, 1.0F);
+        }
         if (consecutive >= washTicks() && player.hasEffect(ModEffects.SWEATY_FEET)) {
             player.removeEffect(ModEffects.SWEATY_FEET);
             DEGRADE_TICKS.remove(id);
