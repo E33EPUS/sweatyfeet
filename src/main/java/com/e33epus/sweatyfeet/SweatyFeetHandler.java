@@ -37,31 +37,31 @@ public final class SweatyFeetHandler {
     private static final Map<UUID, Integer> WASH_TICKS = new HashMap<>();
 
     private static int degradeTicks() {
-        return SfConfig.INSTANCE.degrade_seconds * 20;
+        return SfConfig.DEGRADE_SECONDS.get() * 20;
     }
 
     private static int washTicks() {
-        return SfConfig.INSTANCE.wash_seconds * 20;
+        return SfConfig.WASH_SECONDS.get() * 20;
     }
 
     private static int lvl1() {
-        return SfConfig.INSTANCE.level1_seconds * 20;
+        return SfConfig.LEVEL_1_SECONDS.get() * 20;
     }
 
     private static int lvl2() {
-        return SfConfig.INSTANCE.level2_seconds * 20;
+        return SfConfig.LEVEL_2_SECONDS.get() * 20;
     }
 
     private static int lvl3() {
-        return SfConfig.INSTANCE.level3_seconds * 20;
+        return SfConfig.LEVEL_3_SECONDS.get() * 20;
     }
 
     private static int fungusDelay() {
-        return SfConfig.INSTANCE.fungus_delay_seconds * 20;
+        return SfConfig.FUNGUS_DELAY_SECONDS.get() * 20;
     }
 
     private static int effectTicks() {
-        return SfConfig.INSTANCE.effect_seconds * 20;
+        return SfConfig.EFFECT_SECONDS.get() * 20;
     }
 
     private SweatyFeetHandler() {
@@ -75,10 +75,10 @@ public final class SweatyFeetHandler {
         }
 
         // 真菌传染扩散：不依赖靴子，被传染者也能继续传染（站在感染者附近一段时间被传）
-        if (SfConfig.INSTANCE.fungus_infection_enabled
+        if (SfConfig.FUNGUS_INFECTION_ENABLED.get()
             && player.hasEffect(ModEffects.FOOT_FUNGUS)
-            && player.tickCount % (SfConfig.INSTANCE.fungus_infection_interval_seconds * 20) == 0) {
-            double rangeSq = (double) SfConfig.INSTANCE.fungus_infection_range * SfConfig.INSTANCE.fungus_infection_range;
+            && player.tickCount % (SfConfig.FUNGUS_INFECTION_INTERVAL_SECONDS.get() * 20) == 0) {
+            double rangeSq = (double) SfConfig.FUNGUS_INFECTION_RANGE.get() * SfConfig.FUNGUS_INFECTION_RANGE.get();
             for (Player other : player.level().players()) {
                 if (other == player || other.hasEffect(ModEffects.FOOT_FUNGUS)) {
                     continue;
@@ -137,7 +137,7 @@ public final class SweatyFeetHandler {
                 }
             }
             // 3 级后继续穿 30 秒 → 真菌感染（无限时长：只能被花露水/倒汗消除，脱鞋不消失）
-            if (SfConfig.INSTANCE.enable_fungus
+            if (SfConfig.ENABLE_FUNGUS.get()
                 && totalTicks >= lvl3() + fungusDelay()
                 && !player.hasEffect(ModEffects.FOOT_FUNGUS)
                 && totalTicks % REFRESH_INTERVAL == 0) {
@@ -146,12 +146,12 @@ public final class SweatyFeetHandler {
         }
 
         // Debug：action bar 实时显示穿戴 tick 与汗脚等级（肉眼验证计时）
-        if (SfConfig.INSTANCE.debug_show_ticks && totalTicks % 20 == 0) {
+        if (SfConfig.DEBUG_SHOW_TICKS.get() && totalTicks % 20 == 0) {
             int lvl = data == null ? -1 : computeAmplifier(totalTicks, lvl2(), lvl3()) + 1;
             player.displayClientMessage(Component.literal("SF tick=" + totalTicks + " lvl=" + lvl), true);
         }
         // Debug：强制真菌（方便测真菌表现，不看 3 级时长）
-        if (SfConfig.INSTANCE.debug_force_fungus && totalTicks % 20 == 0 && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
+        if (SfConfig.DEBUG_FORCE_FUNGUS.get() && totalTicks % 20 == 0 && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
             player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
         }
     }
@@ -162,7 +162,7 @@ public final class SweatyFeetHandler {
      * 穿鞋/泡水洗脚/降级完成后效果消失 → 停止散臭。
      */
     private static void spreadFootSmell(Player player) {
-        if (!SfConfig.INSTANCE.smell_enabled) {
+        if (!SfConfig.SMELL_ENABLED.get()) {
             return;
         }
         MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
@@ -172,7 +172,7 @@ public final class SweatyFeetHandler {
         if (player.tickCount % 20 != 0) {
             return; // 每秒刷新一次
         }
-        double rangeSq = (double) SfConfig.INSTANCE.smell_range * SfConfig.INSTANCE.smell_range;
+        double rangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
         for (Player other : player.level().players()) {
             if (other == player || other.hasEffect(MobEffects.CONFUSION)) {
                 continue;

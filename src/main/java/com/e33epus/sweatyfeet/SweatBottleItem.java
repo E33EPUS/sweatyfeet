@@ -74,10 +74,10 @@ public class SweatBottleItem extends Item implements ProjectileItem {
         }
         if (!level.isClientSide) {
             if (lvl >= 2) {
-                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, SfConfig.INSTANCE.bottle_nausea_seconds * 20, 0));
+                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, SfConfig.BOTTLE_NAUSEA_SECONDS.get() * 20, 0));
             }
             if (lvl >= 3) {
-                entity.addEffect(new MobEffectInstance(MobEffects.POISON, SfConfig.INSTANCE.drink_poison_seconds * 20, 0));
+                entity.addEffect(new MobEffectInstance(MobEffects.POISON, SfConfig.DRINK_POISON_SECONDS.get() * 20, 0));
             }
             // 音效：1 级像吃东西（回饱食度），2/3 级像喝药水
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),

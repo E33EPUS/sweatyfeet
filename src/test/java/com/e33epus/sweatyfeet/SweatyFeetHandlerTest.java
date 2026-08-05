@@ -45,10 +45,9 @@ class SweatyFeetHandlerTest {
 
     @Test
     void defaultConfigSecondsConvertToTicks() {
-        SfConfig c = new SfConfig();
-        assertEquals(120 * 20, c.level1_seconds * 20);
-        assertEquals(240 * 20, c.level2_seconds * 20);
-        assertEquals(360 * 20, c.level3_seconds * 20);
+        assertEquals(120 * 20, SfConfig.LEVEL_1_SECONDS.getDefault() * 20);
+        assertEquals(240 * 20, SfConfig.LEVEL_2_SECONDS.getDefault() * 20);
+        assertEquals(360 * 20, SfConfig.LEVEL_3_SECONDS.getDefault() * 20);
     }
 
     @Test
@@ -63,8 +62,7 @@ class SweatyFeetHandlerTest {
 
     @Test
     void defaultSlideRetentionDoesNotExceedBounds() {
-        SfConfig c = new SfConfig();
-        int retention = c.slide_retention_percent;
+        int retention = SfConfig.SLIDE_RETENTION_PERCENT.getDefault();
         assertTrue(retention >= 1 && retention <= 100, "retention must be 1-100, was " + retention);
     }
 

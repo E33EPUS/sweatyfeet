@@ -22,8 +22,8 @@ public class SweatyFeetEffect extends MobEffect {
 
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (SfConfig.INSTANCE.sweat_particles && entity.level() instanceof ServerLevel serverLevel) {
-            int count = (2 + amplifier) * SfConfig.INSTANCE.sweat_particle_scale;
+        if (SfConfig.SWEAT_PARTICLES.get() && entity.level() instanceof ServerLevel serverLevel) {
+            int count = (2 + amplifier) * SfConfig.SWEAT_PARTICLE_SCALE.get();
             serverLevel.sendParticles(
                 ParticleTypes.SPLASH,
                 entity.getX(), entity.getY() + 0.1, entity.getZ(),

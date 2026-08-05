@@ -118,14 +118,9 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-repositories {
-    // Cloth Config 官方 maven（游戏内配置 GUI 库）
-    maven { url = 'https://maven.shedaniel.me/' }
-}
-
 dependencies {
-    // Cloth Config：游戏内配置 GUI（AutoConfig）。整合包已装 15.0.140，此处编译期引用
-    implementation "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
+    // 配置系统用 NeoForge 内置 ModConfigSpec + 自绘 Screen（零前置）
+    // 动画用 player-animator（optional 前置）
     compileOnly "org.spongepowered:mixin:0.8.7"
 
     // Example optional mod dependency with JEI

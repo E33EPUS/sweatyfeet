@@ -27,8 +27,8 @@ public class LivingEntityMixin {
     private float sweatyfeet$slideFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         if (entity instanceof Player player) {
             MobEffectInstance sf = player.getEffect(ModEffects.SWEATY_FEET);
-            if (sf != null && sf.getAmplifier() >= 1 && SfConfig.INSTANCE.slide_enabled) {
-                return SfConfig.INSTANCE.slide_retention_percent / 100.0F;
+            if (sf != null && sf.getAmplifier() >= 1 && SfConfig.SLIDE_ENABLED.get()) {
+                return SfConfig.SLIDE_RETENTION_PERCENT.get() / 100.0F;
             }
         }
         return state.getFriction(level, pos, entity);

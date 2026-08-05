@@ -34,7 +34,7 @@ public class FootFungusEffect extends MobEffect {
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         int t = entity.tickCount;
         // 喷嚏粒子：每 60 tick 一次（表现）
-        if (SfConfig.INSTANCE.sneeze_particles
+        if (SfConfig.SNEEZE_PARTICLES.get()
             && t % 60 == 0
             && entity.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(
@@ -43,9 +43,9 @@ public class FootFungusEffect extends MobEffect {
                 12, 0.3, 0.2, 0.3, 0.05);
         }
         // 缓慢扣血：magic 伤害（无视护甲），按配置间隔，可致死
-        if (SfConfig.INSTANCE.fungus_damage_enabled
+        if (SfConfig.FUNGUS_DAMAGE_ENABLED.get()
             && !entity.level().isClientSide
-            && t % (SfConfig.INSTANCE.fungus_damage_interval_seconds * 20) == 0) {
+            && t % (SfConfig.FUNGUS_DAMAGE_INTERVAL_SECONDS.get() * 20) == 0) {
             entity.hurt(entity.damageSources().magic(), 1.0F);
         }
         return true;

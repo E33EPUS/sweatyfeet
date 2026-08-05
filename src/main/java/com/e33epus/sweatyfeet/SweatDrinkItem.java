@@ -52,7 +52,7 @@ public class SweatDrinkItem extends Item {
         if (!level.isClientSide) {
             Holder<MobEffect> effect = effectForType(readType(stack));
             if (effect != null) {
-                entity.addEffect(new MobEffectInstance(effect, SfConfig.INSTANCE.drink_buff_seconds * 20, 0));
+                entity.addEffect(new MobEffectInstance(effect, SfConfig.DRINK_BUFF_SECONDS.get() * 20, 0));
             }
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                 SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
