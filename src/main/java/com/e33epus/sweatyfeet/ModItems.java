@@ -25,6 +25,10 @@ public final class ModItems {
     public static final DeferredItem<SweatRepellentItem> FLORAL_WATER =
         ITEMS.register("floral_water", rl -> new SweatRepellentItem(new Item.Properties().stacksTo(16)));
 
+    /** 洗脚水桶：空桶右键浑水盆收集，喝 = 反胃+扣血+概率真菌（整蛊） */
+    public static final DeferredItem<WashWaterBucketItem> WASH_WATER_BUCKET =
+        ITEMS.register("wash_water_bucket", rl -> new WashWaterBucketItem(new Item.Properties().stacksTo(1)));
+
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
         DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SweatyFeet.MOD_ID);
 
@@ -48,6 +52,8 @@ public final class ModItems {
                 output.accept(strength);
                 // 花露水
                 output.accept(new ItemStack(FLORAL_WATER.get()));
+                // 洗脚水桶（示例无名字）
+                output.accept(new ItemStack(WASH_WATER_BUCKET.get()));
                 // 洗脚盆
                 output.accept(new ItemStack(ModBlocks.WASH_BASIN_ITEM.get()));
             })

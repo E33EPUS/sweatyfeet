@@ -86,12 +86,24 @@ public class WashBasinBlock extends Block {
             return ItemInteractionResult.FAIL; // 盆不是空的，不给倒
         }
 
-        // 空桶舀水：有水→空桶变水桶；浑水→收集（3d 做，先 FAIL）
+        // 空桶舀水：有水→空桶变水桶；浑水→收成"xxx的洗脚水"，盆变空
         if (stack.is(Items.BUCKET)) {
             if (filled == Filled.WATER) {
                 if (!level.isClientSide) {
                     level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.EMPTY));
                     player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
+            if (filled == Filled.DIRTY) {
+                if (!level.isClientSide) {
+                    level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.EMPTY));
+                    ItemStack dirtyWater = new ItemStack(ModItems.WASH_WATER_BUCKET.get());
+                    dirtyWater.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                        Component.translatable("item.sweatyfeet.wash_water_bucket.owned", player.getName()));
+                    player.setItemInHand(hand, dirtyWater);
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }

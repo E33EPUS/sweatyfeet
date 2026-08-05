@@ -8,6 +8,8 @@
     "item.sweatyfeet.sweat_drink.speed": "速度饮品",
     "item.sweatyfeet.sweat_drink.strength": "力量饮品",
     "item.sweatyfeet.floral_water": "花露水",
+    "item.sweatyfeet.wash_water_bucket": "洗脚水桶",
+    "item.sweatyfeet.wash_water_bucket.owned": "%s的洗脚水",
     "item.sweatyfeet.wash_basin": "洗脚盆",
     "block.sweatyfeet.wash_basin": "洗脚盆",
     "item.sweatyfeet.sweaty_boots": "充满汗液的%s",
