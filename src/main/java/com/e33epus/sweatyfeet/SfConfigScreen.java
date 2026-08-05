@@ -349,9 +349,10 @@ public class SfConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        // 背景：CONFIG_BG 烘焙为 75% 不透明（0xC0 alpha），走带 alpha 顶点绘制恢复半透明
-        SfColoredTextureRenderer.drawWithAlpha(g, SfUiTextureManager.rl(SfUiElement.CONFIG_BG),
-            0, 0, width, height, 0xC0 / 255f);
+        // 背景：半透明深灰（世界透出）——fill 的 ARGB 顶点 alpha 在 RenderType.gui() blend 下保证生效，
+        // 比纹理 blit + setShaderColor 稳（1.21.1 的 blit 走 POSITION_TEX shader，alpha 时序易丢导致全不透）。
+        // 0x8F = 56% 不透明，等效 e33chat CONFIG_BG(192) × drawWithAlpha(0.75) 的视觉。
+        g.fill(0, 0, width, height, 0x8F101010);
         tickAnims(); // 先推进平滑动画+同步控件 y，再画（下方绘制循环依赖更新后的 offset）
         g.drawString(font, title, width / 2 - font.width(title) / 2, 14, c().configTitle(), false);
 
