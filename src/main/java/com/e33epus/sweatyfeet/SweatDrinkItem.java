@@ -28,7 +28,7 @@ public class SweatDrinkItem extends Item {
     static String readType(ItemStack stack) {
         String type = stack.get(ModDataComponents.DRINK_TYPE.get());
         return switch (type) {
-            case "speed", "strength" -> type;
+            case "speed", "strength", "fermented" -> type;
             case null, default -> "speed";
         };
     }
@@ -53,9 +53,18 @@ public class SweatDrinkItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide) {
-            Holder<MobEffect> effect = effectForType(readType(stack));
-            if (effect != null) {
-                entity.addEffect(new MobEffectInstance(effect, SfConfig.DRINK_BUFF_SECONDS.get() * 20, 0));
+            int ticks = SfConfig.DRINK_BUFF_SECONDS.get() * 20;
+            if ("fermented".equals(readType(stack))) {
+                // 汗液饮品（发酵靴 3 级产物）：迅捷 + 跳跃提升 + 力量 + 幸运
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, ticks, 0));
+                entity.addEffect(new MobEffectInstance(MobEffects.JUMP, ticks, 0)); // 1.21.1 跳跃提升字段名 JUMP
+                entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, ticks, 0));
+                entity.addEffect(new MobEffectInstance(MobEffects.LUCK, ticks, 0));
+            } else {
+                Holder<MobEffect> effect = effectForType(readType(stack));
+                if (effect != null) {
+                    entity.addEffect(new MobEffectInstance(effect, ticks, 0));
+                }
             }
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                 SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);

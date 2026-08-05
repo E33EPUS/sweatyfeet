@@ -2,6 +2,7 @@ package com.e33epus.sweatyfeet;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +30,13 @@ public final class ModItems {
     public static final DeferredItem<WashWaterBucketItem> WASH_WATER_BUCKET =
         ITEMS.register("wash_water_bucket", rl -> new WashWaterBucketItem(new Item.Properties().stacksTo(1)));
 
+    /** 发酵靴：皮革靴+糖合成，穿它汗脚发酵——3 级倒汗产出"汗液饮品"（正面 buff） */
+    public static final DeferredItem<ArmorItem> FERMENTED_BOOTS =
+        ITEMS.register("fermented_boots", rl -> new ArmorItem(
+            net.minecraft.world.item.ArmorMaterials.LEATHER,
+            ArmorItem.Type.BOOTS,
+            new Item.Properties()));
+
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
         DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SweatyFeet.MOD_ID);
 
@@ -43,13 +51,12 @@ public final class ModItems {
                     bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
                     output.accept(bottle);
                 }
-                // 饮品（速度/力量，带类型组件）
-                ItemStack speed = new ItemStack(SWEAT_DRINK.get());
-                speed.set(ModDataComponents.DRINK_TYPE.get(), "speed");
-                output.accept(speed);
-                ItemStack strength = new ItemStack(SWEAT_DRINK.get());
-                strength.set(ModDataComponents.DRINK_TYPE.get(), "strength");
-                output.accept(strength);
+                // 饮品（发酵靴 3 级倒汗产物：汗液饮品，正面 buff）
+                ItemStack fermented = new ItemStack(SWEAT_DRINK.get());
+                fermented.set(ModDataComponents.DRINK_TYPE.get(), "fermented");
+                output.accept(fermented);
+                // 发酵靴
+                output.accept(new ItemStack(FERMENTED_BOOTS.get()));
                 // 花露水
                 output.accept(new ItemStack(FLORAL_WATER.get()));
                 // 洗脚水桶（示例无名字）

@@ -528,12 +528,23 @@ public final class SweatyFeetHandler {
         // 之前用 WEAR_TICKS 内存态算等级：计时随脱鞋清零，导致二级/三级汗脚只能倒出一级瓶
         int lvl = data.level() + 1;
         offhand.consume(1, player);
-        ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
-        bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
-        bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned",
-            player.getGameProfile().getName(), romanLevel(data.level())));
-        if (!player.getInventory().add(bottle)) {
-            player.drop(bottle, false);
+        if (lvl == 3 && main.is(ModItems.FERMENTED_BOOTS.get())) {
+            // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
+            ItemStack drink = new ItemStack(ModItems.SWEAT_DRINK.get());
+            drink.set(ModDataComponents.DRINK_TYPE.get(), "fermented");
+            drink.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_drink.owned",
+                player.getGameProfile().getName()));
+            if (!player.getInventory().add(drink)) {
+                player.drop(drink, false);
+            }
+        } else {
+            ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
+            bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
+            bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned",
+                player.getGameProfile().getName(), romanLevel(data.level())));
+            if (!player.getInventory().add(bottle)) {
+                player.drop(bottle, false);
+            }
         }
 
         // 靴子还原：删组件 + 还原自定义名（无原名则回到默认显示名）
