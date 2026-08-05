@@ -118,9 +118,18 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+repositories {
+    // player-animator（泡脚动画，optional 前置）——NeoForge 1.21 运行时即 mojmap 命名，可直接 implementation
+    maven {
+        name = "KosmX's maven"
+        url = 'https://maven.kosmx.dev/'
+    }
+}
+
 dependencies {
     // 配置系统用 NeoForge 内置 ModConfigSpec + 自绘 Screen（零前置）
-    // 动画用 player-animator（optional 前置）
+    // 动画用 player-animator（optional 前置，仅客户端触发，不 shadow 进 jar——库要单独装）
+    implementation "dev.kosmx.player-anim:player-animation-lib-forge:2.0.4+1.21.1"
     compileOnly "org.spongepowered:mixin:0.8.7"
 
     // Example optional mod dependency with JEI

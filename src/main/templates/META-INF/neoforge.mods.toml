@@ -26,3 +26,11 @@ config="${mod_id}.mixins.json"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+# 泡脚动画（optional）：没装 player-animator 只是没动画，玩法不受影响
+[[dependencies.${mod_id}]]
+    modId="playeranimator"
+    type="optional"
+    versionRange="[2.0.1,)"
+    ordering="AFTER"
+    side="CLIENT"
