@@ -24,10 +24,13 @@ public class SweatDrinkItem extends Item {
         super(properties);
     }
 
-    /** 读饮品类型，未知类型归一化到 speed（防脏数据） */
+    /** 读饮品类型，未知/空类型归一化到 speed（防脏数据，避免 descriptionId 生成不存在的 lang key） */
     static String readType(ItemStack stack) {
         String type = stack.get(ModDataComponents.DRINK_TYPE.get());
-        return type == null ? "speed" : type;
+        return switch (type) {
+            case "speed", "strength" -> type;
+            case null, default -> "speed";
+        };
     }
 
     @Override

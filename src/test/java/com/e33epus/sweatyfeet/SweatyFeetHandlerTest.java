@@ -3,6 +3,8 @@ package com.e33epus.sweatyfeet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -104,5 +106,24 @@ class SweatyFeetHandlerTest {
         assertEquals(0, r.amplifier());
         r = SweatyFeetHandler.nextDegradeState(r.amplifier(), 1, 60); // → 移除
         assertEquals(-1, r.amplifier());
+    }
+
+    @Test
+    void degradeStepsDownAtZeroTicks() {
+        // 倒计时归零那一瞬间也降级（ticksLeft=0 与 1 等价，防边界漏掉）
+        SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(2, 0, 60);
+        assertEquals(1, r.amplifier());
+        assertEquals(60, r.ticksLeft());
+    }
+
+    @Test
+    void drinkTypeReadsCustomComponent() {
+        ItemStack strength = new ItemStack(Items.GLASS_BOTTLE);
+        strength.set(ModDataComponents.DRINK_TYPE.get(), "strength");
+        assertEquals("strength", SweatDrinkItem.readType(strength));
+
+        ItemStack unknown = new ItemStack(Items.GLASS_BOTTLE);
+        unknown.set(ModDataComponents.DRINK_TYPE.get(), "bogus");
+        assertEquals("speed", SweatDrinkItem.readType(unknown)); // 未知类型归一化到 speed
     }
 }
