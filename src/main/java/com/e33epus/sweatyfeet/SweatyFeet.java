@@ -12,6 +12,7 @@ public class SweatyFeet {
 
     public SweatyFeet(IEventBus modBus, ModContainer container) {
         ModDataComponents.register(modBus);
+        ModAttachments.register(modBus);
         ModEffects.register(modBus);
         ModEntities.register(modBus);
         ModItems.register(modBus);

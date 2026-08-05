@@ -215,6 +215,18 @@ public final class SweatyFeetHandler {
                 smellRangeSq, player, false);
         }
 
+        // 持久化恢复：下线重进后按附件把汗脚/真菌重新挂回（每 20 tick 检查一次，避免每 tick 写）
+        if (player.tickCount % 20 == 0) {
+            int savedAmp = player.getData(ModAttachments.SWEAT_STATE);
+            if (savedAmp >= 0 && !player.hasEffect(ModEffects.SWEATY_FEET)) {
+                player.removeEffect(ModEffects.SWEATY_FEET);
+                player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), savedAmp, false, true));
+            }
+            if (player.getData(ModAttachments.FUNGUS) && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
+                player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
+            }
+        }
+
         // 真菌传染扩散：不依赖靴子，被传染者也能继续传染（站在感染者附近一段时间被传）
         if (SfConfig.FUNGUS_INFECTION_ENABLED.get()
             && player.hasEffect(ModEffects.FOOT_FUNGUS)
@@ -227,6 +239,7 @@ public final class SweatyFeetHandler {
                 if (other.distanceToSqr(player) <= rangeSq) {
                     // 传染也给无限时长：真菌只能被花露水/倒汗消除，不会自然消失
                     other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
+                    other.setData(ModAttachments.FUNGUS, true); // 持久化传染
                 }
             }
         }
@@ -277,6 +290,7 @@ public final class SweatyFeetHandler {
             }
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
+                player.setData(ModAttachments.SWEAT_STATE, amplifier); // 持久化当前等级
                 // 3 级：额外减速（汗脚3级 = 脚滑 + 减速）
                 if (amplifier >= 2) {
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, effectTicks(), 0, false, true));
@@ -288,6 +302,7 @@ public final class SweatyFeetHandler {
                 && !player.hasEffect(ModEffects.FOOT_FUNGUS)
                 && totalTicks % REFRESH_INTERVAL == 0) {
                 player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
+                player.setData(ModAttachments.FUNGUS, true); // 持久化真菌
             }
         }
 
@@ -354,6 +369,7 @@ public final class SweatyFeetHandler {
         }
         if (consecutive >= washTicksFor(player) && player.hasEffect(ModEffects.SWEATY_FEET)) {
             player.removeEffect(ModEffects.SWEATY_FEET);
+            player.setData(ModAttachments.SWEAT_STATE, -1); // 洗清汗脚：持久化归零
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
         }
@@ -410,8 +426,10 @@ public final class SweatyFeetHandler {
         if (t >= washTicksFor(player)) {
             // 洗完：清汗脚（药水还清真菌） + 盆变浑水
             player.removeEffect(ModEffects.SWEATY_FEET);
+            player.setData(ModAttachments.SWEAT_STATE, -1); // 泡脚洗清：持久化归零
             if (filled == WashBasinBlock.Filled.MEDICINAL) {
                 player.removeEffect(ModEffects.FOOT_FUNGUS);
+                player.setData(ModAttachments.FUNGUS, false); // 药水洗脚水治好真菌：持久化
             }
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
@@ -439,6 +457,7 @@ public final class SweatyFeetHandler {
         // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
         player.removeEffect(ModEffects.SWEATY_FEET);
         player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
+        player.setData(ModAttachments.SWEAT_STATE, next.amplifier()); // 持久化降级后的等级
         DEGRADE_TICKS.put(id, next.ticksLeft());
     }
 
@@ -528,6 +547,7 @@ public final class SweatyFeetHandler {
         // 倒汗 = 主动缓解：清零计时 + 移除脚部 debuff（真菌不可逆：倒汗清不掉，只能花露水泡脚）
         WEAR_TICKS.remove(player.getUUID());
         player.removeEffect(ModEffects.SWEATY_FEET);
+        player.setData(ModAttachments.SWEAT_STATE, -1); // 倒汗清汗脚：持久化归零
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满<玩家名>汗液的<原名>（等级X）」+ 挂汗脚 1 级 */
@@ -537,6 +557,7 @@ public final class SweatyFeetHandler {
         boots.set(ModDataComponents.SWEAT.get(), data);
         renameSweatyBoots(player, boots, data);
         player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, true));
+        player.setData(ModAttachments.SWEAT_STATE, 0); // 持久化汗脚 1 级
     }
 
     /** 汗靴改名：带玩家名 + 等级（文档格式「充满<玩家名>汗液的<原名>靴子（等级X）」） */
