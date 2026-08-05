@@ -19,6 +19,8 @@
     "item.sweatyfeet.sweat_bottle.owned": "%s's Sweat Bottle (Level %s)",
     "effect.sweatyfeet.sweaty_feet": "Sweaty Feet",
     "effect.sweatyfeet.foot_fungus": "Foot Fungus",
+    "death.attack.sweatyfeet.fungus": "%1$s was consumed from within by foot fungus",
+    "death.attack.sweatyfeet.fungus.player": "%1$s was consumed by foot fungus whilst fighting %2$s",
 
     "sweatyfeet.config.title": "Sweaty Feet Config",
     "sweatyfeet.config.exit": "Exit",

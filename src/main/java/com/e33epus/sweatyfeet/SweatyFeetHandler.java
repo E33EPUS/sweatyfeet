@@ -1,6 +1,8 @@
 package com.e33epus.sweatyfeet;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -44,6 +46,9 @@ public final class SweatyFeetHandler {
 
     /** 赤脚连续泡水 tick（玩家 → 连续 tick）；断水/穿鞋清零，满 wash_seconds 清汗脚 */
     private static final Map<UUID, Integer> WASH_TICKS = new HashMap<>();
+
+    /** 上一 tick 手持三级汗靴的玩家（过渡检测用：放下瞬间清反胃，不伤其他来源） */
+    private static final Set<UUID> HELD_L3 = new HashSet<>();
 
     /** 盆泡脚：累计计时（玩家 → 累计 tick）；离开暂停不清零，满 wash_seconds 洗完 + 盆变浑 */
     private static final Map<UUID, Integer> BASIN_TICKS = new HashMap<>();
@@ -194,14 +199,19 @@ public final class SweatyFeetHandler {
             return;
         }
 
-        // 手持三级汗靴：持续反胃（放下即消——只挂 2 秒短效果，手拿不断刷新）
+        // 手持三级汗靴：持续反胃（文档：放下即消）。注意不能每 tick 无脑 remove——
+        // 那会把二级汗液瓶等其他来源的反胃也秒删。用过渡检测：只在"刚放下"那一 tick 清一次
         ItemStack held = player.getMainHandItem();
         if (!held.is(ItemTags.FOOT_ARMOR)) {
             held = player.getOffhandItem();
         }
         SweatData heldData = held.get(ModDataComponents.SWEAT.get());
+        UUID heldId = player.getUUID();
         if (heldData != null && heldData.level() >= 2) {
+            HELD_L3.add(heldId);
             player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 0, false, true));
+        } else if (HELD_L3.remove(heldId) && player.hasEffect(MobEffects.CONFUSION)) {
+            player.removeEffect(MobEffects.CONFUSION);
         }
 
         // 真菌感染者：无论是否穿鞋，散发绿粒子 + 附近玩家反胃（类似三级脱鞋）
@@ -220,7 +230,7 @@ public final class SweatyFeetHandler {
             int savedAmp = player.getData(ModAttachments.SWEAT_STATE);
             if (savedAmp >= 0 && !player.hasEffect(ModEffects.SWEATY_FEET)) {
                 player.removeEffect(ModEffects.SWEATY_FEET);
-                player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), savedAmp, false, true));
+                player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), savedAmp, false, false));
             }
             if (player.getData(ModAttachments.FUNGUS) && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
                 player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
@@ -273,7 +283,7 @@ public final class SweatyFeetHandler {
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 MobEffectInstance leftover = player.getEffect(ModEffects.SWEATY_FEET);
                 if (leftover != null) {
-                    player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), leftover.getAmplifier(), false, true));
+                    player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), leftover.getAmplifier(), false, false));
                 }
             }
             if (totalTicks >= lvl1()) {
@@ -456,7 +466,7 @@ public final class SweatyFeetHandler {
         // 降级重挂：必须 remove 再 add —— 原版 MobEffectInstance.update 对"同 amp 更短时长/更低 amp"
         // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
         player.removeEffect(ModEffects.SWEATY_FEET);
-        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, true));
+        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, false));
         player.setData(ModAttachments.SWEAT_STATE, next.amplifier()); // 持久化降级后的等级
         DEGRADE_TICKS.put(id, next.ticksLeft());
     }
@@ -567,15 +577,18 @@ public final class SweatyFeetHandler {
         SweatData data = new SweatData(0, customName);
         boots.set(ModDataComponents.SWEAT.get(), data);
         renameSweatyBoots(player, boots, data);
-        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, true));
+        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, false));
         player.setData(ModAttachments.SWEAT_STATE, 0); // 持久化汗脚 1 级
     }
 
-    /** 汗靴改名：带玩家名 + 等级（文档格式「充满<玩家名>汗液的<原名>靴子（等级X）」） */
+    /** 汗靴改名：带玩家名 + 等级。基底名取"原始自定义名或物品默认名"——
+     *  绝不能用 getHoverName（含当前自定义名），升级重命名会把已套的名字再套一层（叠名 bug） */
     private static void renameSweatyBoots(Player player, ItemStack boots, SweatData data) {
-        Component displayName = data.originalName() != null ? data.originalName() : boots.getHoverName();
+        Component baseName = data.originalName() != null
+            ? data.originalName()
+            : Component.translatable(boots.getDescriptionId());
         boots.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweaty_boots",
-            player.getGameProfile().getName(), displayName, romanLevel(data.level())));
+            player.getGameProfile().getName(), baseName, romanLevel(data.level())));
     }
 
     /** 等级罗马数字（0=I 1=II 2=III，对应汗脚/瓶 1/2/3 级） */
@@ -588,6 +601,6 @@ public final class SweatyFeetHandler {
     }
 
     private static void refreshEffect(Player player, Holder<MobEffect> effect, int amplifier) {
-        player.addEffect(new MobEffectInstance(effect, effectTicks(), amplifier, false, true));
+        player.addEffect(new MobEffectInstance(effect, effectTicks(), amplifier, false, false));
     }
 }

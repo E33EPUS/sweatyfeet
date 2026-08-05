@@ -46,7 +46,7 @@ public class FootFungusEffect extends MobEffect {
         if (SfConfig.FUNGUS_DAMAGE_ENABLED.get()
             && !entity.level().isClientSide
             && t % (SfConfig.FUNGUS_DAMAGE_INTERVAL_SECONDS.get() * 20) == 0) {
-            entity.hurt(entity.damageSources().magic(), 1.0F);
+            entity.hurt(ModEffects.FUNGUS_DAMAGE, 1.0F); // 自定义死法：被脚气真菌侵蚀
         }
         return true;
     }

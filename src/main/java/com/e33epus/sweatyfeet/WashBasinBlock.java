@@ -131,13 +131,21 @@ public class WashBasinBlock extends Block {
             return ItemInteractionResult.FAIL;
         }
 
-        return ItemInteractionResult.FAIL;
+        // 空手/其他物品 → 交给 useWithoutItem（泡脚交互）。
+        // 之前这里 return FAIL：vanilla 只在 PASS_TO_DEFAULT 时才调 useWithoutItem，
+        // 导致空手右键盆永远没反应、泡脚/计时/浑水/收集整条链全死（实测实锤）
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     /** 空手右键：泡脚交互 */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
+        // useItemOn 现在对非桶/非花露水一律 PASS 到这里——只有双手空才算"泡脚"意图，
+        // 拿着别的东西右键不触发（避免挥剑误泡脚）
+        if (!player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty()) {
+            return InteractionResult.PASS;
+        }
         Filled filled = state.getValue(FILLED);
         if (filled == Filled.DIRTY) {
             // 浑水是泡完的产物，不能泡——想泡先舀掉换新水

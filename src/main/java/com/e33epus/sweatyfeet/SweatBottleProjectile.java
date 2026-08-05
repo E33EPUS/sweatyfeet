@@ -35,7 +35,7 @@ public class SweatBottleProjectile extends ThrowableItemProjectile {
     protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
         if (!this.level().isClientSide && hit.getEntity() instanceof LivingEntity living) {
-            living.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, SfConfig.THROW_DEBUFF_SECONDS.get() * 20, 0));
+            living.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, SfConfig.THROW_DEBUFF_SECONDS.get() * 20, 0, false, false));
         }
     }
 

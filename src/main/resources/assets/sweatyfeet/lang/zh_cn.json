@@ -19,6 +19,8 @@
     "item.sweatyfeet.sweat_bottle.owned": "%s的汗液瓶（等级%s）",
     "effect.sweatyfeet.sweaty_feet": "汗脚",
     "effect.sweatyfeet.foot_fungus": "真菌感染",
+    "death.attack.sweatyfeet.fungus": "%1$s 的脚气真菌从内部侵蚀了 ta",
+    "death.attack.sweatyfeet.fungus.player": "%1$s 在 %2$s 面前被脚气真菌侵蚀殆尽",
 
     "sweatyfeet.config.title": "Sweaty Feet 设置",
     "sweatyfeet.config.exit": "退出",
