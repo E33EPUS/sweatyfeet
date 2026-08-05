@@ -45,12 +45,12 @@ public final class SoakAnimationClient {
         if (layer == null) {
             return;
         }
-        // 泡脚动画条件：赤脚 + 站在盆上 + 盆里有清水或药水（洗完变浑水就停）
+        // 泡脚动画条件：赤脚 + 站在盆上 + 盆里有清水或药水。
+        // 必须先 is() 再 getValue——getValue 对别的方块抛 IllegalArgumentException（踩泥巴就崩，实测过）
         var stateOn = player.getBlockStateOn();
-        boolean onWater = stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.WATER
-            || stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.MEDICINAL;
         boolean soaking = stateOn.is(ModBlocks.WASH_BASIN.get())
-            && onWater
+            && (stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.WATER
+                || stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.MEDICINAL)
             && player.getItemBySlot(EquipmentSlot.FEET).isEmpty();
         if (soaking) {
             if (layer.getAnimation() == null) {
