@@ -1,5 +1,7 @@
 {
     "variants": {
-        "": { "model": "sweatyfeet:block/wash_basin" }
+        "filled=empty": { "model": "sweatyfeet:block/wash_basin" },
+        "filled=water": { "model": "sweatyfeet:block/wash_basin_water" },
+        "filled=dirty": { "model": "sweatyfeet:block/wash_basin_dirty" }
     }
 }
