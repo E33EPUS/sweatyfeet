@@ -12,7 +12,8 @@
     "item.sweatyfeet.wash_water_bucket.owned": "%s's foot wash water",
     "item.sweatyfeet.wash_basin": "Wash Basin",
     "block.sweatyfeet.wash_basin": "Wash Basin",
-    "item.sweatyfeet.sweaty_boots": "Sweaty %s",
+    "item.sweatyfeet.sweaty_boots": "%s's sweaty %s (Level %s)",
+    "item.sweatyfeet.sweat_bottle.owned": "%s's Sweat Bottle (Level %s)",
     "effect.sweatyfeet.sweaty_feet": "Sweaty Feet",
     "effect.sweatyfeet.foot_fungus": "Foot Fungus",
 

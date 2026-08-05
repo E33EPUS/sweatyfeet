@@ -90,43 +90,79 @@ public final class SweatyFeetHandler {
     }
 
     /**
-     * 汗靴扔进水里泡洗：LevelTick 扫描水中 ItemEntity（汗靴），泡满 wash_boots_seconds
-     * 还原为正常靴子（去汗液 + 还原名），期间冒水花粒子。
+     * 每 tick 级联扫描（每秒一次）：
+     * 1) 汗靴扔水里泡洗（受 WASH_BOOTS_ENABLED 配置）
+     * 2) 三级汗靴丢在地上散发绿臭味粒子 + 附近玩家（含本人）反胃（环境污染）
      */
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
-        if (!SfConfig.WASH_BOOTS_ENABLED.get() || level.getGameTime() % 20 != 0) {
+        if (level.getGameTime() % 20 != 0) {
             return; // 每秒扫一次
         }
-        int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
+        if (SfConfig.WASH_BOOTS_ENABLED.get()) {
+            int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
+            for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
+                if (!(e instanceof ItemEntity itemEntity) || !itemEntity.isInWater()) {
+                    continue;
+                }
+                ItemStack stack = itemEntity.getItem();
+                if (!stack.is(ItemTags.FOOT_ARMOR) || !stack.has(ModDataComponents.SWEAT.get())) {
+                    continue;
+                }
+                // 泡洗计时随等级递增（1 级 T_base，3 级 3×）；组件累加，冒水花粒子
+                SweatData data = stack.get(ModDataComponents.SWEAT.get());
+                int need = washBootsTicks * (data.level() + 1);
+                int washed = stack.getOrDefault(ModDataComponents.SWEAT_WASH_TICKS.get(), 0) + 20;
+                stack.set(ModDataComponents.SWEAT_WASH_TICKS.get(), washed);
+                level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP,
+                    itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
+                    3, 0.15, 0.1, 0.15, 0.0);
+                if (washed >= need) {
+                    // 洗干净：去汗液 + 还原自定义名
+                    stack.remove(ModDataComponents.SWEAT.get());
+                    stack.remove(ModDataComponents.SWEAT_WASH_TICKS.get());
+                    if (data != null && data.originalName() != null) {
+                        stack.set(DataComponents.CUSTOM_NAME, data.originalName());
+                    } else {
+                        stack.remove(DataComponents.CUSTOM_NAME);
+                    }
+                }
+            }
+        }
+        // 三级汗靴丢地污染：绿粒子 + 附近玩家（含丢者本人）反胃
+        double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
         for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
-            if (!(e instanceof ItemEntity itemEntity) || !itemEntity.isInWater()) {
+            if (!(e instanceof ItemEntity itemEntity)) {
                 continue;
             }
             ItemStack stack = itemEntity.getItem();
-            if (!stack.is(ItemTags.FOOT_ARMOR) || !stack.has(ModDataComponents.SWEAT.get())) {
+            SweatData data = stack.get(ModDataComponents.SWEAT.get());
+            if (data == null || data.level() < 2) {
+                continue; // 只有三级汗靴污染环境
+            }
+            level.sendParticles(ParticleTypes.COMPOSTER,
+                itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
+                2, 0.3, 0.2, 0.3, 0.0);
+            giveNearbyNausea(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+                smellRangeSq, null, true);
+        }
+    }
+
+    /** 给范围内玩家反胃（3 秒）；self 为 null 时包含所有玩家，否则排除 self */
+    private static void giveNearbyNausea(ServerLevel level, double x, double y, double z,
+                                         double rangeSq, Player self, boolean includeSelf) {
+        for (Player other : level.players()) {
+            if (!includeSelf && other == self) {
                 continue;
             }
-            // 泡洗计时随等级递增（1 级 T_base，3 级 3×）；组件累加，冒水花粒子
-            SweatData data = stack.get(ModDataComponents.SWEAT.get());
-            int need = washBootsTicks * (data.level() + 1);
-            int washed = stack.getOrDefault(ModDataComponents.SWEAT_WASH_TICKS.get(), 0) + 20;
-            stack.set(ModDataComponents.SWEAT_WASH_TICKS.get(), washed);
-            level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP,
-                itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
-                3, 0.15, 0.1, 0.15, 0.0);
-            if (washed >= need) {
-                // 洗干净：去汗液 + 还原自定义名
-                stack.remove(ModDataComponents.SWEAT.get());
-                stack.remove(ModDataComponents.SWEAT_WASH_TICKS.get());
-                if (data != null && data.originalName() != null) {
-                    stack.set(DataComponents.CUSTOM_NAME, data.originalName());
-                } else {
-                    stack.remove(DataComponents.CUSTOM_NAME);
-                }
+            if (other.hasEffect(MobEffects.CONFUSION)) {
+                continue;
+            }
+            if (other.distanceToSqr(x, y, z) <= rangeSq) {
+                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, true));
             }
         }
     }
@@ -156,6 +192,27 @@ public final class SweatyFeetHandler {
         Player player = event.getEntity();
         if (player.level().isClientSide) {
             return;
+        }
+
+        // 手持三级汗靴：持续反胃（放下即消——只挂 2 秒短效果，手拿不断刷新）
+        ItemStack held = player.getMainHandItem();
+        if (!held.is(ItemTags.FOOT_ARMOR)) {
+            held = player.getOffhandItem();
+        }
+        SweatData heldData = held.get(ModDataComponents.SWEAT.get());
+        if (heldData != null && heldData.level() >= 2) {
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 0, false, true));
+        }
+
+        // 真菌感染者：无论是否穿鞋，散发绿粒子 + 附近玩家反胃（类似三级脱鞋）
+        if (player.hasEffect(ModEffects.FOOT_FUNGUS) && player.tickCount % 20 == 0
+            && player.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.COMPOSTER,
+                player.getX(), player.getY() + 0.1, player.getZ(),
+                2, 0.3, 0.0, 0.3, 0.0);
+            double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
+            giveNearbyNausea(serverLevel, player.getX(), player.getY(), player.getZ(),
+                smellRangeSq, player, false);
         }
 
         // 真菌传染扩散：不依赖靴子，被传染者也能继续传染（站在感染者附近一段时间被传）
@@ -216,6 +273,7 @@ public final class SweatyFeetHandler {
             if (amplifier > data.level() && totalTicks % REFRESH_INTERVAL == 0) {
                 boots.set(ModDataComponents.SWEAT.get(), data.withLevel(amplifier));
                 data = boots.get(ModDataComponents.SWEAT.get());
+                renameSweatyBoots(player, boots, data); // 升级同步改名（等级II/III）
             }
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
@@ -442,6 +500,8 @@ public final class SweatyFeetHandler {
         offhand.consume(1, player);
         ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
         bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
+        bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned",
+            player.getGameProfile().getName(), romanLevel(data.level())));
         if (!player.getInventory().add(bottle)) {
             player.drop(bottle, false);
         }
@@ -459,13 +519,29 @@ public final class SweatyFeetHandler {
         player.removeEffect(ModEffects.SWEATY_FEET);
     }
 
-    /** 汗化：写组件（存原名）+ 改名「充满汗液的xxx」+ 挂汗脚 1 级 */
+    /** 汗化：写组件（存原名）+ 改名「充满<玩家名>汗液的<原名>（等级X）」+ 挂汗脚 1 级 */
     private static void sweatify(Player player, ItemStack boots) {
         Component customName = boots.get(DataComponents.CUSTOM_NAME);
-        Component displayName = customName != null ? customName : boots.getHoverName();
-        boots.set(ModDataComponents.SWEAT.get(), new SweatData(0, customName));
-        boots.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweaty_boots", displayName));
+        SweatData data = new SweatData(0, customName);
+        boots.set(ModDataComponents.SWEAT.get(), data);
+        renameSweatyBoots(player, boots, data);
         player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, true));
+    }
+
+    /** 汗靴改名：带玩家名 + 等级（文档格式「充满<玩家名>汗液的<原名>靴子（等级X）」） */
+    private static void renameSweatyBoots(Player player, ItemStack boots, SweatData data) {
+        Component displayName = data.originalName() != null ? data.originalName() : boots.getHoverName();
+        boots.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweaty_boots",
+            player.getGameProfile().getName(), displayName, romanLevel(data.level())));
+    }
+
+    /** 等级罗马数字（0=I 1=II 2=III，对应汗脚/瓶 1/2/3 级） */
+    private static String romanLevel(int level) {
+        return switch (level) {
+            case 0 -> "I";
+            case 1 -> "II";
+            default -> "III";
+        };
     }
 
     private static void refreshEffect(Player player, Holder<MobEffect> effect, int amplifier) {

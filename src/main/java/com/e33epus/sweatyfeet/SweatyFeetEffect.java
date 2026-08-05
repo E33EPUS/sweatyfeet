@@ -29,6 +29,13 @@ public class SweatyFeetEffect extends MobEffect {
                 entity.getX(), entity.getY() + 0.1, entity.getZ(),
                 count, 0.15, 0.0, 0.15, 0.05);
         }
+        // 3 级（amp 2）额外冒绿色臭味粒子（整蛊表现）
+        if (amplifier >= 2 && entity.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                ParticleTypes.COMPOSTER,
+                entity.getX(), entity.getY() + 0.1, entity.getZ(),
+                2, 0.3, 0.0, 0.3, 0.0);
+        }
         return true;
     }
 }

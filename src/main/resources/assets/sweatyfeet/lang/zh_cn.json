@@ -12,7 +12,8 @@
     "item.sweatyfeet.wash_water_bucket.owned": "%s的洗脚水",
     "item.sweatyfeet.wash_basin": "洗脚盆",
     "block.sweatyfeet.wash_basin": "洗脚盆",
-    "item.sweatyfeet.sweaty_boots": "充满汗液的%s",
+    "item.sweatyfeet.sweaty_boots": "充满%s汗液的%s（等级%s）",
+    "item.sweatyfeet.sweat_bottle.owned": "%s的汗液瓶（等级%s）",
     "effect.sweatyfeet.sweaty_feet": "汗脚",
     "effect.sweatyfeet.foot_fungus": "真菌感染",
 
