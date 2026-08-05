@@ -121,18 +121,35 @@ public class SfConfigScreen extends Screen {
         if (cats != null) return;
         cats = new ArrayList<>();
 
-        // timing：穿戴计时
-        List<Opt> timing = new ArrayList<>();
-        timing.add(Opt.header("sweatyfeet.config.section.wear"));
-        timing.add(new Opt("sweatyfeet.config.level1_seconds",
+        // 汗脚生成与降级：穿戴计时 + 脱鞋降级/效果时长
+        List<Opt> sweat = new ArrayList<>();
+        sweat.add(Opt.header("sweatyfeet.config.section.wear"));
+        sweat.add(new Opt("sweatyfeet.config.level1_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.LEVEL_1_SECONDS.get()), 1, 86400, 6, SfConfig.LEVEL_1_SECONDS::set), null));
-        timing.add(new Opt("sweatyfeet.config.level2_seconds",
+        sweat.add(new Opt("sweatyfeet.config.level2_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.LEVEL_2_SECONDS.get()), 1, 86400, 6, SfConfig.LEVEL_2_SECONDS::set), null));
-        timing.add(new Opt("sweatyfeet.config.level3_seconds",
+        sweat.add(new Opt("sweatyfeet.config.level3_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.LEVEL_3_SECONDS.get()), 1, 86400, 6, SfConfig.LEVEL_3_SECONDS::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.timing", timing));
+        sweat.add(Opt.header("sweatyfeet.config.section.degrade"));
+        sweat.add(new Opt("sweatyfeet.config.degrade_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.DEGRADE_SECONDS.get()), 1, 86400, 6, SfConfig.DEGRADE_SECONDS::set), null));
+        sweat.add(new Opt("sweatyfeet.config.effect_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.EFFECT_SECONDS.get()), 1, 86400, 6, SfConfig.EFFECT_SECONDS::set), null));
+        cats.add(new Cat("sweatyfeet.config.cat.sweat", sweat));
 
-        // fungus：真菌（含脚臭）
+        // 脚滑与脚臭：移动手感 + 散臭范围
+        List<Opt> slideSmell = new ArrayList<>();
+        slideSmell.add(Opt.header("sweatyfeet.config.section.slide"));
+        slideSmell.add(new Opt("sweatyfeet.config.slide_enabled", y -> mkBoolButton(y, SfConfig.SLIDE_ENABLED), null));
+        slideSmell.add(new Opt("sweatyfeet.config.slide_retention_percent",
+            y -> mkIntBox(y, String.valueOf(SfConfig.SLIDE_RETENTION_PERCENT.get()), 1, 100, 3, SfConfig.SLIDE_RETENTION_PERCENT::set), null));
+        slideSmell.add(Opt.header("sweatyfeet.config.section.smell"));
+        slideSmell.add(new Opt("sweatyfeet.config.smell_enabled", y -> mkBoolButton(y, SfConfig.SMELL_ENABLED), null));
+        slideSmell.add(new Opt("sweatyfeet.config.smell_range",
+            y -> mkIntBox(y, String.valueOf(SfConfig.SMELL_RANGE.get()), 1, 64, 2, SfConfig.SMELL_RANGE::set), null));
+        cats.add(new Cat("sweatyfeet.config.cat.slide_smell", slideSmell));
+
+        // 真菌感染：触发/扣血/传染
         List<Opt> fungus = new ArrayList<>();
         fungus.add(Opt.header("sweatyfeet.config.section.fungus_trigger"));
         fungus.add(new Opt("sweatyfeet.config.enable_fungus", y -> mkBoolButton(y, SfConfig.ENABLE_FUNGUS), null));
@@ -148,44 +165,33 @@ public class SfConfigScreen extends Screen {
             y -> mkIntBox(y, String.valueOf(SfConfig.FUNGUS_INFECTION_RANGE.get()), 1, 64, 2, SfConfig.FUNGUS_INFECTION_RANGE::set), null));
         fungus.add(new Opt("sweatyfeet.config.fungus_infection_interval_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.FUNGUS_INFECTION_INTERVAL_SECONDS.get()), 1, 86400, 6, SfConfig.FUNGUS_INFECTION_INTERVAL_SECONDS::set), null));
-        fungus.add(Opt.header("sweatyfeet.config.section.smell"));
-        fungus.add(new Opt("sweatyfeet.config.smell_enabled", y -> mkBoolButton(y, SfConfig.SMELL_ENABLED), null));
-        fungus.add(new Opt("sweatyfeet.config.smell_range",
-            y -> mkIntBox(y, String.valueOf(SfConfig.SMELL_RANGE.get()), 1, 64, 2, SfConfig.SMELL_RANGE::set), null));
         cats.add(new Cat("sweatyfeet.config.cat.fungus", fungus));
 
-        // durations：效果时长
-        List<Opt> durations = new ArrayList<>();
-        durations.add(Opt.header("sweatyfeet.config.section.effect_duration"));
-        durations.add(new Opt("sweatyfeet.config.effect_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.EFFECT_SECONDS.get()), 1, 86400, 6, SfConfig.EFFECT_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.throw_debuff_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.THROW_DEBUFF_SECONDS.get()), 1, 86400, 6, SfConfig.THROW_DEBUFF_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.drink_poison_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_POISON_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_POISON_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.bottle_nausea_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.BOTTLE_NAUSEA_SECONDS.get()), 1, 86400, 6, SfConfig.BOTTLE_NAUSEA_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.drink_buff_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_BUFF_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_BUFF_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.degrade_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.DEGRADE_SECONDS.get()), 1, 86400, 6, SfConfig.DEGRADE_SECONDS::set), null));
-        durations.add(new Opt("sweatyfeet.config.wash_seconds",
+        // 洗脚与洗靴：泡水/泡盆 + 汗靴泡洗
+        List<Opt> wash = new ArrayList<>();
+        wash.add(Opt.header("sweatyfeet.config.section.wash"));
+        wash.add(new Opt("sweatyfeet.config.wash_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.WASH_SECONDS.get()), 1, 86400, 6, SfConfig.WASH_SECONDS::set), null));
-        durations.add(Opt.header("sweatyfeet.config.section.boot_wash"));
-        durations.add(new Opt("sweatyfeet.config.wash_boots_enabled", y -> mkBoolButton(y, SfConfig.WASH_BOOTS_ENABLED), null));
-        durations.add(new Opt("sweatyfeet.config.wash_boots_seconds",
+        wash.add(Opt.header("sweatyfeet.config.section.boot_wash"));
+        wash.add(new Opt("sweatyfeet.config.wash_boots_enabled", y -> mkBoolButton(y, SfConfig.WASH_BOOTS_ENABLED), null));
+        wash.add(new Opt("sweatyfeet.config.wash_boots_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.WASH_BOOTS_SECONDS.get()), 1, 86400, 6, SfConfig.WASH_BOOTS_SECONDS::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.durations", durations));
+        cats.add(new Cat("sweatyfeet.config.cat.wash", wash));
 
-        // movement：脚滑
-        List<Opt> movement = new ArrayList<>();
-        movement.add(Opt.header("sweatyfeet.config.section.slide"));
-        movement.add(new Opt("sweatyfeet.config.slide_enabled", y -> mkBoolButton(y, SfConfig.SLIDE_ENABLED), null));
-        movement.add(new Opt("sweatyfeet.config.slide_retention_percent",
-            y -> mkIntBox(y, String.valueOf(SfConfig.SLIDE_RETENTION_PERCENT.get()), 1, 100, 3, SfConfig.SLIDE_RETENTION_PERCENT::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.movement", movement));
+        // 汗液瓶与饮品：投掷/饮用效果时长
+        List<Opt> bottle = new ArrayList<>();
+        bottle.add(Opt.header("sweatyfeet.config.section.bottle"));
+        bottle.add(new Opt("sweatyfeet.config.throw_debuff_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.THROW_DEBUFF_SECONDS.get()), 1, 86400, 6, SfConfig.THROW_DEBUFF_SECONDS::set), null));
+        bottle.add(new Opt("sweatyfeet.config.bottle_nausea_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.BOTTLE_NAUSEA_SECONDS.get()), 1, 86400, 6, SfConfig.BOTTLE_NAUSEA_SECONDS::set), null));
+        bottle.add(new Opt("sweatyfeet.config.drink_poison_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_POISON_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_POISON_SECONDS::set), null));
+        bottle.add(new Opt("sweatyfeet.config.drink_buff_seconds",
+            y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_BUFF_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_BUFF_SECONDS::set), null));
+        cats.add(new Cat("sweatyfeet.config.cat.bottle", bottle));
 
-        // visual：表现
+        // 表现粒子
         List<Opt> visual = new ArrayList<>();
         visual.add(Opt.header("sweatyfeet.config.section.particles"));
         visual.add(new Opt("sweatyfeet.config.sweat_particles", y -> mkBoolButton(y, SfConfig.SWEAT_PARTICLES), null));
