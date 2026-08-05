@@ -366,8 +366,10 @@ public final class SweatyFeetHandler {
 
     /**
      * 盆泡脚推进：赤脚右键盆开始的会话，站在盆边（半径 1.5 格，兼容以后坐旁边椅子）
-     * 且盆里仍是清水时累计计时；离开暂停（不清零）；满 wash_seconds →
-     * 清汗脚（跳过降级）+ 盆变浑水。水被舀走/盆被拆 → 会话终止。
+     * 且盆里仍是清水/药水时累计计时；离开暂停（不清零）。
+     * - 清水：满 washTicksFor 洗完 → 清汗脚 + 盆变浑水
+     * - 药水洗脚水：满 washTicksFor 洗完 → 清汗脚 + 清真菌（药水洗脚水唯一治真菌），盆变浑水
+     * 水被舀走/盆被拆 → 会话终止。
      */
     private static void tickBasinSoak(Player player) {
         UUID id = player.getUUID();
@@ -377,8 +379,14 @@ public final class SweatyFeetHandler {
         }
         Level level = player.level();
         BlockState basinState = level.getBlockState(pos);
-        if (!basinState.is(ModBlocks.WASH_BASIN.get())
-            || basinState.getValue(WashBasinBlock.FILLED) != WashBasinBlock.Filled.WATER) {
+        if (!basinState.is(ModBlocks.WASH_BASIN.get())) {
+            BASIN_TICKS.remove(id);
+            BASIN_POS.remove(id);
+            return;
+        }
+        WashBasinBlock.Filled filled = basinState.getValue(WashBasinBlock.FILLED);
+        if (filled != WashBasinBlock.Filled.WATER && filled != WashBasinBlock.Filled.MEDICINAL) {
+            // 水被舀走/变浑 → 会话终止（药水洗完变浑也一样）
             BASIN_TICKS.remove(id);
             BASIN_POS.remove(id);
             return;
@@ -400,8 +408,11 @@ public final class SweatyFeetHandler {
             player.displayClientMessage(Component.translatable("sweatyfeet.msg.washing", left), true);
         }
         if (t >= washTicksFor(player)) {
-            // 洗完：清汗脚 + 盆变浑水
+            // 洗完：清汗脚（药水还清真菌） + 盆变浑水
             player.removeEffect(ModEffects.SWEATY_FEET);
+            if (filled == WashBasinBlock.Filled.MEDICINAL) {
+                player.removeEffect(ModEffects.FOOT_FUNGUS);
+            }
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
             level.setBlockAndUpdate(pos, basinState.setValue(WashBasinBlock.FILLED, WashBasinBlock.Filled.DIRTY));

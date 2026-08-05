@@ -102,8 +102,10 @@
     "sweatyfeet.msg.take_off": "Take off your boots to wash your feet!",
     "sweatyfeet.msg.washing": "Washing feet, %s s left...",
     "sweatyfeet.msg.basin_empty": "The basin is empty!",
+    "sweatyfeet.msg.basin_dirty": "The water is dirty, scoop it out!",
     "sweatyfeet.msg.no_sweat": "Your feet don't stink, why soak?",
     "sweatyfeet.msg.soak_start": "Soaking...",
+    "sweatyfeet.msg.soak_medicinal": "Medicinal soak: curing fungus...",
     "sweatyfeet.msg.soak_done": "Done soaking! The water is dirty now...",
     "sweatyfeet.msg.aroma": "So mellow...? Delicious!"
 }

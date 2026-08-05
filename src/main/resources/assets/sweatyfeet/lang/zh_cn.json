@@ -102,8 +102,10 @@
     "sweatyfeet.msg.take_off": "脱鞋后再洗脚！",
     "sweatyfeet.msg.washing": "正在洗脚，用时 %s 秒…",
     "sweatyfeet.msg.basin_empty": "盆里没有水！",
+    "sweatyfeet.msg.basin_dirty": "水都洗浑了，舀掉换新的吧！",
     "sweatyfeet.msg.no_sweat": "脚不臭，泡什么脚？",
     "sweatyfeet.msg.soak_start": "开始泡脚…",
+    "sweatyfeet.msg.soak_medicinal": "药水洗脚水：泡着治真菌…",
     "sweatyfeet.msg.soak_done": "泡完了！水都洗浑了…",
     "sweatyfeet.msg.aroma": "醇香…？好喝！"
 }

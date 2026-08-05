@@ -36,7 +36,7 @@ public class WashBasinBlock extends Block {
     private static final VoxelShape SHAPE = box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
 
     public enum Filled implements net.minecraft.util.StringRepresentable {
-        EMPTY, WATER, DIRTY;
+        EMPTY, WATER, DIRTY, MEDICINAL;
 
         @Override
         public String getSerializedName() {
@@ -66,6 +66,25 @@ public class WashBasinBlock extends Block {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
         Filled filled = state.getValue(FILLED);
+
+        // 花露水倒进含水盆：清水 → 药水洗脚水（真菌治疗两步走的第一步）
+        if (stack.is(ModItems.FLORAL_WATER.get())) {
+            if (filled == Filled.WATER) {
+                if (!level.isClientSide) {
+                    level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.MEDICINAL));
+                    stack.consume(1, player);
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleTypes.CLOUD,
+                            pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5,
+                            8, 0.3, 0.1, 0.3, 0.05);
+                    }
+                }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
+            return ItemInteractionResult.FAIL; // 盆里没清水不能倒花露水
+        }
 
         // 水桶倒水：只能倒进空盆
         if (stack.is(Items.WATER_BUCKET)) {
@@ -120,14 +139,23 @@ public class WashBasinBlock extends Block {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
         Filled filled = state.getValue(FILLED);
-        if (filled != Filled.WATER) {
-            // 没水（空或已浑）不能泡——浑水是泡完的产物，想泡先舀掉换新水
+        if (filled == Filled.DIRTY) {
+            // 浑水是泡完的产物，不能泡——想泡先舀掉换新水
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable("sweatyfeet.msg.basin_dirty"), true);
+            }
+            return InteractionResult.CONSUME;
+        }
+        if (filled != Filled.WATER && filled != Filled.MEDICINAL) {
             if (!level.isClientSide) {
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.basin_empty"), true);
             }
             return InteractionResult.CONSUME;
         }
-        if (!player.hasEffect(ModEffects.SWEATY_FEET)) {
+        boolean hasSweat = player.hasEffect(ModEffects.SWEATY_FEET);
+        boolean hasFungus = player.hasEffect(ModEffects.FOOT_FUNGUS);
+        // 药水洗脚水：治真菌（没汗脚也能泡）；清水：洗汗脚。两者都没有 → 提示
+        if (!hasSweat && !hasFungus) {
             if (!level.isClientSide) {
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.no_sweat"), true);
             }
@@ -139,10 +167,11 @@ public class WashBasinBlock extends Block {
             }
             return InteractionResult.CONSUME;
         }
-        // 赤脚 + 盆有水 + 有汗脚 → 开始/继续泡脚（累计计时不清零）
+        // 赤脚 + 盆有水/药水 + 有汗脚或真菌 → 开始/继续泡脚（累计计时不清零）
         if (!level.isClientSide) {
             SweatyFeetHandler.startBasinSoak(player, pos);
-            player.displayClientMessage(Component.translatable("sweatyfeet.msg.soak_start"), true);
+            player.displayClientMessage(Component.translatable(
+                filled == Filled.MEDICINAL ? "sweatyfeet.msg.soak_medicinal" : "sweatyfeet.msg.soak_start"), true);
         }
         return InteractionResult.CONSUME;
     }
