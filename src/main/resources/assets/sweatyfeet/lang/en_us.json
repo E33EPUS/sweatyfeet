@@ -97,5 +97,9 @@
     "sweatyfeet.config.debug_force_fungus.desc": "Force fungus while wearing boots, skipping the level-3 wait.",
 
     "sweatyfeet.msg.take_off": "Take off your boots to wash your feet!",
-    "sweatyfeet.msg.washing": "Washing feet, %s s left..."
+    "sweatyfeet.msg.washing": "Washing feet, %s s left...",
+    "sweatyfeet.msg.basin_empty": "The basin is empty!",
+    "sweatyfeet.msg.no_sweat": "Your feet don't stink, why soak?",
+    "sweatyfeet.msg.soak_start": "Soaking...",
+    "sweatyfeet.msg.soak_done": "Done soaking! The water is dirty now..."
 }

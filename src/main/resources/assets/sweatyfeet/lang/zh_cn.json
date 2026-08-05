@@ -97,5 +97,9 @@
     "sweatyfeet.config.debug_force_fungus.desc": "穿靴即强制真菌感染，跳过3级等待。",
 
     "sweatyfeet.msg.take_off": "脱鞋后再洗脚！",
-    "sweatyfeet.msg.washing": "正在洗脚，用时 %s 秒…"
+    "sweatyfeet.msg.washing": "正在洗脚，用时 %s 秒…",
+    "sweatyfeet.msg.basin_empty": "盆里没有水！",
+    "sweatyfeet.msg.no_sweat": "脚不臭，泡什么脚？",
+    "sweatyfeet.msg.soak_start": "开始泡脚…",
+    "sweatyfeet.msg.soak_done": "泡完了！水都洗浑了…"
 }

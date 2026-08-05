@@ -3,6 +3,7 @@ package com.e33epus.sweatyfeet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +20,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -41,6 +44,12 @@ public final class SweatyFeetHandler {
 
     /** 赤脚连续泡水 tick（玩家 → 连续 tick）；断水/穿鞋清零，满 wash_seconds 清汗脚 */
     private static final Map<UUID, Integer> WASH_TICKS = new HashMap<>();
+
+    /** 盆泡脚：累计计时（玩家 → 累计 tick）；离开暂停不清零，满 wash_seconds 洗完 + 盆变浑 */
+    private static final Map<UUID, Integer> BASIN_TICKS = new HashMap<>();
+
+    /** 盆泡脚：当前泡的目标盆（玩家 → 盆坐标）；空手右键盆（赤脚+有水+有汗脚）时记录 */
+    private static final Map<UUID, BlockPos> BASIN_POS = new HashMap<>();
 
     private static int degradeTicks() {
         return SfConfig.DEGRADE_SECONDS.get() * 20;
@@ -164,6 +173,8 @@ public final class SweatyFeetHandler {
             degradeSweatyFeet(player);
             // 洗脚：赤脚泡水满 wash_seconds 清汗脚（跳过降级）；真菌泡水洗不掉
             handleWashOff(player);
+            // 盆泡脚：赤脚右键开始的会话，站盆边累计计时
+            tickBasinSoak(player);
             // 洗脚 HUD：穿鞋泡水提醒脱鞋 / 赤脚泡水倒计时
             showWashHud(player);
             // 散臭：赤脚 + 有汗脚 → 附近玩家持续反胃（穿鞋防臭，洗脚/降级完不臭）
@@ -279,6 +290,58 @@ public final class SweatyFeetHandler {
             player.removeEffect(ModEffects.SWEATY_FEET);
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
+        }
+    }
+
+    /** 盆泡脚开始/继续：记录目标盆（累计计时不清零——离开暂停，回来右键接着泡） */
+    static void startBasinSoak(Player player, BlockPos pos) {
+        BASIN_POS.put(player.getUUID(), pos.immutable());
+    }
+
+    /**
+     * 盆泡脚推进：赤脚右键盆开始的会话，站在盆边（半径 1.5 格，兼容以后坐旁边椅子）
+     * 且盆里仍是清水时累计计时；离开暂停（不清零）；满 wash_seconds →
+     * 清汗脚（跳过降级）+ 盆变浑水。水被舀走/盆被拆 → 会话终止。
+     */
+    private static void tickBasinSoak(Player player) {
+        UUID id = player.getUUID();
+        BlockPos pos = BASIN_POS.get(id);
+        if (pos == null) {
+            return;
+        }
+        Level level = player.level();
+        BlockState basinState = level.getBlockState(pos);
+        if (!basinState.is(ModBlocks.WASH_BASIN.get())
+            || basinState.getValue(WashBasinBlock.FILLED) != WashBasinBlock.Filled.WATER) {
+            BASIN_TICKS.remove(id);
+            BASIN_POS.remove(id);
+            return;
+        }
+        double dx = player.getX() - (pos.getX() + 0.5);
+        double dz = player.getZ() - (pos.getZ() + 0.5);
+        if (dx * dx + dz * dz > 2.25) {
+            return; // 离开盆边：暂停计时
+        }
+        int t = BASIN_TICKS.merge(id, 1, Integer::sum);
+        if (t % 20 == 0 && level instanceof ServerLevel serverLevel) {
+            // 泡脚表现：水花粒子 + 水声 + 倒计时 HUD（每秒）
+            serverLevel.sendParticles(ParticleTypes.SPLASH,
+                pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5,
+                3, 0.2, 0.0, 0.2, 0.05);
+            serverLevel.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.4F, 1.0F);
+            int left = Math.max(0, (washTicks() - t) / 20);
+            player.displayClientMessage(Component.translatable("sweatyfeet.msg.washing", left), true);
+        }
+        if (t >= washTicks()) {
+            // 洗完：清汗脚 + 盆变浑水
+            player.removeEffect(ModEffects.SWEATY_FEET);
+            DEGRADE_TICKS.remove(id);
+            WASH_TICKS.remove(id);
+            level.setBlockAndUpdate(pos, basinState.setValue(WashBasinBlock.FILLED, WashBasinBlock.Filled.DIRTY));
+            BASIN_TICKS.remove(id);
+            BASIN_POS.remove(id);
+            player.displayClientMessage(Component.translatable("sweatyfeet.msg.soak_done"), true);
         }
     }
 
