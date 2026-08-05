@@ -104,7 +104,7 @@ public final class SfConfig {
         SLIDE_ENABLED = builder.comment("汗脚 2 级起脚滑（摩擦改为冰面值，双端一致）")
             .define("slide_enabled", true);
         SLIDE_RETENTION_PERCENT = builder.comment("脚滑摩擦值（%）——100 同冰面，越低越黏")
-            .defineInRange("slide_retention_percent", 98, 1, 100);
+            .defineInRange("slide_retention_percent", 85, 1, 100);
         builder.pop();
 
         builder.comment("表现选项。").push("visual");
