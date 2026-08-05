@@ -49,5 +49,9 @@
     "sweatyfeet.config.sweat_particle_scale": "Sweat particle scale",
     "sweatyfeet.config.sneeze_particles": "Sneeze particles",
     "sweatyfeet.config.debug_show_ticks": "Show wear ticks (action bar)",
-    "sweatyfeet.config.debug_force_fungus": "Force fungus (debug)"
+    "sweatyfeet.config.debug_force_fungus": "Force fungus (debug)",
+    "sweatyfeet.config.wash_boots_enabled": "Wash sweaty boots in water",
+    "sweatyfeet.config.wash_boots_seconds": "Boots wash seconds",
+    "sweatyfeet.msg.take_off": "Take off your boots to wash your feet!",
+    "sweatyfeet.msg.washing": "Washing feet, %s s left..."
 }

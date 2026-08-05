@@ -15,12 +15,14 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
@@ -71,6 +73,67 @@ public final class SweatyFeetHandler {
     private SweatyFeetHandler() {
     }
 
+    /**
+     * 汗靴扔进水里泡洗：LevelTick 扫描水中 ItemEntity（汗靴），泡满 wash_boots_seconds
+     * 还原为正常靴子（去汗液 + 还原名），期间冒水花粒子。
+     */
+    @SubscribeEvent
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        if (!SfConfig.WASH_BOOTS_ENABLED.get() || level.getGameTime() % 20 != 0) {
+            return; // 每秒扫一次
+        }
+        int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
+        for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
+            if (!(e instanceof ItemEntity itemEntity) || !itemEntity.isInWater()) {
+                continue;
+            }
+            ItemStack stack = itemEntity.getItem();
+            if (!stack.is(ItemTags.FOOT_ARMOR) || !stack.has(ModDataComponents.SWEAT.get())) {
+                continue;
+            }
+            // 泡洗计时（组件累加），冒水花粒子
+            int washed = stack.getOrDefault(ModDataComponents.SWEAT_WASH_TICKS.get(), 0) + 20;
+            stack.set(ModDataComponents.SWEAT_WASH_TICKS.get(), washed);
+            level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP,
+                itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
+                3, 0.15, 0.1, 0.15, 0.0);
+            if (washed >= washBootsTicks) {
+                // 洗干净：去汗液 + 还原自定义名
+                SweatData data = stack.get(ModDataComponents.SWEAT.get());
+                stack.remove(ModDataComponents.SWEAT.get());
+                stack.remove(ModDataComponents.SWEAT_WASH_TICKS.get());
+                if (data != null && data.originalName() != null) {
+                    stack.set(DataComponents.CUSTOM_NAME, data.originalName());
+                } else {
+                    stack.remove(DataComponents.CUSTOM_NAME);
+                }
+            }
+        }
+    }
+
+    /** 洗脚 HUD 提示：穿鞋泡水提醒脱鞋；赤脚洗脚显示倒计时（action bar，物品栏正上方不重叠） */
+    private static void showWashHud(Player player) {
+        if (player.tickCount % 20 != 0) {
+            return; // 每秒刷新
+        }
+        if (player.hasEffect(ModEffects.SWEATY_FEET) && player.isInWater()) {
+            if (!player.getItemBySlot(EquipmentSlot.FEET).is(ItemTags.FOOT_ARMOR)) {
+                // 赤脚洗脚中：显示剩余秒数
+                int consecutive = WASH_TICKS.getOrDefault(player.getUUID(), 0);
+                int left = Math.max(0, (washTicks() - consecutive) / 20);
+                player.displayClientMessage(
+                    Component.translatable("sweatyfeet.msg.washing", left), true);
+            } else {
+                // 穿鞋泡水：提醒脱鞋
+                player.displayClientMessage(
+                    Component.translatable("sweatyfeet.msg.take_off"), true);
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
@@ -101,6 +164,8 @@ public final class SweatyFeetHandler {
             degradeSweatyFeet(player);
             // 洗脚：赤脚泡水满 wash_seconds 清汗脚（跳过降级）；真菌泡水洗不掉
             handleWashOff(player);
+            // 洗脚 HUD：穿鞋泡水提醒脱鞋 / 赤脚泡水倒计时
+            showWashHud(player);
             // 散臭：赤脚 + 有汗脚 → 附近玩家持续反胃（穿鞋防臭，洗脚/降级完不臭）
             spreadFootSmell(player);
             return;

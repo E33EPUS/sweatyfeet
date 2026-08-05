@@ -33,6 +33,8 @@ public final class SfConfig {
     public static final ModConfigSpec.IntValue DRINK_BUFF_SECONDS;
     public static final ModConfigSpec.IntValue DEGRADE_SECONDS;
     public static final ModConfigSpec.IntValue WASH_SECONDS;
+    public static final ModConfigSpec.BooleanValue WASH_BOOTS_ENABLED;
+    public static final ModConfigSpec.IntValue WASH_BOOTS_SECONDS;
     // 移动
     public static final ModConfigSpec.BooleanValue SLIDE_ENABLED;
     public static final ModConfigSpec.IntValue SLIDE_RETENTION_PERCENT;
@@ -92,6 +94,10 @@ public final class SfConfig {
             .defineInRange("degrade_seconds", 60, 1, 86400);
         WASH_SECONDS = builder.comment("赤脚泡水洗脚所需秒数（真菌泡水洗不掉，要用花露水）")
             .defineInRange("wash_seconds", 15, 1, 86400);
+        WASH_BOOTS_ENABLED = builder.comment("汗靴扔进水里能否泡洗（洗干净还原为正常靴子）")
+            .define("wash_boots_enabled", true);
+        WASH_BOOTS_SECONDS = builder.comment("汗靴扔水里泡洗所需秒数")
+            .defineInRange("wash_boots_seconds", 15, 1, 86400);
         builder.pop();
 
         builder.comment("移动效果（汗脚 2 级起）。").push("movement");

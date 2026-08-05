@@ -163,7 +163,9 @@ public class SfConfigScreen extends Screen {
                 new IntEntry(SfConfig.BOTTLE_NAUSEA_SECONDS, "sweatyfeet.config.bottle_nausea_seconds"),
                 new IntEntry(SfConfig.DRINK_BUFF_SECONDS, "sweatyfeet.config.drink_buff_seconds"),
                 new IntEntry(SfConfig.DEGRADE_SECONDS, "sweatyfeet.config.degrade_seconds"),
-                new IntEntry(SfConfig.WASH_SECONDS, "sweatyfeet.config.wash_seconds"));
+                new IntEntry(SfConfig.WASH_SECONDS, "sweatyfeet.config.wash_seconds"),
+                new BoolEntry(SfConfig.WASH_BOOTS_ENABLED, "sweatyfeet.config.wash_boots_enabled"),
+                new IntEntry(SfConfig.WASH_BOOTS_SECONDS, "sweatyfeet.config.wash_boots_seconds"));
             case 3 -> List.of(
                 new BoolEntry(SfConfig.SLIDE_ENABLED, "sweatyfeet.config.slide_enabled"),
                 new IntEntry(SfConfig.SLIDE_RETENTION_PERCENT, "sweatyfeet.config.slide_retention_percent"));
