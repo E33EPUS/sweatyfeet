@@ -63,6 +63,8 @@ public final class ModItems {
                 output.accept(new ItemStack(WASH_WATER_BUCKET.get()));
                 // 洗脚盆
                 output.accept(new ItemStack(ModBlocks.WASH_BASIN_ITEM.get()));
+                // 凳子
+                output.accept(new ItemStack(ModBlocks.STOOL_ITEM.get()));
             })
             .build());
 

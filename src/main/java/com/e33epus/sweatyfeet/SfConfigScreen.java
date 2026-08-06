@@ -59,8 +59,8 @@ public class SfConfigScreen extends Screen {
     private int scrollOffset;
     private int treeScroll;
     private final List<AbstractWidget> scrollWidgets = new ArrayList<>();
-    // 左侧树折叠状态（6 个 tab）
-    private final boolean[] expanded = {true, true, true, true, true, true};
+    // 左侧树折叠状态（随 buildCats 的 tab 数动态分配，写死长度必越界——7 tab 崩过）
+    private boolean[] expanded = {};
     // 右侧选项 / 左侧树各一套平滑滚动(easeOutCubic 时间轴)+滚动条拖拽
     private float rAnimFrom, rAnimTo;
     private long rAnimStart;
@@ -198,6 +198,14 @@ public class SfConfigScreen extends Screen {
         visual.add(new Opt("sweatyfeet.config.sweat_particle_scale",
             y -> mkIntBox(y, String.valueOf(SfConfig.SWEAT_PARTICLE_SCALE.get()), 1, 10, 2, SfConfig.SWEAT_PARTICLE_SCALE::set), null));
         visual.add(new Opt("sweatyfeet.config.sneeze_particles", y -> mkBoolButton(y, SfConfig.SNEEZE_PARTICLES), null));
+        visual.add(Opt.header("sweatyfeet.config.section.undress"));
+        visual.add(new Opt("sweatyfeet.config.soak_undress_enabled", y -> mkBoolButton(y, SfConfig.SOAK_UNDRESS_ENABLED), null));
+        visual.add(new Opt("sweatyfeet.config.soak_undress_tint",
+            y -> mkStrBox(y, SfConfig.SOAK_UNDRESS_TINT.get(), 9, SfConfig.SOAK_UNDRESS_TINT::set), null));
+        visual.add(new Opt("sweatyfeet.config.soak_undress_pick",
+            y -> Button.builder(Component.translatable("sweatyfeet.picker.open"),
+                b -> minecraft.setScreen(new SoakSkinPickerScreen(minecraft.player, this)))
+                .bounds(inputX, y, INPUT_W, 20).build(), null));
         cats.add(new Cat("sweatyfeet.config.cat.visual", visual));
 
         // debug：调试
@@ -205,7 +213,10 @@ public class SfConfigScreen extends Screen {
         debug.add(Opt.header("sweatyfeet.config.section.debug"));
         debug.add(new Opt("sweatyfeet.config.debug_show_ticks", y -> mkBoolButton(y, SfConfig.DEBUG_SHOW_TICKS), null));
         debug.add(new Opt("sweatyfeet.config.debug_force_fungus", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_FUNGUS), null));
+        debug.add(new Opt("sweatyfeet.config.debug_undress", y -> mkBoolButton(y, SfConfig.DEBUG_UNDRESS), null));
         cats.add(new Cat("sweatyfeet.config.cat.debug", debug));
+        expanded = new boolean[cats.size()];
+        java.util.Arrays.fill(expanded, true);
     }
 
     public SfConfigScreen(Screen lastScreen) {
@@ -242,6 +253,9 @@ public class SfConfigScreen extends Screen {
         tracked.add(track(SfConfig.SWEAT_PARTICLES));
         tracked.add(track(SfConfig.SWEAT_PARTICLE_SCALE));
         tracked.add(track(SfConfig.SNEEZE_PARTICLES));
+        tracked.add(track(SfConfig.SOAK_UNDRESS_ENABLED));
+        tracked.add(track(SfConfig.SOAK_UNDRESS_TINT));
+        tracked.add(track(SfConfig.DEBUG_UNDRESS));
         tracked.add(track(SfConfig.DEBUG_SHOW_TICKS));
         tracked.add(track(SfConfig.DEBUG_FORCE_FUNGUS));
     }
@@ -336,6 +350,14 @@ public class SfConfigScreen extends Screen {
                 btn.setMessage(nv ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF);
             }
         ).bounds(inputX, y, INPUT_W, 20).build();
+    }
+
+    private EditBox mkStrBox(int y, String initial, int maxLen, Consumer<String> onChange) {
+        EditBox box = new EditBox(font, inputX, y, INPUT_W, 20, Component.literal(""));
+        box.setValue(initial);
+        box.setMaxLength(maxLen);
+        box.setResponder(onChange::accept);
+        return box;
     }
 
     private EditBox mkIntBox(int y, String initial, int min, int max, int maxLen, Consumer<Integer> onChange) {

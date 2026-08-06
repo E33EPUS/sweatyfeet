@@ -20,12 +20,26 @@ public final class ModBlocks {
         BLOCKS.register("wash_basin", () -> new WashBasinBlock(
             BlockBehaviour.Properties.of()
                 .strength(0.6F)
-                .sound(SoundType.WOOD)));
+                .sound(SoundType.WOOD)
+                .noOcclusion()));
+
+    /** 凳子：可放置可坐，坐凳上右键旁边洗脚盆洗脚 */
+    public static final DeferredBlock<StoolBlock> STOOL =
+        BLOCKS.register("stool", () -> new StoolBlock(
+            BlockBehaviour.Properties.of()
+                .strength(0.6F)
+                .sound(SoundType.WOOD)
+                .noOcclusion()));
 
     /** 洗脚盆的物品形态（进创造栏） */
     public static final DeferredItem<BlockItem> WASH_BASIN_ITEM =
         ModItems.ITEMS.register("wash_basin",
             rl -> new BlockItem(WASH_BASIN.get(), new Item.Properties()));
+
+    /** 凳子的物品形态（进创造栏） */
+    public static final DeferredItem<BlockItem> STOOL_ITEM =
+        ModItems.ITEMS.register("stool",
+            rl -> new BlockItem(STOOL.get(), new Item.Properties()));
 
     private ModBlocks() {
     }

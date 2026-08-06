@@ -160,12 +160,10 @@ public class WashBasinBlock extends Block {
             }
             return InteractionResult.CONSUME;
         }
-        boolean hasSweat = player.hasEffect(ModEffects.SWEATY_FEET);
-        boolean hasFungus = player.hasEffect(ModEffects.FOOT_FUNGUS);
-        // 药水洗脚水：治真菌（没汗脚也能泡）；清水：洗汗脚。两者都没有 → 提示
-        if (!hasSweat && !hasFungus) {
+        // 洗脚机制（v2）：必须坐在凳子上才能洗——站着右键盆只提示
+        if (!(player.getVehicle() instanceof SeatEntity)) {
             if (!level.isClientSide) {
-                player.displayClientMessage(Component.translatable("sweatyfeet.msg.no_sweat"), true);
+                player.displayClientMessage(Component.translatable("sweatyfeet.msg.sit_to_soak"), true);
             }
             return InteractionResult.CONSUME;
         }
@@ -175,11 +173,22 @@ public class WashBasinBlock extends Block {
             }
             return InteractionResult.CONSUME;
         }
-        // 赤脚 + 盆有水/药水 + 有汗脚或真菌 → 开始/继续泡脚（累计计时不清零）
+        boolean hasSweat = player.hasEffect(ModEffects.SWEATY_FEET);
+        boolean hasFungus = player.hasEffect(ModEffects.FOOT_FUNGUS);
+        // 药水洗脚水：治真菌（没汗脚也能泡）；清水：洗汗脚。两者都没有 → 提示
+        if (!hasSweat && !hasFungus) {
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable("sweatyfeet.msg.no_sweat"), true);
+            }
+            return InteractionResult.CONSUME;
+        }
+        // 坐凳上 + 赤脚 + 盆有水/药水 + 有汗脚或真菌 → 开始/继续泡脚（累计计时不清零）
         if (!level.isClientSide) {
             SweatyFeetHandler.startBasinSoak(player, pos);
             player.displayClientMessage(Component.translatable(
                 filled == Filled.MEDICINAL ? "sweatyfeet.msg.soak_medicinal" : "sweatyfeet.msg.soak_start"), true);
+            // 开泡的倒计时首句立刻刷（不等 20 tick），之后由 tickBasinSoak 每秒刷
+            SweatyFeetHandler.showBasinSoakHud(player);
         }
         return InteractionResult.CONSUME;
     }

@@ -42,11 +42,16 @@ public class FootFungusEffect extends MobEffect {
                 entity.getX(), entity.getY() + entity.getBbHeight() * 0.8, entity.getZ(),
                 12, 0.3, 0.2, 0.3, 0.05);
         }
-        // 缓慢扣血：magic 伤害（无视护甲），按配置间隔，可致死
+        // 缓慢扣血（无视护甲），按配置间隔，可致死。
+        // DamageSources.source(key) 是 private，自己从注册表取 Holder 构造——
+        // 必须是注册过的 Holder（damage_event 同步包按注册表 id 序列化，direct holder 会踢人）
         if (SfConfig.FUNGUS_DAMAGE_ENABLED.get()
             && !entity.level().isClientSide
             && t % (SfConfig.FUNGUS_DAMAGE_INTERVAL_SECONDS.get() * 20) == 0) {
-            entity.hurt(ModEffects.FUNGUS_DAMAGE, 1.0F); // 自定义死法：被脚气真菌侵蚀
+            net.minecraft.core.Holder<net.minecraft.world.damagesource.DamageType> type =
+                entity.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                    .getHolderOrThrow(ModEffects.FUNGUS_DAMAGE);
+            entity.hurt(new net.minecraft.world.damagesource.DamageSource(type), 1.0F); // 自定义死法：被脚气真菌侵蚀
         }
         return true;
     }

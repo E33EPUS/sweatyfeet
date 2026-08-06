@@ -42,6 +42,9 @@ public final class SfConfig {
     public static final ModConfigSpec.BooleanValue SWEAT_PARTICLES;
     public static final ModConfigSpec.IntValue SWEAT_PARTICLE_SCALE;
     public static final ModConfigSpec.BooleanValue SNEEZE_PARTICLES;
+    public static final ModConfigSpec.BooleanValue SOAK_UNDRESS_ENABLED;
+    public static final ModConfigSpec.ConfigValue<String> SOAK_UNDRESS_TINT;
+    public static final ModConfigSpec.BooleanValue DEBUG_UNDRESS;
     // 调试
     public static final ModConfigSpec.BooleanValue DEBUG_SHOW_TICKS;
     public static final ModConfigSpec.BooleanValue DEBUG_FORCE_FUNGUS;
@@ -114,6 +117,10 @@ public final class SfConfig {
             .defineInRange("sweat_particle_scale", 1, 1, 10);
         SNEEZE_PARTICLES = builder.comment("真菌感染是否打喷嚏粒子")
             .define("sneeze_particles", true);
+        SOAK_UNDRESS_ENABLED = builder.comment("坐泡脚椅时下半身皮肤替换为肤色（脱裤观感，纯客户端表现）")
+            .define("soak_undress_enabled", true);
+        SOAK_UNDRESS_TINT = builder.comment("自定义肤色（hex 如 #C68863）；留空 = 自动从玩家皮肤采样")
+            .define("soak_undress_tint", "");
         builder.pop();
 
         builder.comment("调试。").push("debug");
@@ -121,6 +128,8 @@ public final class SfConfig {
             .define("debug_show_ticks", false);
         DEBUG_FORCE_FUNGUS = builder.comment("穿靴即强制真菌（调试用，跳过 3 级等待）")
             .define("debug_force_fungus", false);
+        DEBUG_UNDRESS = builder.comment("坐下脱裤改图 debug：resolve 结果变化时记日志")
+            .define("debug_undress", false);
         builder.pop();
 
         SERVER_SPEC = builder.build();

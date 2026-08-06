@@ -16,7 +16,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 泡脚动画（纯客户端表现）：赤脚站在洗脚盆上 → 腿部交替划水循环。
+ * 坐姿泡脚动画（纯客户端表现）：骑在泡脚椅座位上 + 赤脚 → 腿小幅摆动、身体后仰轻晃。
+ * 座位 NBT（basinPos）不同步客户端，这里只判"骑着座位 + 赤脚"，洗没洗由服务端算。
  * 需要 player-animator 前置，没装只是没动画，玩法不受影响（ModList 守卫 + optional 依赖）。
  */
 @EventBusSubscriber(modid = SweatyFeet.MOD_ID, value = Dist.CLIENT)
@@ -28,9 +29,9 @@ public final class SoakAnimationClient {
     private static final ResourceLocation LAYER_ID =
         ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "soak_layer");
 
-    /** 对应 assets/sweatyfeet/player_animations/soaking.json 的 name 字段 */
-    private static final ResourceLocation SOAKING_ANIM =
-        ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "soaking");
+    /** 对应 assets/sweatyfeet/player_animations/soaking_sit.json 的 name 字段 */
+    private static final ResourceLocation SOAKING_SIT_ANIM =
+        ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "soaking_sit");
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -45,16 +46,11 @@ public final class SoakAnimationClient {
         if (layer == null) {
             return;
         }
-        // 泡脚动画条件：赤脚 + 站在盆上 + 盆里有清水或药水。
-        // 必须先 is() 再 getValue——getValue 对别的方块抛 IllegalArgumentException（踩泥巴就崩，实测过）
-        var stateOn = player.getBlockStateOn();
-        boolean soaking = stateOn.is(ModBlocks.WASH_BASIN.get())
-            && (stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.WATER
-                || stateOn.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.MEDICINAL)
+        boolean soaking = player.getVehicle() instanceof SeatEntity
             && player.getItemBySlot(EquipmentSlot.FEET).isEmpty();
         if (soaking) {
             if (layer.getAnimation() == null) {
-                IPlayable anim = PlayerAnimationRegistry.getAnimation(SOAKING_ANIM);
+                IPlayable anim = PlayerAnimationRegistry.getAnimation(SOAKING_SIT_ANIM);
                 if (anim != null) {
                     layer.setAnimation((KeyframeAnimationPlayer) anim.playAnimation());
                 }

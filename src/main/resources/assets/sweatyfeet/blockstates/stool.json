@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "sweatyfeet:block/stool" },
+        "facing=east":  { "model": "sweatyfeet:block/stool", "y": 90 },
+        "facing=south": { "model": "sweatyfeet:block/stool", "y": 180 },
+        "facing=west":  { "model": "sweatyfeet:block/stool", "y": 270 }
+    }
+}

@@ -167,7 +167,7 @@ public final class SweatyFeetHandler {
                 continue;
             }
             if (other.distanceToSqr(x, y, z) <= rangeSq) {
-                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, true));
+                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0, false, true));
             }
         }
     }
@@ -209,7 +209,12 @@ public final class SweatyFeetHandler {
         UUID heldId = player.getUUID();
         if (heldData != null && heldData.level() >= 2) {
             HELD_L3.add(heldId);
-            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 0, false, true));
+            // 60 tick、剩余低于 40 才补：每次补都比剩余长 → 触发客户端同步包，眩晕持续。
+            // 之前每 tick 刷同值 40：服务端无变化不发同步，客户端 2 秒到期 → 看不到屏幕扭曲
+            MobEffectInstance cur = player.getEffect(MobEffects.CONFUSION);
+            if (cur == null || cur.getDuration() < 100) {
+                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 1, false, true));
+            }
         } else if (HELD_L3.remove(heldId) && player.hasEffect(MobEffects.CONFUSION)) {
             player.removeEffect(MobEffects.CONFUSION);
         }
@@ -230,7 +235,7 @@ public final class SweatyFeetHandler {
             int savedAmp = player.getData(ModAttachments.SWEAT_STATE);
             if (savedAmp >= 0 && !player.hasEffect(ModEffects.SWEATY_FEET)) {
                 player.removeEffect(ModEffects.SWEATY_FEET);
-                player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), savedAmp, false, false));
+                player.addEffect(sweatyFeetEffect(effectTicks(), savedAmp));
             }
             if (player.getData(ModAttachments.FUNGUS) && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
                 player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
@@ -254,6 +259,9 @@ public final class SweatyFeetHandler {
             }
         }
 
+        // 盆泡脚会话（v2：坐凳+脱鞋+右键盆开始；这里推进累计计时）
+        tickBasinSoak(player);
+
         ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
         if (!boots.is(ItemTags.FOOT_ARMOR)) {
             // 脱鞋：清穿戴计时，汗脚走"按级降级"（每级 60 秒递减，3→2→1→消除）
@@ -261,8 +269,6 @@ public final class SweatyFeetHandler {
             degradeSweatyFeet(player);
             // 洗脚：赤脚泡水满 wash_seconds 清汗脚（跳过降级）；真菌泡水洗不掉
             handleWashOff(player);
-            // 盆泡脚：赤脚右键开始的会话，站盆边累计计时
-            tickBasinSoak(player);
             // 洗脚 HUD：穿鞋泡水提醒脱鞋 / 赤脚泡水倒计时
             showWashHud(player);
             // 散臭：赤脚 + 有汗脚 → 附近玩家持续反胃（穿鞋防臭，洗脚/降级完不臭）
@@ -283,7 +289,7 @@ public final class SweatyFeetHandler {
             if (totalTicks % REFRESH_INTERVAL == 0) {
                 MobEffectInstance leftover = player.getEffect(ModEffects.SWEATY_FEET);
                 if (leftover != null) {
-                    player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), leftover.getAmplifier(), false, false));
+                    player.addEffect(sweatyFeetEffect(effectTicks(), leftover.getAmplifier()));
                 }
             }
             if (totalTicks >= lvl1()) {
@@ -299,7 +305,7 @@ public final class SweatyFeetHandler {
                 renameSweatyBoots(player, boots, data); // 升级同步改名（等级II/III）
             }
             if (totalTicks % REFRESH_INTERVAL == 0) {
-                refreshEffect(player, ModEffects.SWEATY_FEET, amplifier);
+                player.addEffect(sweatyFeetEffect(effectTicks(), amplifier));
                 player.setData(ModAttachments.SWEAT_STATE, amplifier); // 持久化当前等级
                 // 3 级：额外减速（汗脚3级 = 脚滑 + 减速）
                 if (amplifier >= 2) {
@@ -350,7 +356,7 @@ public final class SweatyFeetHandler {
             }
             if (other.distanceToSqr(player) <= rangeSq) {
                 // 反胃 3 秒，amplifier = 汗脚等级（越臭反胃越强）
-                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, sf.getAmplifier(), false, true));
+                other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, sf.getAmplifier(), false, true));
             }
         }
     }
@@ -368,6 +374,10 @@ public final class SweatyFeetHandler {
             return;
         }
         UUID id = player.getUUID();
+        if (!player.hasEffect(ModEffects.SWEATY_FEET)) {
+            WASH_TICKS.remove(id);
+            return; // 脚不臭泡水 = 游泳，不播洗脚声不累计（实测无汗脚水里一直响洗脚声）
+        }
         int consecutive = WASH_TICKS.merge(id, 1, Integer::sum);
         // 泡脚表现：水花粒子 + 水声（每秒）
         if (consecutive % 20 == 0 && player.level() instanceof ServerLevel serverLevel) {
@@ -385,14 +395,33 @@ public final class SweatyFeetHandler {
         }
     }
 
+    /**
+     * 泡脚倒计时 HUD（action bar）：清水="正在洗脚"，药水="正在清理真菌"。
+     * 开始泡脚时立即调一次（首句不等 20 tick），之后 tickBasinSoak 每秒刷。
+     */
+    static void showBasinSoakHud(Player player) {
+        BlockPos pos = BASIN_POS.get(player.getUUID());
+        if (pos == null) {
+            return;
+        }
+        BlockState state = player.level().getBlockState(pos);
+        boolean medicinal = state.is(ModBlocks.WASH_BASIN.get())
+            ? state.getValue(WashBasinBlock.FILLED) == WashBasinBlock.Filled.MEDICINAL
+            : false;
+        int t = BASIN_TICKS.getOrDefault(player.getUUID(), 0);
+        int left = Math.max(0, (washTicksFor(player) - t) / 20);
+        player.displayClientMessage(Component.translatable(
+            medicinal ? "sweatyfeet.msg.cleaning_fungus" : "sweatyfeet.msg.washing", left), true);
+    }
+
     /** 盆泡脚开始/继续：记录目标盆（累计计时不清零——离开暂停，回来右键接着泡） */
     static void startBasinSoak(Player player, BlockPos pos) {
         BASIN_POS.put(player.getUUID(), pos.immutable());
     }
 
     /**
-     * 盆泡脚推进：赤脚右键盆开始的会话，站在盆边（半径 1.5 格，兼容以后坐旁边椅子）
-     * 且盆里仍是清水/药水时累计计时；离开暂停（不清零）。
+     * 盆泡脚推进：右键盆/坐泡脚椅开始的会话，站在盆边（半径 1.5 格）或坐在座位上时累计计时；
+     * 离开暂停（不清零）。坐着泡额外要求赤脚（穿鞋只是干坐着，不累计）。
      * - 清水：满 washTicksFor 洗完 → 清汗脚 + 盆变浑水
      * - 药水洗脚水：满 washTicksFor 洗完 → 清汗脚 + 清真菌（药水洗脚水唯一治真菌），盆变浑水
      * 水被舀走/盆被拆 → 会话终止。
@@ -417,21 +446,28 @@ public final class SweatyFeetHandler {
             BASIN_POS.remove(id);
             return;
         }
+        // 站盆边（独立盆或组合盆半，半径 1.5 格）或坐椅子上（座位离盆心 1 格，同范围）都算泡脚位置
         double dx = player.getX() - (pos.getX() + 0.5);
         double dz = player.getZ() - (pos.getZ() + 0.5);
         if (dx * dx + dz * dz > 2.25) {
             return; // 离开盆边：暂停计时
         }
+        boolean wearingBoots = player.getItemBySlot(EquipmentSlot.FEET).is(ItemTags.FOOT_ARMOR);
+        if (!player.hasEffect(ModEffects.SWEATY_FEET) && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
+            return; // 脚干净：不累计（不然白水站/坐一会就浑了）
+        }
+        if (wearingBoots) {
+            return; // 穿鞋：暂停计时且不刷倒计时（WashBasinBlock 会提示脱鞋）
+        }
         int t = BASIN_TICKS.merge(id, 1, Integer::sum);
         if (t % 20 == 0 && level instanceof ServerLevel serverLevel) {
-            // 泡脚表现：水花粒子 + 水声 + 倒计时 HUD（每秒）
+            // 泡脚表现：水花粒子 + 水声（每秒）
             serverLevel.sendParticles(ParticleTypes.SPLASH,
                 pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5,
                 3, 0.2, 0.0, 0.2, 0.05);
             serverLevel.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.4F, 1.0F);
-            int left = Math.max(0, (washTicksFor(player) - t) / 20);
-            player.displayClientMessage(Component.translatable("sweatyfeet.msg.washing", left), true);
+            showBasinSoakHud(player);
         }
         if (t >= washTicksFor(player)) {
             // 洗完：清汗脚（药水还清真菌） + 盆变浑水
@@ -447,6 +483,17 @@ public final class SweatyFeetHandler {
             BASIN_TICKS.remove(id);
             BASIN_POS.remove(id);
             player.displayClientMessage(Component.translatable("sweatyfeet.msg.soak_done"), true);
+        }
+    }
+
+    /** 起身（或被拆椅子弹下来）：座位实体清掉（tick 里无乘客自清理兜底），会话保留暂停 */
+    @SubscribeEvent
+    public static void onMountChange(net.neoforged.neoforge.event.entity.EntityMountEvent event) {
+        if (event.isMounting() || !event.getLevel().isClientSide) {
+            return;
+        }
+        if (event.getEntityBeingMounted() instanceof SeatEntity seat && !seat.isRemoved()) {
+            seat.discard();
         }
     }
 
@@ -466,9 +513,14 @@ public final class SweatyFeetHandler {
         // 降级重挂：必须 remove 再 add —— 原版 MobEffectInstance.update 对"同 amp 更短时长/更低 amp"
         // 一律不覆盖，直接 addEffect(60s) 会被残留的 300s 汗脚挡住，降级永远不生效
         player.removeEffect(ModEffects.SWEATY_FEET);
-        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, next.ticksLeft(), next.amplifier(), false, false));
+        player.addEffect(sweatyFeetEffect(next.ticksLeft(), next.amplifier()));
         player.setData(ModAttachments.SWEAT_STATE, next.amplifier()); // 持久化降级后的等级
         DEGRADE_TICKS.put(id, next.ticksLeft());
+    }
+
+    /** 汗脚效果实例：无粒子但 HUD 图标要显示（5 参构造 showParticles=false 会把 showIcon 一起关掉，实测图标消失） */
+    private static MobEffectInstance sweatyFeetEffect(int ticks, int amplifier) {
+        return new MobEffectInstance(ModEffects.SWEATY_FEET, ticks, amplifier, false, false, true);
     }
 
     /**
@@ -577,7 +629,7 @@ public final class SweatyFeetHandler {
         SweatData data = new SweatData(0, customName);
         boots.set(ModDataComponents.SWEAT.get(), data);
         renameSweatyBoots(player, boots, data);
-        player.addEffect(new MobEffectInstance(ModEffects.SWEATY_FEET, effectTicks(), 0, false, false));
+        player.addEffect(sweatyFeetEffect(effectTicks(), 0));
         player.setData(ModAttachments.SWEAT_STATE, 0); // 持久化汗脚 1 级
     }
 
@@ -600,7 +652,4 @@ public final class SweatyFeetHandler {
         };
     }
 
-    private static void refreshEffect(Player player, Holder<MobEffect> effect, int amplifier) {
-        player.addEffect(new MobEffectInstance(effect, effectTicks(), amplifier, false, false));
-    }
 }

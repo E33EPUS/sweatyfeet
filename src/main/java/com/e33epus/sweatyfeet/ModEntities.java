@@ -19,6 +19,14 @@ public final class ModEntities {
             .updateInterval(10)
             .build("sweat_bottle"));
 
+    /** 隐形座位：clientTrackingRange 拉满保证远端玩家也能看到骑乘姿态 */
+    public static final Supplier<EntityType<SeatEntity>> SEAT =
+        ENTITY_TYPES.register("seat", () -> EntityType.Builder
+            .<SeatEntity>of(SeatEntity::new, MobCategory.MISC)
+            .sized(0.0001F, 0.0001F)
+            .clientTrackingRange(10)
+            .build("seat"));
+
     private ModEntities() {
     }
 

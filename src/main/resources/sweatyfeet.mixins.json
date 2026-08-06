@@ -6,6 +6,9 @@
     "mixins": [
         "LivingEntityMixin"
     ],
+    "client": [
+        "client.PlayerRendererSoakSkinMixin"
+    ],
     "injectors": {
         "defaultRequire": 1
     }
