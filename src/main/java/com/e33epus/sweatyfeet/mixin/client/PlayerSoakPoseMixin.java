@@ -38,8 +38,12 @@ public abstract class PlayerSoakPoseMixin<T extends LivingEntity, M extends Enti
         // ItemStackSweatHintMixin 的 getTooltipLines 同款教训。LivingEntityRenderer 只有一个 render。
         method = "render",
         at = @At(
+            // 调用点 owner 必须是 EntityModel 不是 Model：javap 运行时字节码实锤
+            // invokevirtual EntityModel.renderToBuffer(PoseStack;VertexConsumer;III)V——
+            // LivingEntityRenderer 的 model 字段声明为 EntityModel<T>，常量池引用类型就是它，
+            // target 写 Model 会 0/1 匹配失败（InjectionError，第二次启动崩溃）
             value = "INVOKE",
-            target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V"
+            target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V"
         )
     )
     private void sf$applySoakPose(T entity, float entityYaw, float partialTick,
