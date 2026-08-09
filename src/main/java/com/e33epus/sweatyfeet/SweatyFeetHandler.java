@@ -654,6 +654,13 @@ public final class SweatyFeetHandler {
         // 把主手汗靴【预测性】穿到脚上，产生"幽灵汗靴"，随后被服务端同步纠正消失。
         // 基类 PlayerInteractEvent 不带 setCanceled（@Cancelable 只加在子类），走 ICancellableEvent 接口
         ((net.neoforged.bus.api.ICancellableEvent) event).setCanceled(true);
+        // 关键：RightClickBlock 取消默认返回 PASS → 客户端 startUseItem 会 fallback 到 useItem，
+        // 再发一个 UseItem 包 → 服务端此时汗靴已还原（SWEAT 组件已删）→ 拦不住 → ArmorItem.use
+        // 把靴子重新穿上（b1b74b6 引入的"倒汗后立刻装备"bug，agent 源码实锤双包链路）。
+        // FAIL 让客户端直接 return，不再 fallback；RightClickItem 分支对空右键无 fallback，保持默认。
+        if (event instanceof PlayerInteractEvent.RightClickBlock rcb) {
+            rcb.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
         if (player.level().isClientSide) {
             return;
         }
