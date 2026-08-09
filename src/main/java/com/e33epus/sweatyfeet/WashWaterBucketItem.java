@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
@@ -42,6 +43,11 @@ public class WashWaterBucketItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide && entity instanceof Player player) {
+            // consume_item 进度触发器必须显式调用（vanilla 由消费物手动 trigger），
+            // 不调"味真足！"进度永远不触发
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                net.minecraft.advancements.CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
+            }
             // 醇香：纯提示，无实际效果
             player.displayClientMessage(Component.translatable("sweatyfeet.msg.aroma"), true);
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
@@ -51,5 +57,13 @@ public class WashWaterBucketItem extends Item {
         }
         stack.consume(1, entity);
         return new ItemStack(Items.BUCKET);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
+                                TooltipFlag flag) {
+        // 简介行 + 使用方式行（分行）
+        tooltip.add(Component.translatable("item.sweatyfeet.wash_water_bucket.tooltip1"));
+        tooltip.add(Component.translatable("item.sweatyfeet.wash_water_bucket.tooltip2"));
     }
 }

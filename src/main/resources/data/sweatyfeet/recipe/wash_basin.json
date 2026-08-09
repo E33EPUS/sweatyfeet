@@ -6,7 +6,7 @@
         "PPP"
     ],
     "key": {
-        "P": { "item": "minecraft:oak_planks" }
+        "P": { "tag": "minecraft:planks" }
     },
     "result": {
         "id": "sweatyfeet:wash_basin"

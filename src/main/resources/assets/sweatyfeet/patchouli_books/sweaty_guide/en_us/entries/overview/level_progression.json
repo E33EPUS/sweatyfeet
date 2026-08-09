@@ -1,0 +1,10 @@
+{
+    "name": "Level Progression",
+    "icon": "sweatyfeet:sweat_bottle",
+    "category": "sweatyfeet:overview",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:text", "text": "Keep wearing them: $(bold)30 s → level 1$(), $(bold)60 s → level 2$(), $(bold)90 s → level 3$() (defaults, server-configurable).$(br2)From level 2 your feet start sliding (slide retention is configurable); at level 3 green stink particles appear around your feet." },
+        { "type": "patchouli:text", "text": "Higher levels mean: higher-level sweat bottles when pouring, and longer soak times when washing.$(br2)After level 3, $(bold)30 more seconds of wear → foot fungus$() (see the \"Foot Fungus\" entry)." }
+    ]
+}

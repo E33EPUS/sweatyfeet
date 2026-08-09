@@ -1,0 +1,10 @@
+{
+    "name": "穿靴计时",
+    "icon": "minecraft:leather_boots",
+    "category": "sweatyfeet:overview",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:text", "text": "穿上$(bold)任意靴子$()（皮革、铁、金、钻石、下界合金都行），穿戴累计时间开始计时。$(br2)累计达标后触发$(bold)汗化$()：靴子改名为「充满X汗液的靴子」，你挂上$(bold)汗脚$()效果。" },
+        { "type": "patchouli:text", "text": "汗化阈值由服务器配置 $(bold)level_1_seconds$() 决定（默认 30 秒）。$(br2)靴子等级在汗化瞬间固化：$(bold)脱鞋再穿等级保留$()，只升不降。" }
+    ]
+}

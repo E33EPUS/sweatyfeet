@@ -1,6 +1,7 @@
 package com.e33epus.sweatyfeet;
 
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
@@ -53,6 +55,10 @@ public class SweatDrinkItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide) {
+            // 美醉了！：喝汗液饮品进度（consume_item 必须显式 trigger，且要在 stack.consume 前传本体）
+            if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+                net.minecraft.advancements.CriteriaTriggers.CONSUME_ITEM.trigger(sp, stack);
+            }
             int ticks = SfConfig.DRINK_BUFF_SECONDS.get() * 20;
             if ("fermented".equals(readType(stack))) {
                 // 汗液饮品（发酵靴 3 级产物）：迅捷 + 跳跃提升 + 力量 + 幸运
@@ -87,5 +93,13 @@ public class SweatDrinkItem extends Item {
     @Override
     public String getDescriptionId(ItemStack stack) {
         return super.getDescriptionId(stack) + "." + readType(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
+                                TooltipFlag flag) {
+        // 简介行 + 使用方式行（分行）
+        tooltip.add(Component.translatable("item.sweatyfeet.sweat_drink.tooltip1"));
+        tooltip.add(Component.translatable("item.sweatyfeet.sweat_drink.tooltip2"));
     }
 }

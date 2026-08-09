@@ -1,6 +1,10 @@
 package com.e33epus.sweatyfeet;
 
+import java.util.List;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 
 /**
  * 花露水（Floral Water）：真菌治疗的"两步走"第一步。
@@ -12,5 +16,13 @@ import net.minecraft.world.item.Item;
 public class SweatRepellentItem extends Item {
     public SweatRepellentItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
+        // 使用方式行 + 免责声明行（用户定：两行即可）
+        tooltip.add(Component.translatable("item.sweatyfeet.floral_water.tooltip1"));
+        tooltip.add(Component.translatable("item.sweatyfeet.floral_water.tooltip2"));
     }
 }

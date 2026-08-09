@@ -1,0 +1,10 @@
+{
+    "name": "洗脚与治疗",
+    "icon": "sweatyfeet:wash_basin",
+    "category": "sweatyfeet:overview",
+    "sortnum": 4,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)清水洗汗脚，药水洗脚水治真菌$()。$(br2)方式一：$(bold)赤脚泡水$()——有汗脚时泡进任意水域，按等级累计时长洗净（穿鞋泡水只会被提醒脱鞋）。$(br2)方式二：坐在凳子上、脱掉靴子、$(bold)空手右键$()旁边装了水的洗脚盆。" },
+        { "type": "patchouli:text", "text": "泡完：汗脚（或真菌）清除，盆里的水变$(bold)浑水$()——空桶可以舀成「xxx的洗脚水」。$(br2)$(bold)脱鞋降级$()：脱鞋后汗脚每过一段配置时长降一级，降到 1 级后保留不再降——$(bold)汗脚只能靠洗脚彻底清掉$()。" }
+    ]
+}

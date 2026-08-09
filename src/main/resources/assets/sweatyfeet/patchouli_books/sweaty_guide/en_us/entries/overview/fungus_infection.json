@@ -1,0 +1,10 @@
+{
+    "name": "Foot Fungus",
+    "icon": "sweatyfeet:wash_water_bucket",
+    "category": "sweatyfeet:overview",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "After 30 more seconds of wear at sweat level 3 (configurable), you catch $(bold)foot fungus$() — it has $(bold)infinite duration$(): taking boots off or pouring sweat does NOT cure it.$(br2)While infected: -15% movement speed, sneezing on a timer, and while barefoot you shed green particles that nauseate nearby players ($(bold)wearing boots blocks the smell$())." },
+        { "type": "patchouli:text", "text": "$(bold)The only cure$(): pour a bottle of $(bold)floral water$() into a water basin to turn it medicinal, then sit on a stool, take off your boots and soak until done (see \"Washing & Curing\").$(br2)Standing near an infected player can $(bold)infect you$() — and the infected can spread it further." }
+    ]
+}

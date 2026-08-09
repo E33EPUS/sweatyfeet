@@ -1,0 +1,9 @@
+{
+    "name": "Sweat Bottle",
+    "icon": "sweatyfeet:sweat_bottle",
+    "category": "sweatyfeet:items",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "A bottle full of sweat. Hold a sweaty boot in your main hand and an empty bottle in your offhand, then sneak + right-click to pour.$(br2)Drink: level 1 restores half a hunger shank, level 2 nauseates for 10 s, level 3 poisons for 3 s." }
+    ]
+}

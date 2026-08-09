@@ -1,0 +1,10 @@
+{
+    "name": "Particle Effects",
+    "icon": "minecraft:composter",
+    "category": "sweatyfeet:visuals",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Sweat drops$(): while Sweaty Feet, water droplets keep rising around your feet — the count scales with level and $(bold)sweat_particle_scale$() (can be disabled).$(br2)$(bold)Stink particles$(): green particles around the feet at sweat level 3, and around barefoot fungus-infected players." },
+        { "type": "patchouli:text", "text": "$(bold)Sneezes$(): during foot fungus you sneeze every 60 ticks ($(bold)sneeze_particles$() can be disabled).$(br2)$(bold)Splash$(): water splashes, bubbles and puffs from washing, filling the basin, and rinsing boots — purely cosmetic, never affects the mechanics." }
+    ]
+}

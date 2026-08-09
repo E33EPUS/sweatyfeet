@@ -1,0 +1,12 @@
+{
+    "name": "Config Reference",
+    "icon": "minecraft:book",
+    "category": "sweatyfeet:config",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Levels$()$(br)level_1/2/3_seconds — sweat threshold and level-up times$(br)effect_seconds — Sweaty Feet effect duration$(br)degrade_seconds — per-level degrade countdown after taking boots off" },
+        { "type": "patchouli:text", "text": "$(bold)Fungus$()$(br)enable_fungus — master switch$(br)fungus_delay_seconds — delay after level 3$(br)fungus_damage_enabled / fungus_damage_interval_seconds — periodic damage$(br)fungus_infection_enabled / fungus_infection_range / fungus_infection_interval_seconds — spread$(br)smell_enabled / smell_range — stink nausea" },
+        { "type": "patchouli:text", "text": "$(bold)Values & items$()$(br)wash_seconds — base soak duration$(br)wash_boots_enabled / wash_boots_seconds — rinsing sweaty boots$(br)drink_poison_seconds / bottle_nausea_seconds / drink_buff_seconds — drink effects$(br)slide_enabled / slide_retention_percent — level 2 sliding" },
+        { "type": "patchouli:text", "text": "$(bold)Visuals$()$(br)sweat_particles / sweat_particle_scale — sweat drops$(br)sneeze_particles — sneezes$(br)soak_undress_enabled / soak_undress_tint — sitting undress & skin color$(br2)$(bold)Debug$()$(br)debug_undress / debug_show_ticks / debug_force_fungus" }
+    ]
+}

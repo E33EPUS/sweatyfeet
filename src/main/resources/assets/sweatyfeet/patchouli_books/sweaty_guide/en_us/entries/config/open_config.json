@@ -1,0 +1,10 @@
+{
+    "name": "The J Key & Config Screen",
+    "icon": "minecraft:comparator",
+    "category": "sweatyfeet:config",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Press J$() to open the Sweaty Feet config screen — in-game or from the main menu.$(br2)Left side is a collapsible category tree, right side holds the actual options: toggles, numbers and the eyedropper color picker." },
+        { "type": "patchouli:text", "text": "If the key conflicts, the game shows a red warning and you can rebind it in vanilla key settings.$(br2)$(bold)Server config$() (level times, fungus, values) is set by the host; $(bold)client config$() (visuals, picked color) is per-player." }
+    ]
+}

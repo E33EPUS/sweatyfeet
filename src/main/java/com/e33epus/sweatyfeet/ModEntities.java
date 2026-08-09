@@ -11,14 +11,6 @@ public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
         DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, SweatyFeet.MOD_ID);
 
-    public static final Supplier<EntityType<SweatBottleProjectile>> SWEAT_BOTTLE =
-        ENTITY_TYPES.register("sweat_bottle", () -> EntityType.Builder
-            .<SweatBottleProjectile>of(SweatBottleProjectile::new, MobCategory.MISC)
-            .sized(0.25F, 0.25F)
-            .clientTrackingRange(4)
-            .updateInterval(10)
-            .build("sweat_bottle"));
-
     /** 隐形座位：clientTrackingRange 拉满保证远端玩家也能看到骑乘姿态 */
     public static final Supplier<EntityType<SeatEntity>> SEAT =
         ENTITY_TYPES.register("seat", () -> EntityType.Builder

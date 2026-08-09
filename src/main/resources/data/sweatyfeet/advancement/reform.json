@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "reform": { "trigger": "minecraft:impossible" }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.reform.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:floral_water" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.reform.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["reform"]]
+}

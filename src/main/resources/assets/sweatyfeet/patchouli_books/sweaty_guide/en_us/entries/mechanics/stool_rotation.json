@@ -1,0 +1,10 @@
+{
+    "name": "Stool Rotation",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:mechanics",
+    "sortnum": 3,
+    "pages": [
+        { "type": "patchouli:text", "text": "While sitting on a stool, your body stays $(bold)locked to the stool's facing$() — the same logic as riding a vanilla boat/horse.$(br2)Turning your head is clamped to $(bold)90° left or right of the stool's facing$() (180° total) — no spinning in circles." },
+        { "type": "patchouli:text", "text": "Turning feels identical to vanilla riding — smooth, no mouse fighting.$(br2)$(bold)Getting up$(): press Shift (sneak) to stand up, just like dismounting." }
+    ]
+}

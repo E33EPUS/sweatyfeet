@@ -1,0 +1,9 @@
+{
+    "name": "Foot-Washing Water",
+    "icon": "sweatyfeet:wash_water_bucket",
+    "category": "sweatyfeet:items",
+    "sortnum": 3,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:wash_water_bucket", "text": "The dirty water left after washing your feet. Scoop it from a dirty basin with a bucket.$(br2)It's drinkable (?)" }
+    ]
+}

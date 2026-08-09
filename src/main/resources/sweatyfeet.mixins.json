@@ -7,7 +7,8 @@
         "LivingEntityMixin"
     ],
     "client": [
-        "client.PlayerRendererSoakSkinMixin"
+        "client.AbstractClientPlayerMixin",
+        "client.ItemStackSweatHintMixin"
     ],
     "injectors": {
         "defaultRequire": 1

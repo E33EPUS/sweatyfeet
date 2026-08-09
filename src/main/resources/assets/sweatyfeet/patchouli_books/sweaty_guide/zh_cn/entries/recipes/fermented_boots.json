@@ -1,0 +1,9 @@
+{
+    "name": "发酵靴",
+    "icon": "sweatyfeet:fermented_boots",
+    "category": "sweatyfeet:recipes",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:crafting", "recipe": "sweatyfeet:fermented_boots", "text": "皮革靴 + 糖。" }
+    ]
+}

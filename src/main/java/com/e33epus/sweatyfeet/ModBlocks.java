@@ -1,7 +1,6 @@
 package com.e33epus.sweatyfeet;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -31,15 +30,18 @@ public final class ModBlocks {
                 .sound(SoundType.WOOD)
                 .noOcclusion()));
 
-    /** 洗脚盆的物品形态（进创造栏） */
-    public static final DeferredItem<BlockItem> WASH_BASIN_ITEM =
+    /** 洗脚盆的物品形态（进创造栏，带悬浮描述：简介+使用+条件 3 行） */
+    public static final DeferredItem<TooltipBlockItem> WASH_BASIN_ITEM =
         ModItems.ITEMS.register("wash_basin",
-            rl -> new BlockItem(WASH_BASIN.get(), new Item.Properties()));
+            rl -> new TooltipBlockItem(WASH_BASIN.get(), new Item.Properties(),
+                "item.sweatyfeet.wash_basin.tooltip1", "item.sweatyfeet.wash_basin.tooltip2",
+                "item.sweatyfeet.wash_basin.tooltip3"));
 
-    /** 凳子的物品形态（进创造栏） */
-    public static final DeferredItem<BlockItem> STOOL_ITEM =
+    /** 凳子的物品形态（进创造栏，带悬浮描述：简介+使用 2 行） */
+    public static final DeferredItem<TooltipBlockItem> STOOL_ITEM =
         ModItems.ITEMS.register("stool",
-            rl -> new BlockItem(STOOL.get(), new Item.Properties()));
+            rl -> new TooltipBlockItem(STOOL.get(), new Item.Properties(),
+                "item.sweatyfeet.stool.tooltip1", "item.sweatyfeet.stool.tooltip2"));
 
     private ModBlocks() {
     }

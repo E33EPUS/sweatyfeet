@@ -50,6 +50,9 @@ public final class SweatyFeetHandler {
     /** 上一 tick 手持三级汗靴的玩家（过渡检测用：放下瞬间清反胃，不伤其他来源） */
     private static final Set<UUID> HELD_L3 = new HashSet<>();
 
+    /** 已授予"生化武器"的汗靴实体（丢地污染臭到人只授予一次，防每 tick 重复） */
+    private static final Set<UUID> BIO_WEAPON_AWARDED = new HashSet<>();
+
     /** 盆泡脚：累计计时（玩家 → 累计 tick）；离开暂停不清零，满 wash_seconds 洗完 + 盆变浑 */
     private static final Map<UUID, Integer> BASIN_TICKS = new HashMap<>();
 
@@ -62,6 +65,16 @@ public final class SweatyFeetHandler {
 
     private static int washTicks() {
         return SfConfig.WASH_SECONDS.get() * 20;
+    }
+
+    /** 授予自定义进度 criterion（impossible 触发器 + 代码手动 award；进度未加载/离线安全跳过） */
+    private static void awardCriterion(net.minecraft.server.level.ServerPlayer sp, String advancementPath,
+                                       String criterion) {
+        net.minecraft.advancements.AdvancementHolder holder = sp.server.getAdvancements()
+            .get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, advancementPath));
+        if (holder != null) {
+            sp.getAdvancements().award(holder, criterion);
+        }
     }
 
     /** 洗脚所需 tick（随汗脚等级递增）：1 级 T_base，2 级 2×，3 级 3× */
@@ -137,7 +150,7 @@ public final class SweatyFeetHandler {
                 }
             }
         }
-        // 三级汗靴丢地污染：绿粒子 + 附近玩家（含丢者本人）反胃
+        // 二级及以上汗靴丢地污染：绿粒子 + 附近玩家（含丢者本人）反胃（二级就触发，用户定案）
         double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
         for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
             if (!(e instanceof ItemEntity itemEntity)) {
@@ -146,13 +159,32 @@ public final class SweatyFeetHandler {
             ItemStack stack = itemEntity.getItem();
             SweatData data = stack.get(ModDataComponents.SWEAT.get());
             if (data == null || data.level() < 2) {
-                continue; // 只有三级汗靴污染环境
+                continue; // 二级及以上汗靴污染环境（用户定案二级触发）
             }
             level.sendParticles(ParticleTypes.COMPOSTER,
                 itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
                 2, 0.3, 0.2, 0.3, 0.0);
             giveNearbyNausea(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
                 smellRangeSq, null, true);
+            // 生化武器：这双汗靴第一次臭到"非丢者"的其他玩家 → 授予丢者（离线不补发）
+            net.minecraft.world.entity.Entity ownerEntity = itemEntity.getOwner();
+            UUID ownerId = ownerEntity != null ? ownerEntity.getUUID() : null;
+            if (ownerId != null && !BIO_WEAPON_AWARDED.contains(itemEntity.getUUID())) {
+                for (Player other : level.players()) {
+                    if (other.getUUID().equals(ownerId) || !other.hasEffect(MobEffects.CONFUSION)) {
+                        continue;
+                    }
+                    if (other.distanceToSqr(itemEntity.getX(), itemEntity.getY(), itemEntity.getZ()) <= smellRangeSq) {
+                        BIO_WEAPON_AWARDED.add(itemEntity.getUUID());
+                        net.minecraft.server.level.ServerPlayer owner =
+                            level.getServer().getPlayerList().getPlayer(ownerId);
+                        if (owner != null) {
+                            awardCriterion(owner, "bio_weapon", "bio_weapon");
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -199,7 +231,7 @@ public final class SweatyFeetHandler {
             return;
         }
 
-        // 手持三级汗靴：持续反胃（文档：放下即消）。注意不能每 tick 无脑 remove——
+        // 手持二级及以上汗靴：持续反胃（文档：放下即消）。注意不能每 tick 无脑 remove——
         // 那会把二级汗液瓶等其他来源的反胃也秒删。用过渡检测：只在"刚放下"那一 tick 清一次
         ItemStack held = player.getMainHandItem();
         if (!held.is(ItemTags.FOOT_ARMOR)) {
@@ -208,7 +240,10 @@ public final class SweatyFeetHandler {
         SweatData heldData = held.get(ModDataComponents.SWEAT.get());
         UUID heldId = player.getUUID();
         if (heldData != null && heldData.level() >= 2) {
-            HELD_L3.add(heldId);
+            // 首次手持二级+汗靴 → 授予"入味了"（HELD_L3.add 返回 true = 第一次进入）
+            if (HELD_L3.add(heldId) && player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                awardCriterion(sp, "marinated", "marinated");
+            }
             // 60 tick、剩余低于 40 才补：每次补都比剩余长 → 触发客户端同步包，眩晕持续。
             // 之前每 tick 刷同值 40：服务端无变化不发同步，客户端 2 秒到期 → 看不到屏幕扭曲
             MobEffectInstance cur = player.getEffect(MobEffects.CONFUSION);
@@ -219,8 +254,9 @@ public final class SweatyFeetHandler {
             player.removeEffect(MobEffects.CONFUSION);
         }
 
-        // 真菌感染者：无论是否穿鞋，散发绿粒子 + 附近玩家反胃（类似三级脱鞋）
+        // 真菌感染者：赤脚才散发绿粒子 + 附近玩家反胃（穿鞋防臭——真菌散臭不看穿鞋是"穿鞋还臭"根因）
         if (player.hasEffect(ModEffects.FOOT_FUNGUS) && player.tickCount % 20 == 0
+            && !player.getItemBySlot(EquipmentSlot.FEET).is(ItemTags.FOOT_ARMOR)
             && player.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.COMPOSTER,
                 player.getX(), player.getY() + 0.1, player.getZ(),
@@ -255,6 +291,10 @@ public final class SweatyFeetHandler {
                     // 传染也给无限时长：真菌只能被花露水/倒汗消除，不会自然消失
                     other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
                     other.setData(ModAttachments.FUNGUS, true); // 持久化传染
+                    // 瘟疫公司：把真菌传给别的玩家 → 授予传染源（award 幂等，传多人只授予一次）
+                    if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                        awardCriterion(sp, "plague_inc", "plague_inc");
+                    }
                 }
             }
         }
@@ -392,6 +432,10 @@ public final class SweatyFeetHandler {
             player.setData(ModAttachments.SWEAT_STATE, -1); // 洗清汗脚：持久化归零
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
+            // 健康生活：成功洗了一次汗脚（赤脚泡水路径）
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                awardCriterion(sp, "healthy", "healthy");
+            }
         }
     }
 
@@ -473,9 +517,17 @@ public final class SweatyFeetHandler {
             // 洗完：清汗脚（药水还清真菌） + 盆变浑水
             player.removeEffect(ModEffects.SWEATY_FEET);
             player.setData(ModAttachments.SWEAT_STATE, -1); // 泡脚洗清：持久化归零
+            // 健康生活：成功洗了一次汗脚（盆泡脚路径）
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                awardCriterion(sp, "healthy", "healthy");
+            }
             if (filled == WashBasinBlock.Filled.MEDICINAL) {
                 player.removeEffect(ModEffects.FOOT_FUNGUS);
                 player.setData(ModAttachments.FUNGUS, false); // 药水洗脚水治好真菌：持久化
+                // 洗心革面：成功去除一次真菌（药水泡脚是唯一治疗途径）
+                if (player instanceof net.minecraft.server.level.ServerPlayer sp2) {
+                    awardCriterion(sp2, "reform", "reform");
+                }
             }
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
@@ -487,6 +539,14 @@ public final class SweatyFeetHandler {
     }
 
     /** 起身（或被拆椅子弹下来）：座位实体清掉（tick 里无乘客自清理兜底），会话保留暂停 */
+    /** 进世界：装了 patchouli 就发一本 Sweaty Feet 手册（每次进世界都发，背包可能多本自己丢） */
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp) {
+            PatchouliBookGiver.tryGiveBook(sp);
+        }
+    }
+
     @SubscribeEvent
     public static void onMountChange(net.neoforged.neoforge.event.entity.EntityMountEvent event) {
         if (event.isMounting() || !event.getLevel().isClientSide) {

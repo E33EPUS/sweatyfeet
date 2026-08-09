@@ -1,0 +1,11 @@
+{
+    "name": "真菌机制细节",
+    "icon": "sweatyfeet:fermented_boots",
+    "category": "sweatyfeet:mechanics",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)触发$()：汗脚 3 级后继续穿靴 $(bold)fungus_delay_seconds$()（默认 30 秒）→ 感染。$(br2)$(bold)效果$()：移速 -15%、每 60 tick 打一次喷嚏（粒子）、可选定时扣血（无视护甲、可致死）。$(br2)$(bold)无限时长$()：脱鞋、倒汗、时间流逝都清不掉。" },
+        { "type": "patchouli:text", "text": "$(bold)传染$()：赤脚感染者周期性向 $(bold)fungus_infection_range$() 内的玩家扩散，被传染者同样无限时长、也能再传染。$(br2)$(bold)气味$()：赤脚才散绿粒子，并把 $(bold)smell_range$() 内的玩家熏到反胃；$(bold)穿上靴子就不散臭$()。" },
+        { "type": "patchouli:text", "text": "$(bold)治疗$()：药水洗脚水（花露水倒进清水盆）泡脚泡完即愈，这是$(bold)唯一$()途径，泡洗同时清掉汗脚。$(br2)相关配置：$(bold)enable_fungus / fungus_damage_enabled / fungus_damage_interval_seconds / fungus_infection_enabled$()。" }
+    ]
+}

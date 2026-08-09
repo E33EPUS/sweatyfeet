@@ -1,0 +1,19 @@
+{
+    "criteria": {
+        "fungus": {
+            "trigger": "minecraft:effects_changed",
+            "conditions": {
+                "effects": { "sweatyfeet:foot_fungus": {} }
+            }
+        }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.fungus_bed.description" },
+        "icon": { "count": 1, "id": "minecraft:red_mushroom" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.fungus_bed.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["fungus"]]
+}

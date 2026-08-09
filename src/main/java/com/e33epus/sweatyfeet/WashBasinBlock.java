@@ -105,7 +105,7 @@ public class WashBasinBlock extends Block {
             return ItemInteractionResult.FAIL; // 盆不是空的，不给倒
         }
 
-        // 空桶舀水：有水→空桶变水桶；浑水→收成"xxx的洗脚水"，盆变空
+        // 空桶舀水：有水→空桶变水桶；浑水→收成"xxx的洗脚水"，盆变空；药水洗脚水→收"稀释的花露水"
         if (stack.is(Items.BUCKET)) {
             if (filled == Filled.WATER) {
                 if (!level.isClientSide) {
@@ -128,7 +128,31 @@ public class WashBasinBlock extends Block {
                 }
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
+            if (filled == Filled.MEDICINAL) {
+                // 药水洗脚水也能用桶接走（之前落 FAIL = 接不起来的根因），收成"稀释的花露水"
+                if (!level.isClientSide) {
+                    level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.EMPTY));
+                    player.setItemInHand(hand, new ItemStack(ModItems.DILUTED_FLORAL_WATER.get()));
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
             return ItemInteractionResult.FAIL;
+        }
+
+        // 稀释的花露水倒进空盆：变回药水洗脚水（跟水桶倒水同逻辑）
+        if (stack.is(ModItems.DILUTED_FLORAL_WATER.get())) {
+            if (filled == Filled.EMPTY) {
+                if (!level.isClientSide) {
+                    level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.MEDICINAL));
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                    level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
+            return ItemInteractionResult.FAIL; // 盆不是空的，不给倒
         }
 
         // 空手/其他物品 → 交给 useWithoutItem（泡脚交互）。
@@ -141,9 +165,10 @@ public class WashBasinBlock extends Block {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
-        // useItemOn 现在对非桶/非花露水一律 PASS 到这里——只有双手空才算"泡脚"意图，
-        // 拿着别的东西右键不触发（避免挥剑误泡脚）
-        if (!player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty()) {
+        // useItemOn 对非桶/非花露水一律 PASS 到这里（useWithoutItem 只在主手被调）。
+        // 只拦主手非空（避免挥剑误泡脚）；副手有物品不拦——vanilla 右键永远先主手，
+        // 主手空时 useWithoutItem 必被调用，拦副手会把整个泡脚交互 PASS 掉（实测失效根因）
+        if (!player.getMainHandItem().isEmpty()) {
             return InteractionResult.PASS;
         }
         Filled filled = state.getValue(FILLED);

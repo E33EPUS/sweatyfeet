@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "marinated": { "trigger": "minecraft:impossible" }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.marinated.description" },
+        "icon": { "count": 1, "id": "minecraft:leather_boots" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.marinated.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["marinated"]]
+}

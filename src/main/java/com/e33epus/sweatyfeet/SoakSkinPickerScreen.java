@@ -64,6 +64,7 @@ public class SoakSkinPickerScreen extends Screen {
         g.drawCenteredString(font, Component.translatable("sweatyfeet.picker.hint"), width / 2, sqY - 12, 0xAAAAAA);
         if (skinRl == null) {
             g.drawCenteredString(font, Component.translatable("sweatyfeet.picker.noskin"), width / 2, height / 2, 0xFF5555);
+            g.drawCenteredString(font, Component.translatable("sweatyfeet.picker.noskin2"), width / 2, height / 2 + 12, 0xAAAAAA);
             return;
         }
         RenderSystem.enableBlend();
@@ -95,12 +96,13 @@ public class SoakSkinPickerScreen extends Screen {
             return 0;
         }
         int c = skinImg.getPixelRGBA(px, py);
-        return ((c >>> 24) & 0xFF) << 16 | ((c >>> 16) & 0xFF) << 8 | ((c >>> 8) & 0xFF);
+        // NativeImage 字节序 ABGR（R 最低字节）→ 0xRRGGBB
+        return (c & 0xFF) << 16 | ((c >>> 8) & 0xFF) << 8 | ((c >>> 16) & 0xFF);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+        if (button == 0 && skinImg != null) {
             // 点击现算像素——不能用渲染帧缓存的 hoverHex：鼠标移到目标上立即点击时，
             // hoverHex 还是上一帧悬停在旧位置（如粉色/紫色区）的色号，
             // 导致"显示蓝色、提取紫红"（实测根因）。
@@ -114,6 +116,7 @@ public class SoakSkinPickerScreen extends Screen {
                 }
                 SfConfig.SOAK_UNDRESS_TINT.set(String.format("#%06X", rgb));
                 SfConfig.SERVER_SPEC.save(); // 持久化：ModConfigSpec.save() 写盘
+                ModNetworking.reportTint(String.format("#%06X", rgb)); // 跨端同步：立即广播
                 onClose();
                 return true;
             }

@@ -1,0 +1,10 @@
+{
+    "name": "坐凳旋转",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:mechanics",
+    "sortnum": 3,
+    "pages": [
+        { "type": "patchouli:text", "text": "坐上凳子后，身体朝向$(bold)固定$()在凳子朝向上——跟原版骑马同一个逻辑。$(br2)转头范围被限制在凳子朝向$(bold)左右各 90°$()（总共 180°），不会转成一圈。" },
+        { "type": "patchouli:text", "text": "转头的手感与原版骑马完全一致，不会被抢鼠标。$(br2)$(bold)起身$()：按 Shift（潜行）离开凳子，跟下马一样。" }
+    ]
+}

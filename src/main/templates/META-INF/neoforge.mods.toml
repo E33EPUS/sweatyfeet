@@ -34,3 +34,11 @@ config="${mod_id}.mixins.json"
     versionRange="[2.0.1,)"
     ordering="AFTER"
     side="CLIENT"
+
+# 手册（optional）：装了帕秋莉进世界发手册，没装其余功能正常
+[[dependencies.${mod_id}]]
+    modId="patchouli"
+    type="optional"
+    versionRange="[1.21.1-92,)"
+    ordering="AFTER"
+    side="BOTH"

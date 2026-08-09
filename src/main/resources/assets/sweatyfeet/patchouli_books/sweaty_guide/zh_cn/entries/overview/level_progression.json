@@ -1,0 +1,10 @@
+{
+    "name": "等级推进",
+    "icon": "sweatyfeet:sweat_bottle",
+    "category": "sweatyfeet:overview",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:text", "text": "继续穿着：$(bold)30 秒 → 1 级$()，$(bold)60 秒 → 2 级$()，$(bold)90 秒 → 3 级$()（默认值，服务器可改）。$(br2)2 级起脚下打滑（滑倒保留度可配）；3 级时脚边开始冒绿色臭味粒子。" },
+        { "type": "patchouli:text", "text": "等级越高：倒出的汗液瓶等级越高、泡脚需要的时间越长。$(br2)3 级后$(bold)继续穿 30 秒 → 真菌感染$()（见「真菌感染」条目）。" }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "criteria": {
+        "salty": {
+            "trigger": "minecraft:consume_item",
+            "conditions": {
+                "item": { "items": "sweatyfeet:sweat_bottle" }
+            }
+        }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.salty.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:sweat_bottle" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.salty.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["salty"]]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Fungus Mechanics",
+    "icon": "sweatyfeet:fermented_boots",
+    "category": "sweatyfeet:mechanics",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Trigger$(): keep wearing boots for $(bold)fungus_delay_seconds$() (30 s default) after reaching sweat level 3.$(br2)$(bold)Effects$(): -15% movement speed, a sneeze every 60 ticks (particles), and optional periodic damage (ignores armor, can be lethal).$(br2)$(bold)Infinite duration$(): taking boots off, pouring sweat, or waiting never clears it." },
+        { "type": "patchouli:text", "text": "$(bold)Spread$(): infected barefoot players periodically infect others within $(bold)fungus_infection_range$() — the newly infected also have infinite duration and can spread it further.$(br2)$(bold)Smell$(): only while barefoot — green particles plus nausea for players within $(bold)smell_range$(); $(bold)wearing boots stops the stench$()." },
+        { "type": "patchouli:text", "text": "$(bold)Cure$(): soak in medicinal water (floral water poured into a water basin) until done — the $(bold)only$() way; the same soak also clears Sweaty Feet.$(br2)Relevant config: $(bold)enable_fungus / fungus_damage_enabled / fungus_damage_interval_seconds / fungus_infection_enabled$()." }
+    ]
+}

@@ -1,21 +1,18 @@
 package com.e33epus.sweatyfeet;
 
-import net.minecraft.core.Direction;
-import net.minecraft.core.Position;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
@@ -24,10 +21,10 @@ import net.minecraft.world.level.Level;
  * - 1 级：喝回半格饱食度
  * - 2 级：+ 反胃 10 秒
  * - 3 级：+ 中毒 3 秒
- * 普通右键喝（仰头动画 + 咕嘟音效），潜行右键投掷（砸中挂汗脚 5 秒）。
- * 喝后回空玻璃瓶。
+ * 普通右键喝（仰头动画 + 咕嘟音效）。喝后回空玻璃瓶。
+ * 来源：穿汗靴副手空瓶右键倒汗（等级 = 汗脚等级）。
  */
-public class SweatBottleItem extends Item implements ProjectileItem {
+public class SweatBottleItem extends Item {
     public SweatBottleItem(Properties properties) {
         super(properties);
     }
@@ -56,13 +53,8 @@ public class SweatBottleItem extends Item implements ProjectileItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            throwBottle(level, player, stack);
-            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-        }
         player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
+        return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
     @Override
@@ -73,6 +65,10 @@ public class SweatBottleItem extends Item implements ProjectileItem {
             player.getFoodData().eat(1, 0.1F);
         }
         if (!level.isClientSide) {
+            // 有点咸...：喝汗液瓶进度（consume_item 必须显式 trigger，且要在 stack.consume 前传本体）
+            if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+                net.minecraft.advancements.CriteriaTriggers.CONSUME_ITEM.trigger(sp, stack);
+            }
             if (lvl >= 2) {
                 entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, SfConfig.BOTTLE_NAUSEA_SECONDS.get() * 20, 0));
             }
@@ -90,29 +86,16 @@ public class SweatBottleItem extends Item implements ProjectileItem {
         return Items.GLASS_BOTTLE.getDefaultInstance();
     }
 
-    private void throwBottle(Level level, Player player, ItemStack stack) {
-        level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-        if (!level.isClientSide) {
-            SweatBottleProjectile projectile = new SweatBottleProjectile(level, player);
-            projectile.setItem(stack);
-            projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-            level.addFreshEntity(projectile);
-        }
-        player.awardStat(Stats.ITEM_USED.get(this));
-        stack.consume(1, player);
-    }
-
-    @Override
-    public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        SweatBottleProjectile projectile = new SweatBottleProjectile(level, pos.x(), pos.y(), pos.z());
-        projectile.setItem(stack);
-        return projectile;
-    }
-
-    /** 按等级显示物品名（一级汗液瓶/二级汗液瓶/三级汗液瓶）；Item.getName 默认转发此方法 */
     @Override
     public String getDescriptionId(ItemStack stack) {
         return super.getDescriptionId(stack) + "." + getLevel(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
+                                TooltipFlag flag) {
+        // 简介行 + 使用方式行（分行）
+        tooltip.add(Component.translatable("item.sweatyfeet.sweat_bottle.tooltip1"));
+        tooltip.add(Component.translatable("item.sweatyfeet.sweat_bottle.tooltip2"));
     }
 }

@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "plague_inc": { "trigger": "minecraft:impossible" }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.plague_inc.description" },
+        "icon": { "count": 1, "id": "minecraft:zombie_head" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.plague_inc.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["plague_inc"]]
+}

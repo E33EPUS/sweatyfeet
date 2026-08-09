@@ -1,0 +1,9 @@
+{
+    "name": "Stool",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:items",
+    "sortnum": 6,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:stool", "text": "A stool built for foot-washing — right-click to sit on it.$(br2)Your facing is locked while seated; pair it with a wash basin." }
+    ]
+}

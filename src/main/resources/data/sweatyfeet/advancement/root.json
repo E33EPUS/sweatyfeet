@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "tick": { "trigger": "minecraft:tick" }
+    },
+    "display": {
+        "announce_to_chat": false,
+        "background": "minecraft:textures/block/oak_planks.png",
+        "description": { "translate": "advancements.sweatyfeet.root.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:sweat_bottle" },
+        "show_toast": false,
+        "title": { "translate": "advancements.sweatyfeet.root.title" }
+    },
+    "requirements": [["tick"]]
+}

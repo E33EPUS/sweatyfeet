@@ -30,9 +30,13 @@ public final class ModItems {
     public static final DeferredItem<WashWaterBucketItem> WASH_WATER_BUCKET =
         ITEMS.register("wash_water_bucket", rl -> new WashWaterBucketItem(new Item.Properties().stacksTo(1)));
 
+    /** 稀释的花露水：空桶右键药水洗脚水盆收集，可倒回盆变药水洗脚水，喝 = "有点苦..."（整蛊） */
+    public static final DeferredItem<DilutedFloralWaterItem> DILUTED_FLORAL_WATER =
+        ITEMS.register("diluted_floral_water", rl -> new DilutedFloralWaterItem(new Item.Properties().stacksTo(1)));
+
     /** 发酵靴：皮革靴+糖合成，穿它汗脚发酵——3 级倒汗产出"汗液饮品"（正面 buff） */
-    public static final DeferredItem<ArmorItem> FERMENTED_BOOTS =
-        ITEMS.register("fermented_boots", rl -> new ArmorItem(
+    public static final DeferredItem<FermentedBootsItem> FERMENTED_BOOTS =
+        ITEMS.register("fermented_boots", rl -> new FermentedBootsItem(
             net.minecraft.world.item.ArmorMaterials.LEATHER,
             ArmorItem.Type.BOOTS,
             new Item.Properties()));
@@ -59,6 +63,8 @@ public final class ModItems {
                 output.accept(new ItemStack(FERMENTED_BOOTS.get()));
                 // 花露水
                 output.accept(new ItemStack(FLORAL_WATER.get()));
+                // 稀释的花露水
+                output.accept(new ItemStack(DILUTED_FLORAL_WATER.get()));
                 // 洗脚水桶（示例无名字）
                 output.accept(new ItemStack(WASH_WATER_BUCKET.get()));
                 // 洗脚盆

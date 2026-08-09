@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
@@ -77,16 +77,34 @@ public final class SoakSkinClient {
     private SoakSkinClient() {
     }
 
-    /** Mixin 入口：坐着且改图就绪 → 返回替换皮肤 id；否则 null 走原版 */
-    public static ResourceLocation resolve(Player player, ResourceLocation base) {
-        if (!SfConfig.SOAK_UNDRESS_ENABLED.get() || base == null) {
+    /** Mixin 入口：坐着且改图就绪 → 返回替换后的 PlayerSkin；否则 null 走原版。
+     *  skin 由 mixin 传入（getSkin() 返回值）——绝不能在这里再调 player.getSkin()，
+     *  否则 mixin→resolve→getSkin→mixin 递归。返回的 PlayerSkin 只换 texture，
+     *  url/cape/elytra/model/secure 保持原样（skinlayers3d 等拿 texture() 时看到改图）。 */
+    public static PlayerSkin resolve(Player player, PlayerSkin skin) {
+        if (!SfConfig.SOAK_UNDRESS_ENABLED.get() || skin == null || skin.texture() == null) {
             return null;
         }
         if (!(player.getVehicle() instanceof SeatEntity)) {
             return null;
         }
+        ResourceLocation base = skin.texture();
         UUID id = player.getUUID();
+        // 颜色优先级：服务端广播来的（其他玩家/自己坐凳时的上报）> 本地配置。
+        // 本地玩家自己最终也走广播回环（== 自己配置），保证各端一致。
         String tintStr = SfConfig.SOAK_UNDRESS_TINT.get();
+        String synced = ModNetworking.syncedTint(id);
+        if (synced != null) {
+            tintStr = synced;
+        }
+        // 本地玩家坐着且有显式色：每 20 tick 上报一次给服务端（广播给所有人）。
+        // 离凳停报（本来就不显示）；新玩家最多等 1 秒收到；滴管选色后立即另发。
+        if (player.level().isClientSide
+            && player.getUUID().equals(Minecraft.getInstance().player != null ? Minecraft.getInstance().player.getUUID() : null)
+            && tintStr != null && !tintStr.isBlank()
+            && player.tickCount % 20 == 0) {
+            ModNetworking.reportTint(tintStr);
+        }
         drainReady(id, base);
         Entry e = CACHE.get(id);
         // 配置肤色变了：旧改图作废（之前 CACHE 不记 tint，改配置永不生效——取色器"没用"根因）
@@ -97,20 +115,27 @@ public final class SoakSkinClient {
         }
         if (SfConfig.DEBUG_UNDRESS.get()) {
             ResourceLocation cur = e != null && e.base().equals(base) ? e.generated() : null;
-            if (!java.util.Objects.equals(cur, LAST_LOGGED.get(id))) {
-                LAST_LOGGED.put(id, cur);
-                com.mojang.logging.LogUtils.getLogger().info(
-                    "[SF] undress resolve {} -> {} (base={})", player.getName().getString(), cur, base);
-            }
+            // 每次调用都记（不只变化时）：能看到缓存命中/未就绪/换肤全状态
+            LAST_LOGGED.put(id, cur);
+            com.mojang.logging.LogUtils.getLogger().info(
+                "[SF] undress resolve {} seat={} tint={} -> {} (base={}, pending={}, failed={})",
+                player.getName().getString(),
+                player.getVehicle() instanceof SeatEntity,
+                tintStr,
+                cur,
+                base,
+                PENDING.contains(id),
+                FAILED.contains(id));
         }
         if (e != null && e.base().equals(base)) {
-            return e.generated();
+            return new PlayerSkin(e.generated(), skin.textureUrl(), skin.capeTexture(),
+                skin.elytraTexture(), skin.model(), skin.secure());
         }
         if (e != null) {
             CACHE.remove(id); // 换皮肤了：旧改图作废，重拉
             FAILED.remove(id);
         }
-        requestFetch(id, player);
+        requestFetch(id, player, skin.textureUrl());
         return null;
     }
 
@@ -135,19 +160,16 @@ public final class SoakSkinClient {
         CACHE.put(id, new Entry(base, rl, tint));
     }
 
-    private static void requestFetch(UUID id, Player player) {
+    private static void requestFetch(UUID id, Player player, String url) {
         synchronized (PENDING) {
             if (PENDING.contains(id) || FAILED.contains(id)) {
                 return;
             }
             PENDING.add(id);
         }
-        String url = player instanceof AbstractClientPlayer cp && cp.getSkin() != null
-            ? cp.getSkin().textureUrl()
-            : null;
+        String resolvedUrl = url;
         // CSL/离线场景：getSkin().textureUrl() 可能为 null（本地导入皮肤无 mojang URL）。
         // 学 e33chat：用名字走 getInsecureSkin，CSL 拦截底层 SkinManager 按名解析。
-        String resolvedUrl = url;
         if (resolvedUrl == null && player != null) {
             try {
                 resolvedUrl = Minecraft.getInstance().getSkinManager()
@@ -161,7 +183,20 @@ public final class SoakSkinClient {
         final String fetchUrl = resolvedUrl;
         FETCHER.submit(() -> {
             NativeImage img = null;
-            if (fetchUrl != null) {
+            // CSL 本地导入皮肤：textureUrl() 是空串（API 不暴露本地路径，反编译实锤），
+            // 直接读 CSL 默认本地皮肤目录（LocalSkin/skins/<玩家名>.png）
+            if (player != null) {
+                try {
+                    java.nio.file.Path local = Minecraft.getInstance().gameDirectory.toPath()
+                        .resolve("CustomSkinLoader/LocalSkin/skins")
+                        .resolve(player.getGameProfile().getName() + ".png");
+                    if (java.nio.file.Files.isRegularFile(local)) {
+                        img = NativeImage.read(java.nio.file.Files.newInputStream(local));
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            if (img == null && fetchUrl != null) {
                 try {
                     img = loadCached(fetchUrl);
                 } catch (Exception ignored) {
@@ -176,35 +211,65 @@ public final class SoakSkinClient {
                 PENDING.remove(id);
                 if (img == null) {
                     FAILED.add(id); // 拉不到不重试，走原皮肤
+                    if (SfConfig.DEBUG_UNDRESS.get()) {
+                        com.mojang.logging.LogUtils.getLogger().info(
+                            "[SF] undress fetch FAILED for {} (url={}, local={})",
+                            id, fetchUrl,
+                            player != null ? Minecraft.getInstance().gameDirectory.toPath()
+                                .resolve("CustomSkinLoader/LocalSkin/skins")
+                                .resolve(player.getGameProfile().getName() + ".png") : "n/a");
+                    }
                 }
             }
         });
     }
 
-    /** 供取色器用：同步加载玩家基础皮肤图（含 CSL 后备链），失败返回 null。
-     *  调用方负责 close。返回的是磁盘缓存的原始 PNG 解码，未经任何屏幕加工。 */
+    /** 供取色器用：同步加载玩家皮肤展开图（NativeImage），失败返回 null。调用方负责 close。
+     *  优先级：① 已注册纹理对象直接读像素（兼容 CSL FakeHttpTexture 本地缓存 + DynamicTexture）
+     *  ② textureUrl() 下载 + 磁盘缓存。返回的是原始皮肤展开图，未经任何屏幕加工。
+     *  不调 player.getSkin()——那会触发 getSkin mixin，坐凳时取到的是改图而不是原始皮肤；
+     *  走 getInsecureSkin（CSL 拦截底层 SkinManager 按名解析，与 mixin 无关）。 */
     public static NativeImage loadBaseImageSync(Player player) {
-        String url = player instanceof AbstractClientPlayer cp && cp.getSkin() != null
-            ? cp.getSkin().textureUrl()
-            : null;
-        if (url == null && player != null) {
+        PlayerSkin skin = null;
+        try {
+            skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(player.getGameProfile());
+        } catch (Exception ignored) {
+        }
+        if (skin != null && skin.texture() != null) {
+            NativeImage img = textureImage(skin.texture());
+            if (img != null) {
+                return img;
+            }
+        }
+        String url = skin != null ? skin.textureUrl() : null;
+        if (url != null) {
             try {
-                url = Minecraft.getInstance().getSkinManager()
-                    .getInsecureSkin(new com.mojang.authlib.GameProfile(
-                        java.util.UUID.nameUUIDFromBytes(player.getGameProfile().getName().getBytes(StandardCharsets.UTF_8)),
-                        player.getGameProfile().getName()))
-                    .textureUrl();
+                return loadCached(url);
             } catch (Exception ignored) {
             }
         }
-        if (url == null) {
-            return null;
-        }
+        return null;
+    }
+
+    /** 从已注册纹理对象拷一份像素（copy：返回副本，调用方可安全 close，不碰正式纹理）。
+     *  只认 DynamicTexture（getPixels 是 vanilla 公开 API）；CSL 的 FakeHttpTexture 是
+     *  SimpleTexture 子类，内部图不公开（skinlayers3d 靠自己 mixin accessor 才拿到）→
+     *  这类走 textureUrl() 下载兜底（CSL 的 url 是真实皮肤站地址，可下载）。
+     *  渲染线程调用（picker init）。 */
+    private static NativeImage textureImage(ResourceLocation rl) {
         try {
-            return loadCached(url);
-        } catch (Exception e) {
-            return null;
+            AbstractTexture tex = Minecraft.getInstance().getTextureManager().getTexture(rl);
+            if (tex instanceof DynamicTexture dt) {
+                NativeImage src = dt.getPixels();
+                if (src != null) {
+                    NativeImage copy = new NativeImage(src.getWidth(), src.getHeight(), true);
+                    copy.copyFrom(src);
+                    return copy;
+                }
+            }
+        } catch (Exception ignored) {
         }
+        return null;
     }
 
     private static NativeImage loadCached(String url) throws Exception {
@@ -254,10 +319,13 @@ public final class SoakSkinClient {
             for (int y = r[2]; y < r[3] && y < h; y++) {
                 for (int x = r[0]; x < r[1] && x < w; x++) {
                     int orig = base.getPixelRGBA(x, y);
-                    if ((orig & 0xFF) == 0) {
+                    if (((orig >>> 24) & 0xFF) == 0) {
                         continue; // 主层透明像素不动（老 64x32 皮肤下半区可能透明）
+                        // ABGR：alpha 在最高字节——之前写 (orig&0xFF)==0 查的是 R 通道，
+                        // 蓝裤(R=0)等腿部像素被误判透明跳过不涂（P1 字节序修正遗漏）
                     }
-                    out.setPixelRGBA(x, y, (skin << 8) | 0xFF);
+                    // 0xRRGGBB → ABGR（A 最高字节，然后 B,G,R）——之前按 RRGGBBAA 写，蓝变紫红+半透明（实测实锤）
+                    out.setPixelRGBA(x, y, (0xFF << 24) | ((skin & 0xFF) << 16) | (((skin >>> 8) & 0xFF) << 8) | ((skin >>> 16) & 0xFF));
                 }
             }
         }
@@ -274,10 +342,11 @@ public final class SoakSkinClient {
 
     /** 肤色候选判定：排除透明/过暗过亮/高饱和/非暖色（抄 needsofnature isSkinTintCandidate） */
     static boolean isSkinTintCandidate(int argb) {
-        int r = (argb >>> 24) & 0xFF;
-        int g = (argb >>> 16) & 0xFF;
-        int b = (argb >>> 8) & 0xFF;
-        int a = argb & 0xFF;
+        // NativeImage 字节序 = ABGR（R 最低字节），反编译 Format.RGBA redOffset=0 实锤
+        int r = argb & 0xFF;
+        int g = (argb >>> 8) & 0xFF;
+        int b = (argb >>> 16) & 0xFF;
+        int a = (argb >>> 24) & 0xFF;
         if (a < 32) {
             return false;
         }
@@ -307,8 +376,8 @@ public final class SoakSkinClient {
             }
             int c = base.getPixelRGBA(p[0], p[1]);
             if (isSkinTintCandidate(c)) {
-                // 字节序 RGBA：R 在最高字节
-                return ((c >>> 24) & 0xFF) << 16 | ((c >>> 16) & 0xFF) << 8 | ((c >>> 8) & 0xFF);
+                // ABGR：R 在最低字节 → 0xRRGGBB
+                return (c & 0xFF) << 16 | ((c >>> 8) & 0xFF) << 8 | ((c >>> 16) & 0xFF);
             }
         }
         return sampleSkinColor(base);
@@ -341,9 +410,9 @@ public final class SoakSkinClient {
                     if (!isSkinTintCandidate(p)) {
                         continue;
                     }
-                    int r = (p >>> 24) & 0xFF;
-                    int g = (p >>> 16) & 0xFF;
-                    int b = (p >>> 8) & 0xFF;
+                    int r = p & 0xFF;
+                    int g = (p >>> 8) & 0xFF;
+                    int b = (p >>> 16) & 0xFF;
                     int idx = (r / 8 << 10) | (g / 8 << 5) | (b / 8);
                     count[idx] += weight;
                     sumR[idx] += (long) r * weight;

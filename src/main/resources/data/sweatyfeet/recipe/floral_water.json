@@ -2,8 +2,8 @@
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
         { "item": "minecraft:potion" },
-        { "item": "minecraft:lily_of_the_valley" },
-        { "item": "minecraft:glowstone_dust" }
+        { "tag": "minecraft:small_flowers" },
+        { "tag": "minecraft:small_flowers" }
     ],
     "result": {
         "id": "sweatyfeet:floral_water",

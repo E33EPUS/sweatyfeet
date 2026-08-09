@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "bio_weapon": { "trigger": "minecraft:impossible" }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.bio_weapon.description" },
+        "icon": { "count": 1, "id": "minecraft:composter" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.bio_weapon.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["bio_weapon"]]
+}

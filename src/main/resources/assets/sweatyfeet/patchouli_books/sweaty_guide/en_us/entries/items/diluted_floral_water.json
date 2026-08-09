@@ -1,0 +1,9 @@
+{
+    "name": "Diluted Floral Water",
+    "icon": "sweatyfeet:diluted_floral_water",
+    "category": "sweatyfeet:items",
+    "sortnum": 7,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:diluted_floral_water", "text": "Foot-washing water spiked with floral water. Scoop it from a medicinal basin with an empty bucket.$(br2)Pour it into an empty basin to restore medicinal water; it's also drinkable (a bit bitter)." }
+    ]
+}

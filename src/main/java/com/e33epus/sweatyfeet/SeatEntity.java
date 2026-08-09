@@ -61,23 +61,28 @@ public class SeatEntity extends Entity {
         }
     }
 
-    /** 身体/腿锁死朝凳朝向；头可转但限 ±90°（共 180°）。
-     *  不能钉 yRot：第一人称视角 = player.yRot，钉死 = 视角被吸住转不了（实测）。
-     *  1.21.1 身体+腿根渲染用 yBodyRot（LivingEntityRenderer），头用 yHeadRot——
-     *  所以 yRot 自由 + yBodyRot 钉 + yHeadRot clamp 三者组合正确。 */
+    /** 坐凳旋转 = 照抄 vanilla 骑马（Boat.clampRotation，反编译实锤）：
+     *  身体钉死凳朝向；视角相对凳朝向 clamp ±90°（头共 180°，用户预期）；头跟随视角。
+     *  关键：每 tick 不动任何旋转，只在玩家转身（Entity.turn → onPassengerTurned）时 clamp，
+     *  并修正 yRotO 插值基准 → 视角被挡住但流畅无拉锯。
+     *  之前每 tick 硬写 yHeadRot 是错的：第一人称相机读 yHeadRot（LivingEntity.getViewYRot
+     *  字节码实锤），每 tick 改 = 相机被拽 = 抢鼠标。 */
+    @Override
+    public void onPassengerTurned(Entity passenger) {
+        if (!(passenger instanceof LivingEntity living)) {
+            return;
+        }
+        living.setYBodyRot(this.getYRot());
+        float delta = net.minecraft.util.Mth.wrapDegrees(living.getYRot() - this.getYRot());
+        float clamped = net.minecraft.util.Mth.clamp(delta, -90.0F, 90.0F); // ±90° = 头共 180°
+        living.yRotO += clamped - delta; // 修正插值基准：clamp 不产生视觉跳变
+        living.setYRot(living.getYRot() + clamped - delta);
+        living.setYHeadRot(living.getYRot());
+    }
+
     @Override
     protected void positionRider(Entity passenger, MoveFunction moveFunction) {
         super.positionRider(passenger, moveFunction);
-        if (passenger instanceof LivingEntity living) {
-            living.yBodyRot = this.getYRot();
-            float target = this.getYRot();
-            float delta = Math.floorMod((long) (living.yHeadRot - target), 360L);
-            if (delta > 180) {
-                delta -= 360;
-            }
-            delta = Math.max(-90, Math.min(90, delta)); // 头最左/最右各 90°
-            living.yHeadRot = target + delta;
-        }
     }
 
     /** 防止玩家对座位右键（避免 vanilla 二次骑乘提示/交互） */

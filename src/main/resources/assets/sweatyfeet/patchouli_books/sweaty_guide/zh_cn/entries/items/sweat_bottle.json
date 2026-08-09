@@ -1,0 +1,9 @@
+{
+    "name": "汗液瓶",
+    "icon": "sweatyfeet:sweat_bottle",
+    "category": "sweatyfeet:items",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "充满汗液的瓶子。主手持汗靴、副手持空瓶，潜行+右键倒汗获得。$(br2)喝：1级回半格饱食度，2级反胃10秒，3级中毒3秒。" }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "criteria": {
+        "swoon": {
+            "trigger": "minecraft:consume_item",
+            "conditions": {
+                "item": { "items": "sweatyfeet:sweat_drink" }
+            }
+        }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.swoon.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:sweat_drink" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.swoon.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["swoon"]]
+}
