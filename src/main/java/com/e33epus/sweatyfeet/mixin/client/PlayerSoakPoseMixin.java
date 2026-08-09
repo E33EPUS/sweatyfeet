@@ -33,7 +33,10 @@ public abstract class PlayerSoakPoseMixin<T extends LivingEntity, M extends Enti
     protected M model;
 
     @Inject(
-        method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/MultiBufferSource;I)V",
+        // method 只用方法名不用完整描述符：1.21.1 运行时混入 LivingEntityRenderer 带泛型签名
+        // 的 render 时，全描述符匹配失效（InvalidInjectionException，启动崩溃）——与
+        // ItemStackSweatHintMixin 的 getTooltipLines 同款教训。LivingEntityRenderer 只有一个 render。
+        method = "render",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V"
