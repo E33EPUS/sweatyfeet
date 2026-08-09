@@ -154,7 +154,7 @@
     "item.sweatyfeet.diluted_floral_water": "Diluted Floral Water",
     "item.sweatyfeet.diluted_floral_water.tooltip1": "Foot-washing water with floral water added",
     "item.sweatyfeet.diluted_floral_water.tooltip2": "Collect with an empty bucket; drinkable",
-    "effect.sweatyfeet.sweaty_feet.description": "Triggered by cumulative boot wear time; higher levels are worse - level 2+ makes you slide (less friction), level 3 nauseates you while holding sweaty boots and pollutes nearby players when dropped. Solutions: take boots off to degrade (level 1 persists until washed), soak barefoot in water or sit on a stool + barefoot + right-click a wash basin, or pour a sweat bottle with an empty bottle in offhand while sneaking + right-clicking",
+    "effect.sweatyfeet.sweaty_feet.description": "Triggered by cumulative boot wear time; higher levels are worse - level 2+ makes you slide (less friction), level 3 nauseates you while holding sweaty boots and pollutes nearby players when dropped. Solutions: take boots off to degrade (level 1 persists until washed), soak barefoot in water or sit on a stool + barefoot + right-click a wash basin; pouring sweat only empties the boots - it does not clear Sweaty Feet",
     "effect.sweatyfeet.foot_fungus.description": "Triggered by continuing to wear boots after level-3 sweaty feet; lasts forever, deals slow damage, and spreads to nearby players (even when wearing boots). Cure: turn a clean-water basin into medicinal water with floral water, then sit on a stool + barefoot + right-click to soak it off; pouring sweat cannot cure fungus",
     "item.sweatyfeet.sweaty_hint": "Hold an empty glass bottle in offhand, sneak + right-click to pour a sweat bottle",
 

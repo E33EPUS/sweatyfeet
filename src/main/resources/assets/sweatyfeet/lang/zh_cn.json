@@ -148,7 +148,7 @@
     "item.sweatyfeet.diluted_floral_water": "稀释的花露水",
     "item.sweatyfeet.diluted_floral_water.tooltip1": "加了花露水的洗脚水",
     "item.sweatyfeet.diluted_floral_water.tooltip2": "空桶右键收集；可以喝",
-    "effect.sweatyfeet.sweaty_feet.description": "穿靴子累计穿戴达到阈值触发：等级越高越难顶——2级起脚滑（摩擦变小），3级手持汗靴自己反胃、丢地污染附近玩家。解法：脱鞋降级（1级保留洗脚才清），赤脚泡水或坐凳+脱鞋+空手右键洗脚盆洗掉，或副手空瓶潜行+右键倒出汗液瓶",
+    "effect.sweatyfeet.sweaty_feet.description": "穿靴子累计穿戴达到阈值触发：等级越高越难顶——2级起脚滑（摩擦变小），3级手持汗靴自己反胃、丢地污染附近玩家。解法：脱鞋降级（1级保留洗脚才清），赤脚泡水或坐凳+脱鞋+空手右键洗脚盆洗掉；倒汗只会把靴子里的汗倒出来，清不掉汗脚",
     "effect.sweatyfeet.foot_fungus.description": "汗脚3级后继续穿靴触发，无限时长，缓慢扣血、可传染给附近玩家（穿鞋也能传）。解法：花露水+清水盆变药水洗脚水，坐凳+脱鞋+空手右键泡脚治好；副手空瓶倒汗清不掉真菌",
     "item.sweatyfeet.sweaty_hint": "副手持空玻璃瓶，潜行+右键倒出汗液瓶",
     "key.sweatyfeet.open_config": "打开 Sweaty Feet 配置",

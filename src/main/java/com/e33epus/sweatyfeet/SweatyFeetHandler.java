@@ -697,10 +697,8 @@ public final class SweatyFeetHandler {
             main.remove(DataComponents.CUSTOM_NAME);
         }
 
-        // 倒汗 = 主动缓解：清零计时 + 移除脚部 debuff（真菌不可逆：倒汗清不掉，只能花露水泡脚）
-        WEAR_TICKS.remove(player.getUUID());
-        player.removeEffect(ModEffects.SWEATY_FEET);
-        player.setData(ModAttachments.SWEAT_STATE, -1); // 倒汗清汗脚：持久化归零
+        // 倒汗只产出瓶子 + 还原靴子；汗脚效果与穿戴计时完全保留（用户拍板：汗脚只能靠洗脚清，
+        // 倒汗不清——真菌本来就不清，只能药水洗脚水泡脚治）
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满<玩家名>汗液的<原名>（等级X）」+ 挂汗脚 1 级 */
