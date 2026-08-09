@@ -4,7 +4,7 @@
     "category": "sweatyfeet:visuals",
     "sortnum": 2,
     "pages": [
-        { "type": "patchouli:text", "text": "$(bold)汗珠$()：汗脚时脚边持续冒水珠，数量随等级和 $(bold)sweat_particle_scale$() 缩放（可关）。$(br2)$(bold)臭味粒子$()：3 级汗脚、以及赤脚的真菌感染者，脚边冒绿色粒子。" },
-        { "type": "patchouli:text", "text": "$(bold)喷嚏$()：真菌感染期间每 60 tick 打一次喷嚏（$(bold)sneeze_particles$() 可关）。$(br2)$(bold)水花$()：洗脚、倒水、泡洗还原时的水花/泡泡/烟雾粒子——纯表现，不影响判定。" }
+        { "type": "patchouli:text", "text": "$(bold)汗珠$()：有汗脚时，脚边会持续冒小水珠，等级越高越明显（可关）。$(br2)$(bold)臭味粒子$()：3 级汗脚，或者光着脚的真菌感染者，脚边会冒绿色粒子。" },
+        { "type": "patchouli:text", "text": "$(bold)喷嚏$()：真菌感染时每 3 秒打一次喷嚏（可关）。$(br2)$(bold)水花$()：洗脚、倒水、泡洗还原靴子时的水花和泡泡——纯粹好看，不影响实际效果。" }
     ]
 }

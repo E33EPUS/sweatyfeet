@@ -1,12 +1,10 @@
 {
-    "name": "配置项速查",
+    "name": "能改的配置",
     "icon": "minecraft:book",
     "category": "sweatyfeet:config",
     "sortnum": 2,
     "pages": [
-        { "type": "patchouli:text", "text": "$(bold)等级$()$(br)level_1/2/3_seconds —— 汗化与升级阈值$(br)effect_seconds —— 汗脚效果时长$(br)degrade_seconds —— 脱鞋后每级降级倒计时" },
-        { "type": "patchouli:text", "text": "$(bold)真菌$()$(br)enable_fungus —— 总开关$(br)fungus_delay_seconds —— 3 级后感染延时$(br)fungus_damage_enabled / fungus_damage_interval_seconds —— 定时扣血$(br)fungus_infection_enabled / fungus_infection_range / fungus_infection_interval_seconds —— 传染$(br)smell_enabled / smell_range —— 臭味反胃" },
-        { "type": "patchouli:text", "text": "$(bold)数值与物品$()$(br)wash_seconds —— 基础泡脚时长$(br)wash_boots_enabled / wash_boots_seconds —— 汗靴泡洗还原$(br)drink_poison_seconds / bottle_nausea_seconds / drink_buff_seconds —— 饮品效果$(br)slide_enabled / slide_retention_percent —— 2 级脚滑" },
-        { "type": "patchouli:text", "text": "$(bold)表现$()$(br)sweat_particles / sweat_particle_scale —— 汗珠$(br)sneeze_particles —— 喷嚏$(br)soak_undress_enabled / soak_undress_tint —— 坐凳脱鞋观感与肤色$(br2)$(bold)调试$()$(br)debug_undress / debug_show_ticks / debug_force_fungus" }
+        { "type": "patchouli:text", "text": "按 $(bold)J$() 打开配置界面，玩法的节奏基本都能调：$(br)想快点出汗？把汗化和升级的等待时间调短。$(br)觉得真菌太烦？可以关掉真菌、扣血、传染和臭味。$(br)泡脚要泡多久、汗靴扔水里多久还原、喝饮品的 buff 时长、2 级打滑的程度——这些也都能改。" },
+        { "type": "patchouli:text", "text": "$(bold)表现类$()：汗珠、喷嚏、坐凳脱鞋这些特效可以单独开关；坐凳时下半身的肤色也在这里用滴管选。$(br2)配置分两种：$(bold)服务器设置$()由服主定，进服就生效；$(bold)客户端设置$()（表现、取色）每个人各调各的。" }
     ]
 }

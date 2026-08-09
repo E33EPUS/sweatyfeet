@@ -5,6 +5,6 @@
     "sortnum": 1,
     "pages": [
         { "type": "patchouli:text", "text": "汗靴（带着汗液等级的靴子）扔进任意水域，会开始$(bold)泡洗还原$()。$(br2)时长按等级：基础时长 ×（等级 + 1）——1 级泡一份，3 级泡三份。" },
-        { "type": "patchouli:text", "text": "泡洗期间靴子周围冒$(bold)泡泡粒子$()提示进度；泡完自动去掉汗液、还原自定义名，变回普通靴子。$(br2)可用配置 $(bold)wash_boots_enabled / wash_boots_seconds$() 开关与调节。" }
+        { "type": "patchouli:text", "text": "泡洗期间靴子周围冒$(bold)泡泡粒子$()提示进度；泡完自动去掉汗液、还原自定义名，变回普通靴子。$(br2)能不能泡洗还原、要泡多久，都由服主在配置里定。" }
     ]
 }
