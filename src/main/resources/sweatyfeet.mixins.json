@@ -8,8 +8,7 @@
     ],
     "client": [
         "client.AbstractClientPlayerMixin",
-        "client.ItemStackSweatHintMixin",
-        "client.PlayerSoakPoseMixin"
+        "client.ItemStackSweatHintMixin"
     ],
     "injectors": {
         "defaultRequire": 1
