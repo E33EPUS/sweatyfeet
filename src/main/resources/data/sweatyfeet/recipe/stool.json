@@ -1,10 +1,13 @@
 {
-    "type": "minecraft:crafting_shapeless",
-    "ingredients": [
-        { "tag": "minecraft:wooden_slabs" },
-        { "item": "minecraft:stick" },
-        { "item": "minecraft:stick" }
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " S ",
+        "R R"
     ],
+    "key": {
+        "S": { "tag": "minecraft:wooden_slabs" },
+        "R": { "item": "minecraft:stick" }
+    },
     "result": {
         "id": "sweatyfeet:stool",
         "count": 1

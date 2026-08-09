@@ -4,6 +4,6 @@
     "category": "sweatyfeet:items",
     "sortnum": 6,
     "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:stool", "text": "洗脚专用凳子，右键坐上去。$(br2)朝向固定，配洗脚盆使用。" }
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:stool", "text": "洗脚专用凳子，右键坐上去。$(br2)坐下后朝向固定、转头限 180°（左右各 90°），按 Shift 起身。配洗脚盆使用。" }
     ]
 }
