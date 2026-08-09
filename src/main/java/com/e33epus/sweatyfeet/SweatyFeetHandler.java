@@ -619,6 +619,18 @@ public final class SweatyFeetHandler {
     /** 主手汗靴 + 副手玻璃瓶 + 潜行右键 → 倒汗，靴子还原，产出汗液瓶 */
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        tryPourSweat(event);
+    }
+
+    /** 右键命中方块（盆/凳/地面等）走 RightClickBlock 路径，RightClickItem 不触发——
+     *  不拦的话 vanilla 继续 ArmorItem.use 把汗靴直接穿上（用户实测 bug：对着盆右键=永远装备）。
+     *  字节码实锤：客户端 performUseItemOn 发 RightClickBlock 且认取消，双端同拦。 */
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        tryPourSweat(event);
+    }
+
+    private static void tryPourSweat(PlayerInteractEvent event) {
         Player player = event.getEntity();
         if (!player.isCrouching()) {
             return;
@@ -639,8 +651,9 @@ public final class SweatyFeetHandler {
         }
 
         // 双端都取消：客户端若只 return，会继续 Item.use → ArmorItem.use → swapWithEquipmentSlot
-        // 把主手汗靴【预测性】穿到脚上，产生"幽灵汗靴"，随后被服务端同步纠正消失
-        event.setCanceled(true);
+        // 把主手汗靴【预测性】穿到脚上，产生"幽灵汗靴"，随后被服务端同步纠正消失。
+        // 基类 PlayerInteractEvent 不带 setCanceled（@Cancelable 只加在子类），走 ICancellableEvent 接口
+        ((net.neoforged.bus.api.ICancellableEvent) event).setCanceled(true);
         if (player.level().isClientSide) {
             return;
         }
