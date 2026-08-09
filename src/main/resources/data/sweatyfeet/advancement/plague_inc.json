@@ -1,14 +1,27 @@
 {
-    "criteria": {
-        "plague_inc": { "trigger": "minecraft:impossible" }
+  "parent": "sweatyfeet:reform",
+  "criteria": {
+    "plague_inc": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.sweatyfeet.plague_inc.description"
     },
-    "display": {
-        "announce_to_chat": true,
-        "description": { "translate": "advancements.sweatyfeet.plague_inc.description" },
-        "icon": { "count": 1, "id": "minecraft:zombie_head" },
-        "show_toast": true,
-        "title": { "translate": "advancements.sweatyfeet.plague_inc.title" }
+    "icon": {
+      "count": 1,
+      "id": "minecraft:zombie_head"
     },
-    "parent": "sweatyfeet:root",
-    "requirements": [["plague_inc"]]
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.sweatyfeet.plague_inc.title"
+    }
+  },
+  "requirements": [
+    [
+      "plague_inc"
+    ]
+  ]
 }

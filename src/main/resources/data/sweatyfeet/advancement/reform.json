@@ -1,14 +1,27 @@
 {
-    "criteria": {
-        "reform": { "trigger": "minecraft:impossible" }
+  "parent": "sweatyfeet:fungus_bed",
+  "criteria": {
+    "reform": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.sweatyfeet.reform.description"
     },
-    "display": {
-        "announce_to_chat": true,
-        "description": { "translate": "advancements.sweatyfeet.reform.description" },
-        "icon": { "count": 1, "id": "sweatyfeet:floral_water" },
-        "show_toast": true,
-        "title": { "translate": "advancements.sweatyfeet.reform.title" }
+    "icon": {
+      "count": 1,
+      "id": "sweatyfeet:floral_water"
     },
-    "parent": "sweatyfeet:root",
-    "requirements": [["reform"]]
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.sweatyfeet.reform.title"
+    }
+  },
+  "requirements": [
+    [
+      "reform"
+    ]
+  ]
 }
