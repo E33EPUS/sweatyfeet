@@ -63,13 +63,13 @@ public abstract class PlayerSoakPoseMixin<T extends LivingEntity, M extends Enti
                 return;
             }
             SoakPose.Parts pose = SoakPose.at(entity.tickCount, partialTick);
-            pm.rightLeg.xRot = pose.rightLegXRot;
-            pm.leftLeg.xRot = pose.leftLegXRot;
-            pm.body.xRot = pose.bodyXRot;
-            pm.rightArm.xRot = pose.rightArmXRot;
-            pm.leftArm.xRot = pose.leftArmXRot;
-            pm.rightArm.zRot = pose.rightArmZRot;
-            pm.leftArm.zRot = pose.leftArmZRot;
+            // 关键：必须连 yRot/zRot 一起清——vanilla 骑乘姿势（setupAnim 的 riding 分支）会给
+            // 双腿设 ±18° yRot 外张 + zRot 微旋，只覆盖 xRot 会残留成"外八字伸腿"（用户截图实锤）
+            pm.rightLeg.xRot = pose.rightLegXRot; pm.rightLeg.yRot = 0.0F; pm.rightLeg.zRot = 0.0F;
+            pm.leftLeg.xRot = pose.leftLegXRot;   pm.leftLeg.yRot = 0.0F; pm.leftLeg.zRot = 0.0F;
+            pm.body.xRot = pose.bodyXRot;         pm.body.yRot = 0.0F;    pm.body.zRot = 0.0F;
+            pm.rightArm.xRot = pose.rightArmXRot; pm.rightArm.yRot = 0.0F; pm.rightArm.zRot = pose.rightArmZRot;
+            pm.leftArm.xRot = pose.leftArmXRot;   pm.leftArm.yRot = 0.0F;  pm.leftArm.zRot = pose.leftArmZRot;
             // 第二层跟随主部位（PlayerModel.setupAnim 的 copyFrom 在注入点之前，需重同步）
             pm.rightPants.copyFrom(pm.rightLeg);
             pm.leftPants.copyFrom(pm.leftLeg);
