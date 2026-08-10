@@ -71,6 +71,8 @@ public class WashBasinBlock extends Block {
         if (stack.is(ModItems.FLORAL_WATER.get())) {
             if (filled == Filled.WATER) {
                 if (!level.isClientSide) {
+                    SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                        player.getGameProfile().getName() + " floral water -> medicinal basin at " + pos);
                     level.setBlockAndUpdate(pos, state.setValue(FILLED, Filled.MEDICINAL));
                     stack.consume(1, player);
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -175,12 +177,16 @@ public class WashBasinBlock extends Block {
         if (filled == Filled.DIRTY) {
             // 浑水是泡完的产物，不能泡——想泡先舀掉换新水
             if (!level.isClientSide) {
+                SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    player.getGameProfile().getName() + " basin blocked: dirty");
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.basin_dirty"), true);
             }
             return InteractionResult.CONSUME;
         }
         if (filled != Filled.WATER && filled != Filled.MEDICINAL) {
             if (!level.isClientSide) {
+                SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    player.getGameProfile().getName() + " basin blocked: empty");
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.basin_empty"), true);
             }
             return InteractionResult.CONSUME;
@@ -188,12 +194,16 @@ public class WashBasinBlock extends Block {
         // 洗脚机制（v2）：必须坐在凳子上才能洗——站着右键盆只提示
         if (!(player.getVehicle() instanceof SeatEntity)) {
             if (!level.isClientSide) {
+                SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    player.getGameProfile().getName() + " basin blocked: not seated");
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.sit_to_soak"), true);
             }
             return InteractionResult.CONSUME;
         }
         if (player.getItemBySlot(EquipmentSlot.FEET).is(net.minecraft.tags.ItemTags.FOOT_ARMOR)) {
             if (!level.isClientSide) {
+                SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    player.getGameProfile().getName() + " basin blocked: boots on");
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.take_off"), true);
             }
             return InteractionResult.CONSUME;
@@ -203,12 +213,17 @@ public class WashBasinBlock extends Block {
         // 药水洗脚水：治真菌（没汗脚也能泡）；清水：洗汗脚。两者都没有 → 提示
         if (!hasSweat && !hasFungus) {
             if (!level.isClientSide) {
+                SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    player.getGameProfile().getName() + " basin blocked: no sweat/fungus");
                 player.displayClientMessage(Component.translatable("sweatyfeet.msg.no_sweat"), true);
             }
             return InteractionResult.CONSUME;
         }
         // 坐凳上 + 赤脚 + 盆有水/药水 + 有汗脚或真菌 → 开始/继续泡脚（累计计时不清零）
         if (!level.isClientSide) {
+            SweatyFeetHandler.debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                player.getGameProfile().getName() + " basin soak start: "
+                + (filled == Filled.MEDICINAL ? "medicinal" : "water"));
             SweatyFeetHandler.startBasinSoak(player, pos);
             player.displayClientMessage(Component.translatable(
                 filled == Filled.MEDICINAL ? "sweatyfeet.msg.soak_medicinal" : "sweatyfeet.msg.soak_start"), true);

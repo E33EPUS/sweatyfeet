@@ -200,6 +200,10 @@ public class SfConfigScreen extends Screen {
                 .bounds(inputX, y, INPUT_W, 20).build(), null));
         visual.add(Opt.header("sweatyfeet.config.section.debug"));
         visual.add(new Opt("sweatyfeet.config.debug_show_ticks", y -> mkBoolButton(y, SfConfig.DEBUG_SHOW_TICKS), null));
+        visual.add(new Opt("sweatyfeet.config.debug_state_log", y -> mkBoolButton(y, SfConfig.DEBUG_STATE_LOG), null));
+        visual.add(new Opt("sweatyfeet.config.debug_flow_log", y -> mkBoolButton(y, SfConfig.DEBUG_FLOW_LOG), null));
+        visual.add(new Opt("sweatyfeet.config.debug_force_sweat", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_SWEAT), null));
+        visual.add(new Opt("sweatyfeet.config.debug_force_level3", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_LEVEL3), null));
         visual.add(new Opt("sweatyfeet.config.debug_force_fungus", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_FUNGUS), null));
         visual.add(new Opt("sweatyfeet.config.debug_undress", y -> mkBoolButton(y, SfConfig.DEBUG_UNDRESS), null));
         cats.add(new Cat("sweatyfeet.config.cat.visual", visual));
@@ -247,6 +251,10 @@ public class SfConfigScreen extends Screen {
         tracked.add(track(SfConfig.DEBUG_UNDRESS));
         tracked.add(track(SfConfig.DEBUG_SHOW_TICKS));
         tracked.add(track(SfConfig.DEBUG_FORCE_FUNGUS));
+        tracked.add(track(SfConfig.DEBUG_FORCE_SWEAT));
+        tracked.add(track(SfConfig.DEBUG_FORCE_LEVEL3));
+        tracked.add(track(SfConfig.DEBUG_STATE_LOG));
+        tracked.add(track(SfConfig.DEBUG_FLOW_LOG));
     }
 
     @Override

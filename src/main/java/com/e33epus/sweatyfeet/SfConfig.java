@@ -48,6 +48,10 @@ public final class SfConfig {
     // 调试
     public static final ModConfigSpec.BooleanValue DEBUG_SHOW_TICKS;
     public static final ModConfigSpec.BooleanValue DEBUG_FORCE_FUNGUS;
+    public static final ModConfigSpec.BooleanValue DEBUG_FORCE_SWEAT;
+    public static final ModConfigSpec.BooleanValue DEBUG_FORCE_LEVEL3;
+    public static final ModConfigSpec.BooleanValue DEBUG_STATE_LOG;
+    public static final ModConfigSpec.BooleanValue DEBUG_FLOW_LOG;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -128,6 +132,14 @@ public final class SfConfig {
             .define("debug_show_ticks", false);
         DEBUG_FORCE_FUNGUS = builder.comment("穿靴即强制真菌（调试用，跳过 3 级等待）")
             .define("debug_force_fungus", false);
+        DEBUG_FORCE_SWEAT = builder.comment("穿靴即强制 1 级汗化（调试用，跳过计时）")
+            .define("debug_force_sweat", false);
+        DEBUG_FORCE_LEVEL3 = builder.comment("穿靴即强制 3 级汗脚（调试用，测发酵靴倒汗/饮品不等待）")
+            .define("debug_force_level3", false);
+        DEBUG_STATE_LOG = builder.comment("每秒打一条 [SF state] 状态日志（穿戴/降级/洗脚/盆泡/真菌/手持）")
+            .define("debug_state_log", false);
+        DEBUG_FLOW_LOG = builder.comment("判定拦截日志：盆守卫链 / 倒汗成败 / 传染 / 散臭 / 进度授予")
+            .define("debug_flow_log", false);
         DEBUG_UNDRESS = builder.comment("坐下脱裤改图 debug：resolve 结果变化时记日志")
             .define("debug_undress", false);
         builder.pop();

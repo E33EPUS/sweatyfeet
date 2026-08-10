@@ -38,6 +38,29 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 public final class SweatyFeetHandler {
     public static final int REFRESH_INTERVAL = 20;         // 每 20 tick 刷新一次 debuff
 
+    /** debug 日志：state_log 打状态、flow_log 打判定（都走 [SF] 前缀，latest.log 可 grep） */
+    static void debugLog(boolean flag, String tag, String msg) {
+        if (flag) {
+            com.mojang.logging.LogUtils.getLogger().info("[SF] [" + tag + "] " + msg);
+        }
+    }
+
+    /** 状态日志（debug_state_log）：每秒一条，覆盖穿戴/降级/泡水/盆泡/真菌/手持全状态 */
+    private static void logDebugState(Player player, Integer wearTicks, int degradeS, int washS) {
+        if (!SfConfig.DEBUG_STATE_LOG.get()) {
+            return;
+        }
+        int basinS = BASIN_TICKS.getOrDefault(player.getUUID(), 0) / 20;
+        debugLog(true, "state", player.getGameProfile().getName()
+            + " wear=" + (wearTicks == null ? "off" : wearTicks)
+            + " lvl=" + (player.hasEffect(ModEffects.SWEATY_FEET)
+                ? player.getEffect(ModEffects.SWEATY_FEET).getAmplifier() + 1 : 0)
+            + " degrade_s=" + degradeS + " wash_s=" + washS + " basin_s=" + basinS
+            + " sweat=" + (player.hasEffect(ModEffects.SWEATY_FEET) ? "Y" : "N")
+            + " fungus=" + (player.hasEffect(ModEffects.FOOT_FUNGUS) ? "Y" : "N")
+            + " heldL3=" + (HELD_L3.contains(player.getUUID()) ? "Y" : "N"));
+    }
+
     /** 玩家总穿戴 tick（服务端内存态，脱鞋/下线即清，不跨会话） */
     private static final Map<UUID, Integer> WEAR_TICKS = new HashMap<>();
 
@@ -74,6 +97,8 @@ public final class SweatyFeetHandler {
             .get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, advancementPath));
         if (holder != null) {
             sp.getAdvancements().award(holder, criterion);
+            debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                sp.getGameProfile().getName() + " advancement awarded: " + advancementPath + "/" + criterion);
         }
     }
 
@@ -291,6 +316,8 @@ public final class SweatyFeetHandler {
                     // 传染也给无限时长：真菌只能被花露水/倒汗消除，不会自然消失
                     other.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
                     other.setData(ModAttachments.FUNGUS, true); // 持久化传染
+                    debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                        "fungus spread: " + player.getGameProfile().getName() + " -> " + other.getGameProfile().getName());
                     // 瘟疫公司：把真菌传给别的玩家 → 授予传染源（award 幂等，传多人只授予一次）
                     if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
                         awardCriterion(sp, "plague_inc", "plague_inc");
@@ -313,6 +340,12 @@ public final class SweatyFeetHandler {
             showWashHud(player);
             // 散臭：赤脚 + 有汗脚 → 附近玩家持续反胃（穿鞋防臭，洗脚/降级完不臭）
             spreadFootSmell(player);
+            // Debug 状态日志（脱鞋分支：wear 已清，看降级/泡水进度）
+            if (player.tickCount % 20 == 0) {
+                logDebugState(player, null,
+                    DEGRADE_TICKS.getOrDefault(player.getUUID(), 0) / 20,
+                    WASH_TICKS.getOrDefault(player.getUUID(), 0) / 20);
+            }
             return;
         }
 
@@ -335,10 +368,18 @@ public final class SweatyFeetHandler {
             if (totalTicks >= lvl1()) {
                 sweatify(player, boots);
             }
+            // Debug：强制 1 级汗化（跳过 30 秒计时）
+            if (SfConfig.DEBUG_FORCE_SWEAT.get() && totalTicks % REFRESH_INTERVAL == 0) {
+                sweatify(player, boots);
+            }
         } else {
             // 已汗化：汗靴等级固化在组件里，只升不降（脱鞋再穿汗靴等级保留）
             // 汗脚效果等级 = 组件等级与当前穿戴进度取最大：汗靴再穿立即恢复组件等级的效果
             int amplifier = Math.max(computeAmplifier(totalTicks, lvl2(), lvl3()), data.level());
+            // Debug：强制 3 级（跳过 60/90 秒等待，测发酵靴倒汗/饮品）
+            if (SfConfig.DEBUG_FORCE_LEVEL3.get()) {
+                amplifier = Math.max(2, data.level());
+            }
             if (amplifier > data.level() && totalTicks % REFRESH_INTERVAL == 0) {
                 boots.set(ModDataComponents.SWEAT.get(), data.withLevel(amplifier));
                 data = boots.get(ModDataComponents.SWEAT.get());
@@ -370,6 +411,11 @@ public final class SweatyFeetHandler {
         // Debug：强制真菌（方便测真菌表现，不看 3 级时长）
         if (SfConfig.DEBUG_FORCE_FUNGUS.get() && totalTicks % 20 == 0 && !player.hasEffect(ModEffects.FOOT_FUNGUS)) {
             player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
+            debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow", player.getGameProfile().getName() + " forced fungus");
+        }
+        // Debug 状态日志（穿鞋分支：wear 推进中）
+        if (totalTicks % 20 == 0) {
+            logDebugState(player, totalTicks, 0, 0);
         }
     }
 
@@ -397,6 +443,9 @@ public final class SweatyFeetHandler {
             if (other.distanceToSqr(player) <= rangeSq) {
                 // 反胃 3 秒，amplifier = 汗脚等级（越臭反胃越强）
                 other.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, sf.getAmplifier(), false, true));
+                debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                    "smell: " + player.getGameProfile().getName() + " -> " + other.getGameProfile().getName()
+                    + " amp=" + sf.getAmplifier());
             }
         }
     }
@@ -647,6 +696,8 @@ public final class SweatyFeetHandler {
 
         ItemStack offhand = player.getOffhandItem();
         if (!offhand.is(Items.GLASS_BOTTLE)) {
+            debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+                player.getGameProfile().getName() + " pour blocked: offhand is not glass bottle");
             return;
         }
 
@@ -699,6 +750,10 @@ public final class SweatyFeetHandler {
 
         // 倒汗只产出瓶子 + 还原靴子；汗脚效果与穿戴计时完全保留（用户拍板：汗脚只能靠洗脚清，
         // 倒汗不清——真菌本来就不清，只能药水洗脚水泡脚治）
+        debugLog(SfConfig.DEBUG_FLOW_LOG.get(), "flow",
+            player.getGameProfile().getName() + " poured: lvl=" + lvl
+            + (lvl == 3 && main.is(ModItems.FERMENTED_BOOTS.get()) ? " (drink)" : " (bottle)")
+            + ", boots restored");
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满<玩家名>汗液的<原名>（等级X）」+ 挂汗脚 1 级 */
