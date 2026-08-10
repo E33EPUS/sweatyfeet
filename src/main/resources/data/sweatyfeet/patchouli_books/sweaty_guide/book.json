@@ -1,7 +1,7 @@
 {
     "name": "sweatyfeet.patchouli.title",
     "landing_text": "sweatyfeet.patchouli.landing",
-    "model": "sweatyfeet:item/sweaty_guide",
+    "model": "sweatyfeet:sweaty_guide",
     "version": 1,
     "creative_tab": "sweatyfeet:tab",
     "show_progress": false,
