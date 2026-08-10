@@ -11,7 +11,7 @@
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge-orange">
   <img alt="Side" src="https://img.shields.io/badge/Side-Client%20%2B%20Server-blue">
   <img alt="Java" src="https://img.shields.io/badge/Java-21%2B-yellow">
-  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.1-informational">
+  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.2-informational">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
@@ -107,7 +107,7 @@ cd sweatyfeet
 ./gradlew build
 ```
 
-产物：`build/libs/sweatyfeet-NeoForge-1.21.1-0.1.1.jar`
+产物：`build/libs/sweatyfeet-NeoForge-1.21.1-0.1.2.jar`
 
 运行测试：`./gradlew test --offline -PrunTests`
 

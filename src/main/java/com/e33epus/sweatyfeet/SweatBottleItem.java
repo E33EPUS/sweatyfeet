@@ -94,6 +94,11 @@ public class SweatBottleItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
                                 TooltipFlag flag) {
+        // 风味 lore（倒汗时按靴子材质写入组件；无组件 = 朴素瓶不显示）
+        String flavor = stack.get(ModDataComponents.SWEAT_FLAVOR.get());
+        if (flavor != null) {
+            SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.flavor_desc." + flavor);
+        }
         // 简介行 + 使用方式行（分行）
         SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip1");
         SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip2");

@@ -742,10 +742,17 @@ public final class SweatyFeetHandler {
                 player.drop(drink, false);
             }
         } else {
+            // 汗液瓶：等级 + 风味（按汗靴材质）写入组件，名字带风味（lang key 显示）
+            String flavor = flavorIdFor(main);
             ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
             bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
+            if (!"plain".equals(flavor)) {
+                bottle.set(ModDataComponents.SWEAT_FLAVOR.get(), flavor);
+            }
             bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned",
-                player.getGameProfile().getName(), romanLevel(data.level())));
+                player.getGameProfile().getName(),
+                Component.translatable("item.sweatyfeet.flavor." + flavor),
+                romanLevel(data.level())));
             if (!player.getInventory().add(bottle)) {
                 player.drop(bottle, false);
             }
@@ -794,6 +801,26 @@ public final class SweatyFeetHandler {
             case 1 -> "II";
             default -> "III";
         };
+    }
+
+    /** 汗液瓶风味 = 汗靴材质（发酵靴归皮革，与材质同味）；非原版五材质靴子 → plain（无风味组件/不显示） */
+    static String flavorIdFor(ItemStack boots) {
+        if (boots.is(Items.LEATHER_BOOTS) || boots.is(ModItems.FERMENTED_BOOTS.get())) {
+            return "leather";
+        }
+        if (boots.is(Items.IRON_BOOTS)) {
+            return "iron";
+        }
+        if (boots.is(Items.GOLDEN_BOOTS)) {
+            return "gold";
+        }
+        if (boots.is(Items.DIAMOND_BOOTS)) {
+            return "diamond";
+        }
+        if (boots.is(Items.NETHERITE_BOOTS)) {
+            return "netherite";
+        }
+        return "plain";
     }
 
 }

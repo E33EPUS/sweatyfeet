@@ -5,7 +5,7 @@
     "sortnum": 0,
     "pages": [
         { "type": "patchouli:text", "text": "$(bold)Getting started$()$(br)\"Sweaty Feet\" — obtain a sweat bottle (the start of the chain).$(br)\"A Bit Salty...\" — drink a sweat bottle.$(br)\"Full of Flavor!\" — drink a bucket of foot-washing water.$(br)\"Marinated\" — hold a level-2/3 sweaty boot and get nauseated by the stench." },
-        { "type": "patchouli:text", "text": "$(bold)Going further$()$(br)\"Healthy Living\" — successfully wash your sweaty feet once.$(br)\"Breeding Ground\" — get infected with foot fungus.$(br)\"Reformed\" — soak in medicinal water and cure the fungus.$(br)\"Plague Inc.\" — spread the fungus to another player." },
+        { "type": "patchouli:text", "text": "$(bold)Going further$()$(br)\"Healthy Living\" — successfully wash your sweaty feet once.$(br)\"Breeding Ground\" — get infected with foot fungus.$(br)\"Reformed\" — soak in medicinal water and cure the fungus.$(br)\"Plague Inc.\" — spread the fungus to another player.$(br)\"From Funky to Rank\" — collect all five sweat flavors (see \"Items → Flavor Almanac\")." },
         { "type": "patchouli:text", "text": "$(bold)Pranks$()$(br)\"Biological Weapon\" — drop level-2+ sweaty boots and stink out another player.$(br)\"Blissfully Drunk!\" — drink a sweat drink.$(br2)All of them are browsable under the \"Sweaty Feet\" tree in the advancements screen, and toast on unlock." }
     ]
 }

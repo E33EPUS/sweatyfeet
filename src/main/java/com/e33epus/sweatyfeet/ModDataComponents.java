@@ -44,6 +44,13 @@ public final class ModDataComponents {
                 .persistent(Codec.INT)
                 .networkSynchronized(ByteBufCodecs.INT));
 
+    /** 汗液瓶风味组件：leather/iron/gold/diamond/netherite（倒汗时按汗靴材质写入，对应风味名与 lore） */
+    public static final Supplier<DataComponentType<String>> SWEAT_FLAVOR =
+        DATA_COMPONENT_TYPES.registerComponentType("sweat_flavor",
+            builder -> builder
+                .persistent(Codec.STRING)
+                .networkSynchronized(ByteBufCodecs.STRING_UTF8));
+
     /** 饮品类型组件：speed/strength/...（一个饮品物品，按类型变效果和名字） */
     public static final Supplier<DataComponentType<String>> DRINK_TYPE =
         DATA_COMPONENT_TYPES.registerComponentType("drink_type",

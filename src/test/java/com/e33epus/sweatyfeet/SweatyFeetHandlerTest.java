@@ -74,6 +74,17 @@ class SweatyFeetHandlerTest {
     }
 
     @Test
+    void bootMaterialMapsToFlavorId() {
+        assertEquals("leather", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.LEATHER_BOOTS)));
+        assertEquals("iron", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.IRON_BOOTS)));
+        assertEquals("gold", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.GOLDEN_BOOTS)));
+        assertEquals("diamond", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.DIAMOND_BOOTS)));
+        assertEquals("netherite", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.NETHERITE_BOOTS)));
+        // 非原版五材质靴子（如链甲无靴）→ plain（无风味组件）
+        assertEquals("plain", SweatyFeetHandler.flavorIdFor(new ItemStack(Items.CHAINMAIL_BOOTS)));
+    }
+
+    @Test
     void degradeCountsDownSameLevel() {
         // 3 级（amp 2）脱鞋：倒计时中，等级不变
         SweatyFeetHandler.DegradeResult r = SweatyFeetHandler.nextDegradeState(2, 60, 60);

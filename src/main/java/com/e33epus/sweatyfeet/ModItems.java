@@ -55,6 +55,13 @@ public final class ModItems {
                     bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
                     output.accept(bottle);
                 }
+                // 风味示例瓶（5 种靴子材质对应风味，等级 1）
+                for (String flavor : new String[]{"leather", "iron", "gold", "diamond", "netherite"}) {
+                    ItemStack flavored = new ItemStack(SWEAT_BOTTLE.get());
+                    flavored.set(ModDataComponents.SWEAT_LEVEL.get(), 1);
+                    flavored.set(ModDataComponents.SWEAT_FLAVOR.get(), flavor);
+                    output.accept(flavored);
+                }
                 // 饮品（发酵靴 3 级倒汗产物：汗液饮品，正面 buff）
                 ItemStack fermented = new ItemStack(SWEAT_DRINK.get());
                 fermented.set(ModDataComponents.DRINK_TYPE.get(), "fermented");

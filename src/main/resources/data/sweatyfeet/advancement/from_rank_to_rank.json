@@ -1,0 +1,88 @@
+{
+    "criteria": {
+        "leather": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": "sweatyfeet:sweat_bottle",
+                        "predicates": {
+                            "components": {
+                                "sweatyfeet:sweat_flavor": { "any_of": [{ "value": "leather" }] }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "iron": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": "sweatyfeet:sweat_bottle",
+                        "predicates": {
+                            "components": {
+                                "sweatyfeet:sweat_flavor": { "any_of": [{ "value": "iron" }] }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "gold": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": "sweatyfeet:sweat_bottle",
+                        "predicates": {
+                            "components": {
+                                "sweatyfeet:sweat_flavor": { "any_of": [{ "value": "gold" }] }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "diamond": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": "sweatyfeet:sweat_bottle",
+                        "predicates": {
+                            "components": {
+                                "sweatyfeet:sweat_flavor": { "any_of": [{ "value": "diamond" }] }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "netherite": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": "sweatyfeet:sweat_bottle",
+                        "predicates": {
+                            "components": {
+                                "sweatyfeet:sweat_flavor": { "any_of": [{ "value": "netherite" }] }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.from_rank_to_rank.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:sweat_bottle" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.from_rank_to_rank.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["leather", "iron", "gold", "diamond", "netherite"]]
+}

@@ -1,0 +1,12 @@
+{
+    "name": "风味图鉴",
+    "icon": "sweatyfeet:sweat_bottle",
+    "category": "sweatyfeet:items",
+    "sortnum": 8,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "汗液瓶的风味取决于$(bold)汗靴的材质$()——靴子越名贵，汗越有层次。集齐五种风味可解锁进度「从夯到拉」。" },
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)醇厚$()（皮革靴）：像一坛没盖紧的老酒——皮革在靴子里发酵了整场冒险。$(br2)$(bold)铁锈$()（铁靴）：像雨里跑了一整天的铁匠围裙，锈味和汗味一起滴答。" },
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)金贵$()（金靴）：连汗都是金色的——但你不该好奇它尝起来怎么样。$(br2)$(bold)凛冽$()（钻靴）：清冽得像钻石——又冷又硬，闻一口打个寒颤。" },
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)硫磺$()（下界合金靴）：下界的硫磺混着岩浆的热气，闻一口像被猪灵揍了一拳。" }
+    ]
+}
