@@ -4,6 +4,6 @@
     "category": "sweatyfeet:overview",
     "sortnum": 5,
     "pages": [
-        { "type": "patchouli:text", "text": "手里拿着$(bold)二级及以上$()的汗靴，你会$(bold)持续反胃$()（屏幕晃动、视野恶心）——放到地上或收进背包立刻消失。$(br2)这是整蛊的经典手段，也是「入味了」进度的触发方式。" }
+        { "type": "patchouli:text", "text": "手里拿着$(bold)二级及以上$()的汗靴，你会$(bold)持续反胃$()（屏幕晃动、视野恶心）" }
     ]
 }

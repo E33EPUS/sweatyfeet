@@ -4,6 +4,6 @@
     "category": "sweatyfeet:overview",
     "sortnum": 5,
     "pages": [
-        { "type": "patchouli:text", "text": "While holding $(bold)level-2+ sweaty boots$() in your hand, you get $(bold)constant nausea$() (wobbling screen) — it stops the moment you put them down or stash them in your inventory.$(br2)It's the classic prank move, and also how the \"Marinated\" advancement is earned." }
+        { "type": "patchouli:text", "text": "While holding $(bold)level-2+ sweaty boots$() in your hand, you get $(bold)constant nausea$() (wobbling screen) — it stops the moment you put them down or stash them in your inventory." }
     ]
 }
