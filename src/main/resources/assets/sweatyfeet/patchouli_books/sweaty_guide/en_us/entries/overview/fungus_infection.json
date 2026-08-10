@@ -4,7 +4,7 @@
     "category": "sweatyfeet:overview",
     "sortnum": 2,
     "pages": [
-        { "type": "patchouli:text", "text": "After 30 more seconds of wear at sweat level 3 (default, host-adjustable), you catch $(bold)foot fungus$(). It does NOT go away - taking boots off, pouring sweat or sleeping won't clear it, it stays with you.$(br2)While infected: noticeably slower, sneezing every so often, and possible damage." },
-        { "type": "patchouli:text", "text": "$(bold)It can be cured$() - but only one way, and the advancements page might hint at it.$(br2)It is also $(bold)contagious$(): stand too close to an infected player and you may catch it - and the newly infected can spread it further." }
+        { "type": "patchouli:text", "text": "After 30 more seconds of wear at sweat level 3 (configurable), you catch $(bold)foot fungus$() — it has $(bold)infinite duration$(): taking boots off or pouring sweat does NOT cure it.$(br2)$(bold)The only cure$(): pour a bottle of $(bold)floral water$() into a water basin to turn it medicinal, then sit on a stool, take off your boots and soak until done (see \"Washing & Curing\")." },
+        { "type": "patchouli:text", "text": "$(bold)Spread$(): standing near an infected player can infect you, and the newly infected can spread it further.$(br2)For the exact symptoms (slowdown, sneezing, smell) and config values, see \"Mechanics → Fungus Mechanics\"." }
     ]
 }

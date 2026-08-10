@@ -121,7 +121,7 @@ public class SfConfigScreen extends Screen {
         if (cats != null) return;
         cats = new ArrayList<>();
 
-        // 汗脚生成与降级：穿戴计时 + 脱鞋降级/效果时长
+        // 汗脚：穿戴计时/降级 + 2级打滑（合并原 sweat + slideSmell 的打滑部分）
         List<Opt> sweat = new ArrayList<>();
         sweat.add(Opt.header("sweatyfeet.config.section.wear"));
         sweat.add(new Opt("sweatyfeet.config.level1_seconds",
@@ -135,21 +135,13 @@ public class SfConfigScreen extends Screen {
             y -> mkIntBox(y, String.valueOf(SfConfig.DEGRADE_SECONDS.get()), 1, 86400, 6, SfConfig.DEGRADE_SECONDS::set), null));
         sweat.add(new Opt("sweatyfeet.config.effect_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.EFFECT_SECONDS.get()), 1, 86400, 6, SfConfig.EFFECT_SECONDS::set), null));
+        sweat.add(Opt.header("sweatyfeet.config.section.slide"));
+        sweat.add(new Opt("sweatyfeet.config.slide_enabled", y -> mkBoolButton(y, SfConfig.SLIDE_ENABLED), null));
+        sweat.add(new Opt("sweatyfeet.config.slide_retention_percent",
+            y -> mkIntBox(y, String.valueOf(SfConfig.SLIDE_RETENTION_PERCENT.get()), 1, 100, 3, SfConfig.SLIDE_RETENTION_PERCENT::set), null));
         cats.add(new Cat("sweatyfeet.config.cat.sweat", sweat));
 
-        // 脚滑与脚臭：移动手感 + 散臭范围
-        List<Opt> slideSmell = new ArrayList<>();
-        slideSmell.add(Opt.header("sweatyfeet.config.section.slide"));
-        slideSmell.add(new Opt("sweatyfeet.config.slide_enabled", y -> mkBoolButton(y, SfConfig.SLIDE_ENABLED), null));
-        slideSmell.add(new Opt("sweatyfeet.config.slide_retention_percent",
-            y -> mkIntBox(y, String.valueOf(SfConfig.SLIDE_RETENTION_PERCENT.get()), 1, 100, 3, SfConfig.SLIDE_RETENTION_PERCENT::set), null));
-        slideSmell.add(Opt.header("sweatyfeet.config.section.smell"));
-        slideSmell.add(new Opt("sweatyfeet.config.smell_enabled", y -> mkBoolButton(y, SfConfig.SMELL_ENABLED), null));
-        slideSmell.add(new Opt("sweatyfeet.config.smell_range",
-            y -> mkIntBox(y, String.valueOf(SfConfig.SMELL_RANGE.get()), 1, 64, 2, SfConfig.SMELL_RANGE::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.slide_smell", slideSmell));
-
-        // 真菌感染：触发/扣血/传染
+        // 真菌：触发/扣血/传染 + 臭味（合并原 fungus + slideSmell 的臭味部分）
         List<Opt> fungus = new ArrayList<>();
         fungus.add(Opt.header("sweatyfeet.config.section.fungus_trigger"));
         fungus.add(new Opt("sweatyfeet.config.enable_fungus", y -> mkBoolButton(y, SfConfig.ENABLE_FUNGUS), null));
@@ -165,33 +157,33 @@ public class SfConfigScreen extends Screen {
             y -> mkIntBox(y, String.valueOf(SfConfig.FUNGUS_INFECTION_RANGE.get()), 1, 64, 2, SfConfig.FUNGUS_INFECTION_RANGE::set), null));
         fungus.add(new Opt("sweatyfeet.config.fungus_infection_interval_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.FUNGUS_INFECTION_INTERVAL_SECONDS.get()), 1, 86400, 6, SfConfig.FUNGUS_INFECTION_INTERVAL_SECONDS::set), null));
+        fungus.add(Opt.header("sweatyfeet.config.section.smell"));
+        fungus.add(new Opt("sweatyfeet.config.smell_enabled", y -> mkBoolButton(y, SfConfig.SMELL_ENABLED), null));
+        fungus.add(new Opt("sweatyfeet.config.smell_range",
+            y -> mkIntBox(y, String.valueOf(SfConfig.SMELL_RANGE.get()), 1, 64, 2, SfConfig.SMELL_RANGE::set), null));
         cats.add(new Cat("sweatyfeet.config.cat.fungus", fungus));
 
-        // 洗脚与洗靴：泡水/泡盆 + 汗靴泡洗
-        List<Opt> wash = new ArrayList<>();
-        wash.add(Opt.header("sweatyfeet.config.section.wash"));
-        wash.add(new Opt("sweatyfeet.config.wash_seconds",
+        // 物品与饮品：洗脚/洗靴 + 汗液瓶/饮品（合并原 wash + bottle）
+        List<Opt> item = new ArrayList<>();
+        item.add(Opt.header("sweatyfeet.config.section.wash"));
+        item.add(new Opt("sweatyfeet.config.wash_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.WASH_SECONDS.get()), 1, 86400, 6, SfConfig.WASH_SECONDS::set), null));
-        wash.add(Opt.header("sweatyfeet.config.section.boot_wash"));
-        wash.add(new Opt("sweatyfeet.config.wash_boots_enabled", y -> mkBoolButton(y, SfConfig.WASH_BOOTS_ENABLED), null));
-        wash.add(new Opt("sweatyfeet.config.wash_boots_seconds",
+        item.add(Opt.header("sweatyfeet.config.section.boot_wash"));
+        item.add(new Opt("sweatyfeet.config.wash_boots_enabled", y -> mkBoolButton(y, SfConfig.WASH_BOOTS_ENABLED), null));
+        item.add(new Opt("sweatyfeet.config.wash_boots_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.WASH_BOOTS_SECONDS.get()), 1, 86400, 6, SfConfig.WASH_BOOTS_SECONDS::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.wash", wash));
-
-        // 汗液瓶与饮品：投掷/饮用效果时长
-        List<Opt> bottle = new ArrayList<>();
-        bottle.add(Opt.header("sweatyfeet.config.section.bottle"));
-        bottle.add(new Opt("sweatyfeet.config.throw_debuff_seconds",
+        item.add(Opt.header("sweatyfeet.config.section.bottle"));
+        item.add(new Opt("sweatyfeet.config.throw_debuff_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.THROW_DEBUFF_SECONDS.get()), 1, 86400, 6, SfConfig.THROW_DEBUFF_SECONDS::set), null));
-        bottle.add(new Opt("sweatyfeet.config.bottle_nausea_seconds",
+        item.add(new Opt("sweatyfeet.config.bottle_nausea_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.BOTTLE_NAUSEA_SECONDS.get()), 1, 86400, 6, SfConfig.BOTTLE_NAUSEA_SECONDS::set), null));
-        bottle.add(new Opt("sweatyfeet.config.drink_poison_seconds",
+        item.add(new Opt("sweatyfeet.config.drink_poison_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_POISON_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_POISON_SECONDS::set), null));
-        bottle.add(new Opt("sweatyfeet.config.drink_buff_seconds",
+        item.add(new Opt("sweatyfeet.config.drink_buff_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.DRINK_BUFF_SECONDS.get()), 1, 86400, 6, SfConfig.DRINK_BUFF_SECONDS::set), null));
-        cats.add(new Cat("sweatyfeet.config.cat.bottle", bottle));
+        cats.add(new Cat("sweatyfeet.config.cat.item", item));
 
-        // 表现粒子
+        // 表现与调试：粒子/坐凳脱鞋 + debug（合并原 visual + debug）
         List<Opt> visual = new ArrayList<>();
         visual.add(Opt.header("sweatyfeet.config.section.particles"));
         visual.add(new Opt("sweatyfeet.config.sweat_particles", y -> mkBoolButton(y, SfConfig.SWEAT_PARTICLES), null));
@@ -206,15 +198,12 @@ public class SfConfigScreen extends Screen {
             y -> Button.builder(Component.translatable("sweatyfeet.picker.open"),
                 b -> minecraft.setScreen(new SoakSkinPickerScreen(minecraft.player, this)))
                 .bounds(inputX, y, INPUT_W, 20).build(), null));
+        visual.add(Opt.header("sweatyfeet.config.section.debug"));
+        visual.add(new Opt("sweatyfeet.config.debug_show_ticks", y -> mkBoolButton(y, SfConfig.DEBUG_SHOW_TICKS), null));
+        visual.add(new Opt("sweatyfeet.config.debug_force_fungus", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_FUNGUS), null));
+        visual.add(new Opt("sweatyfeet.config.debug_undress", y -> mkBoolButton(y, SfConfig.DEBUG_UNDRESS), null));
         cats.add(new Cat("sweatyfeet.config.cat.visual", visual));
 
-        // debug：调试
-        List<Opt> debug = new ArrayList<>();
-        debug.add(Opt.header("sweatyfeet.config.section.debug"));
-        debug.add(new Opt("sweatyfeet.config.debug_show_ticks", y -> mkBoolButton(y, SfConfig.DEBUG_SHOW_TICKS), null));
-        debug.add(new Opt("sweatyfeet.config.debug_force_fungus", y -> mkBoolButton(y, SfConfig.DEBUG_FORCE_FUNGUS), null));
-        debug.add(new Opt("sweatyfeet.config.debug_undress", y -> mkBoolButton(y, SfConfig.DEBUG_UNDRESS), null));
-        cats.add(new Cat("sweatyfeet.config.cat.debug", debug));
         expanded = new boolean[cats.size()];
         java.util.Arrays.fill(expanded, true);
     }
@@ -434,7 +423,7 @@ public class SfConfigScreen extends Screen {
                 Component label = Component.translatable(opt.key());
                 g.drawString(font, label, optLabelX, y + 11, c().configLabel(), false);
                 int lineX = optLabelX + font.width(label) + 8;
-                int lineEnd = optLabelX + optAreaW() + 4;
+                int lineEnd = width - 24; // 横线跨过输入框延伸到右边缘（e33chat 风格，原来只到 inputX 视觉显短）
                 if (lineX < lineEnd)
                     g.blit(SfUiTextureManager.rl(SfUiElement.DIVIDER), lineX, y + 15, lineEnd - lineX, 1, 0f, 0f, 1, 1, 1, 1);
                 y += HEADER_H;

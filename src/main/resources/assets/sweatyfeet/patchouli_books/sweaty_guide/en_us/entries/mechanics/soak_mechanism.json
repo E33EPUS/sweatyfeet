@@ -4,6 +4,8 @@
     "category": "sweatyfeet:mechanics",
     "sortnum": 0,
     "pages": [
-        { "type": "patchouli:text", "text": "The basin has opinions about whether you really want to wash - water, seating, footwear, it checks it all. Try it and you'll learn." }
+        { "type": "patchouli:text", "text": "$(bold)Right-clicking a basin with an empty hand$() checks in order, each failure shows a hint:$(br)Dirty water → scoop it out first$(br)Empty basin → fill it with water first$(br)Not sitting on a stool → sit down$(br)Wearing boots → take them off$(br)Feet clean → no Sweaty Feet to wash$(br)All checks pass → soaking starts." },
+        { "type": "patchouli:text", "text": "$(bold)Water vs medicinal$(): water washes Sweaty Feet; floral water poured into a water basin makes it medicinal, which cures fungus (the only cure).$(br2)$(bold)Soak progress$(): only counts while within 1.5 blocks of the basin — leaving pauses it (no reset); wearing boots also pauses it; higher levels soak longer (one base duration per level)." },
+        { "type": "patchouli:text", "text": "$(bold)Done$(): Sweaty Feet (or fungus) is cleared and the basin turns dirty — scoop it into \"X's foot-washing water\" with a bucket, and scoop it out to refill with fresh water.$(br2)$(bold)Your main hand must be empty$(): holding an item makes the right-click do nothing." }
     ]
 }
