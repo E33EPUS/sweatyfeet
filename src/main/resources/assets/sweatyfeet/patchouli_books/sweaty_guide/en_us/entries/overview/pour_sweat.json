@@ -4,7 +4,7 @@
     "category": "sweatyfeet:overview",
     "sortnum": 3,
     "pages": [
-        { "type": "patchouli:text", "text": "Hold a $(bold)sweaty boot in your main hand$() + an $(bold)empty glass bottle in your offhand$(), then $(bold)sneak + right-click$() to pour: you get one bottle per boot level, and the boots turn clean again.$(br2)Drinking a sweat bottle: level 1 restores half a hunger shank, level 2 nauseates for 10 s, level 3 poisons for 3 s." },
-        { "type": "patchouli:text", "text": "$(bold)Fermented boots$() (leather boots + sugar) at level 3 pour a $(bold)Sweat Drink$(): grants Speed, Jump Boost, Strength and Luck for 30 s each.$(br2)Pouring only extracts the sweat — the boots turn clean again, but your Sweaty Feet stays (and fungus is never cured by pouring; only medicinal soak works)." }
+        { "type": "patchouli:text", "text": "The sweat in sweaty boots can be $(bold)poured out$() into bottles - the level follows the boots (1/2/3), and the boots come clean again.$(br2)Drinking a sweat bottle: level 1 restores half a hunger shank, level 2 nauseates for 10 s, level 3 poisons for 3 s." },
+        { "type": "patchouli:text", "text": "$(bold)Fermented boots$() (leather boots + sugar) worn to level 3 can brew a $(bold)Sweat Drink$(): grants Speed, Jump Boost, Strength and Luck for 30 s each.$(br2)Pouring only extracts the sweat - the boots turn clean again, your Sweaty Feet stays." }
     ]
 }
