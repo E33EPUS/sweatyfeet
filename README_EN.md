@@ -59,7 +59,7 @@ Wearing boots too long makes your feet sweat. Sweaty Feet escalates through thre
 ## Gameplay
 
 ```
-Wear boots → 30/60/90 s → Sweaty Feet level 1/2/3 (boots rename, sweat particles)
+Wear boots → 2/4/6 min → Sweaty Feet level 1/2/3 (boots rename, sweat particles)
   ├─ Keep wearing at level 3 → Foot fungus (drain / sneeze / spread / smell when barefoot)
   ├─ Pour sweat (sweaty boot + empty bottle in offhand + sneak right-click) → sweat bottle, boots clean
   │     Fermented boots at level 3 pour a Sweat Drink (four buffs)

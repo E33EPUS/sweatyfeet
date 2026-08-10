@@ -47,9 +47,9 @@ class SweatyFeetHandlerTest {
 
     @Test
     void defaultConfigSecondsConvertToTicks() {
-        assertEquals(30 * 20, SfConfig.LEVEL_1_SECONDS.getDefault() * 20);
-        assertEquals(60 * 20, SfConfig.LEVEL_2_SECONDS.getDefault() * 20);
-        assertEquals(90 * 20, SfConfig.LEVEL_3_SECONDS.getDefault() * 20);
+        assertEquals(120 * 20, SfConfig.LEVEL_1_SECONDS.getDefault() * 20);
+        assertEquals(240 * 20, SfConfig.LEVEL_2_SECONDS.getDefault() * 20);
+        assertEquals(360 * 20, SfConfig.LEVEL_3_SECONDS.getDefault() * 20);
     }
 
     @Test

@@ -58,18 +58,18 @@ public final class SfConfig {
 
         builder.comment("汗脚 debuff 的穿戴时间阈值（秒）。等级按穿靴子总时长推进，脱鞋清零。").push("timing");
         LEVEL_1_SECONDS = builder.comment("汗脚 1 级所需穿戴秒数（触发汗化并改名「充满汗液的xxx」）")
-            .defineInRange("level1_seconds", 30, 1, 86400);
+            .defineInRange("level1_seconds", 120, 1, 86400);
         LEVEL_2_SECONDS = builder.comment("汗脚 2 级所需穿戴秒数")
-            .defineInRange("level2_seconds", 60, 1, 86400);
+            .defineInRange("level2_seconds", 240, 1, 86400);
         LEVEL_3_SECONDS = builder.comment("汗脚 3 级所需穿戴秒数")
-            .defineInRange("level3_seconds", 90, 1, 86400);
+            .defineInRange("level3_seconds", 360, 1, 86400);
         builder.pop();
 
         builder.comment("真菌感染：3 级后继续穿靴子触发。").push("fungus");
         ENABLE_FUNGUS = builder.comment("是否启用真菌感染（false = 只到 3 级汗脚为止）")
             .define("enable_fungus", true);
         FUNGUS_DELAY_SECONDS = builder.comment("3 级后再继续穿多少秒触发真菌感染")
-            .defineInRange("fungus_delay_seconds", 30, 1, 86400);
+            .defineInRange("fungus_delay_seconds", 60, 1, 86400);
         FUNGUS_DAMAGE_ENABLED = builder.comment("真菌是否缓慢扣血（magic 伤害，无视护甲，可致死）")
             .define("fungus_damage_enabled", true);
         FUNGUS_DAMAGE_INTERVAL_SECONDS = builder.comment("真菌扣血间隔（秒）")
@@ -98,13 +98,13 @@ public final class SfConfig {
         DRINK_BUFF_SECONDS = builder.comment("饮品 buff 时长（秒）")
             .defineInRange("drink_buff_seconds", 30, 1, 86400);
         DEGRADE_SECONDS = builder.comment("汗脚降级每级时长（秒）：脱鞋后 3级→2级→1级 后保留 1 级，必须洗脚才彻底清")
-            .defineInRange("degrade_seconds", 30, 1, 86400);
+            .defineInRange("degrade_seconds", 60, 1, 86400);
         WASH_SECONDS = builder.comment("赤脚泡水洗脚基础时间（秒）：1 级 T_base，2 级 2×，3 级 3×（真菌泡水洗不掉，要用花露水）")
-            .defineInRange("wash_seconds", 8, 1, 86400);
+            .defineInRange("wash_seconds", 15, 1, 86400);
         WASH_BOOTS_ENABLED = builder.comment("汗靴扔进水里能否泡洗（洗干净还原为正常靴子）")
             .define("wash_boots_enabled", true);
         WASH_BOOTS_SECONDS = builder.comment("汗靴扔水里泡洗基础时间（秒）：按靴子等级 ×1/×2/×3")
-            .defineInRange("wash_boots_seconds", 8, 1, 86400);
+            .defineInRange("wash_boots_seconds", 15, 1, 86400);
         builder.pop();
 
         builder.comment("移动效果（汗脚 2 级起）。").push("movement");
