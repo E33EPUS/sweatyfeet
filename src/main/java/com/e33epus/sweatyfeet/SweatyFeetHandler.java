@@ -177,14 +177,17 @@ public final class SweatyFeetHandler {
                     }
                 }
             }
-            // 丢地污染：二级及以上汗靴（用户定案二级触发）
+            // 丢地污染：二级及以上汗靴（用户定案二级触发）；臭气云 = 绿粒子团 + 菌丝孢子缓慢上飘
             SweatData data = stack.get(ModDataComponents.SWEAT.get());
             if (data == null || data.level() < 2) {
                 continue;
             }
             level.sendParticles(ParticleTypes.COMPOSTER,
                 itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
-                2, 0.3, 0.2, 0.3, 0.0);
+                6, 0.6, 0.3, 0.6, 0.0);
+            level.sendParticles(ParticleTypes.MYCELIUM,
+                itemEntity.getX(), itemEntity.getY() + 0.3, itemEntity.getZ(),
+                2, 0.3, 0.2, 0.3, 0.02);
             giveNearbyNausea(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
                 smellRangeSq, null, true);
             // 生化武器：这双汗靴第一次臭到"非丢者"的其他玩家 → 授予丢者（离线不补发）
@@ -279,9 +282,13 @@ public final class SweatyFeetHandler {
         if (player.hasEffect(ModEffects.FOOT_FUNGUS) && player.tickCount % 20 == 0
             && !player.getItemBySlot(EquipmentSlot.FEET).is(ItemTags.FOOT_ARMOR)
             && player.level() instanceof ServerLevel serverLevel) {
+            // 臭气云：绿粒子团 + 菌丝孢子上飘（比旧版 2 个粒子更像一团气）
             serverLevel.sendParticles(ParticleTypes.COMPOSTER,
                 player.getX(), player.getY() + 0.1, player.getZ(),
-                2, 0.3, 0.0, 0.3, 0.0);
+                6, 0.6, 0.2, 0.6, 0.0);
+            serverLevel.sendParticles(ParticleTypes.MYCELIUM,
+                player.getX(), player.getY() + 0.2, player.getZ(),
+                2, 0.3, 0.2, 0.3, 0.02);
             double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
             giveNearbyNausea(serverLevel, player.getX(), player.getY(), player.getZ(),
                 smellRangeSq, player, false);
@@ -349,8 +356,21 @@ public final class SweatyFeetHandler {
         DEGRADE_TICKS.remove(player.getUUID());
         WASH_TICKS.remove(player.getUUID());
 
-        int totalTicks = WEAR_TICKS.merge(player.getUUID(), 1, Integer::sum);
+        int totalTicks = WEAR_TICKS.merge(player.getUUID(),
+            player.level().dimension() == Level.NETHER ? 2 : 1, Integer::sum); // 下界炎热，汗化速度 ×2（整蛊彩蛋）
         SweatData data = boots.get(ModDataComponents.SWEAT.get());
+
+        // 淌汗脚印（表现）：汗脚 2/3 级走动时脚下滴汗珠——靴子里泡满了，一路走一路淌
+        MobEffectInstance sweatFx = player.getEffect(ModEffects.SWEATY_FEET);
+        if (sweatFx != null && sweatFx.getAmplifier() >= 1
+            && player.tickCount % 5 == 0 && player.onGround()
+            && player.getDeltaMovement().horizontalDistanceSqr() > 1.0E-6
+            && player.level() instanceof ServerLevel sweatLevel) {
+            int drops = sweatFx.getAmplifier() >= 2 ? 2 : 1;
+            sweatLevel.sendParticles(ParticleTypes.SPLASH,
+                player.getX(), player.getY() + 0.05, player.getZ(),
+                drops, 0.15, 0.0, 0.15, 0.0);
+        }
 
         if (data == null) {
             // 未汗化：等汗化触发；同时冻结残余汗脚效果（脱鞋残余的效果，再穿时暂停倒计时，
