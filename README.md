@@ -44,7 +44,7 @@
 | NeoForge | 必需 | 21.1+ |
 | Java | 必需 | 21+ |
 | Patchouli | 可选 | 装了进世界自动收到《Sweaty Feet 攻略本》，没装其余功能正常 |
-| player-animator | 可选 | 泡脚动画（坐凳效果），没装不影响玩法 |
+| player-animator | 必需 | 泡脚动画（坐凳效果），没装无法加载 |
 
 ---
 

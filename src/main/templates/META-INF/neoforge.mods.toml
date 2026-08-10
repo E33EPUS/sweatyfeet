@@ -27,10 +27,10 @@ config="${mod_id}.mixins.json"
     ordering="NONE"
     side="BOTH"
 
-# 泡脚动画（optional）：没装 player-animator 只是没动画，玩法不受影响
+# 泡脚动画（必装）：没装 player-animator 客户端直接拒绝加载（动画是核心观感）
 [[dependencies.${mod_id}]]
     modId="playeranimator"
-    type="optional"
+    type="required"
     versionRange="[2.0.1,)"
     ordering="AFTER"
     side="CLIENT"

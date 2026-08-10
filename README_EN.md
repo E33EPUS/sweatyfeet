@@ -44,7 +44,7 @@ Wearing boots too long makes your feet sweat. Sweaty Feet escalates through thre
 | NeoForge | Required | 21.1+ |
 | Java | Required | 21+ |
 | Patchouli | Optional | You'll receive the "Sweaty Feet Guide" book on joining a world; everything else works without it |
-| player-animator | Optional | Soaking animation (stool sitting); gameplay unaffected without it |
+| player-animator | Required | Soaking animation (stool sitting); the mod won't load without it |
 
 ---
 
