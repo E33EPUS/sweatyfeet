@@ -3,7 +3,7 @@
 <h1 align="center">Sweaty Feet</h1>
 
 <p align="center">
-  <em>穿靴子太久会脚臭！整蛊向生存模组</em>
+  <em>穿靴子太久会脚臭，记得脱鞋洗脚！</em>
 </p>
 
 <p align="center">
@@ -15,19 +15,11 @@
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
-长时间穿靴子会把脚捂出汗，汗脚分三级推进，三级的臭脚还会感染真菌——掉血、打喷嚏、传染给朋友。把汗倒进玻璃瓶做成汗液瓶，发酵靴能酿出 buff 饮品；想治好，只能坐凳子上泡脚。全是恶搞，没有正经，适合联机互坑。
+长时间穿靴子会把脚捂出汗，汗脚分三级推进，三级的臭脚还会感染真菌——掉血、打喷嚏、传染给朋友。把汗倒进玻璃瓶做成汗液瓶，发酵靴能酿出 buff 饮品；想治好，只能坐凳子上泡脚。
 
 ---
 
-## 安装
-
-- 环境：Minecraft **1.21.1** + NeoForge **21.1.x** + Java 21
-- 从 [Releases](https://github.com/E33EPUS/sweatyfeet/releases) 下载 JAR，扔进 `.minecraft/mods/`，启动游戏
-- 进世界自动收到一本《Sweaty Feet 攻略本》（需 [Patchouli](https://www.curseforge.com/minecraft/mc-mods/patchouli) 前置），所有机制细节都在书里
-
----
-
-## 玩法循环
+## 玩法
 
 ```
 穿靴子 → 30/60/90 秒 → 汗脚 1/2/3 级（靴子汗化改名、冒汗粒子）
@@ -37,6 +29,12 @@
   └─ 洗脚：坐凳子 + 脱鞋 + 盆泡脚
         清水洗汗脚；花露水倒盆里变药水洗脚水 → 治真菌（唯一解法）
 ```
+
+## 安装
+
+- 环境：Minecraft **1.21.1** + NeoForge **21.1.x** + Java 21
+- 从 [Releases](https://github.com/E33EPUS/sweatyfeet/releases) 下载 JAR，扔进 `.minecraft/mods/`，启动游戏
+- 进世界自动收到一本《Sweaty Feet 攻略本》（需 [Patchouli](https://www.curseforge.com/minecraft/mc-mods/patchouli) 前置），所有机制细节都在书里
 
 ---
 
