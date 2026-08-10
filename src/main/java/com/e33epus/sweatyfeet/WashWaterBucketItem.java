@@ -63,7 +63,7 @@ public class WashWaterBucketItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
                                 TooltipFlag flag) {
         // 简介行 + 使用方式行（分行）
-        tooltip.add(Component.translatable("item.sweatyfeet.wash_water_bucket.tooltip1"));
-        tooltip.add(Component.translatable("item.sweatyfeet.wash_water_bucket.tooltip2"));
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.wash_water_bucket.tooltip1");
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.wash_water_bucket.tooltip2");
     }
 }

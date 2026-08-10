@@ -24,7 +24,7 @@ public class TooltipBlockItem extends BlockItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
         for (String key : tooltipKeys) {
-            tooltip.add(Component.translatable(key));
+            SweatyTooltips.addIfPresent(tooltip, key);
         }
     }
 }

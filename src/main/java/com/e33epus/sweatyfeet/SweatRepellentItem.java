@@ -22,7 +22,7 @@ public class SweatRepellentItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
         // 使用方式行 + 免责声明行（用户定：两行即可）
-        tooltip.add(Component.translatable("item.sweatyfeet.floral_water.tooltip1"));
-        tooltip.add(Component.translatable("item.sweatyfeet.floral_water.tooltip2"));
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.floral_water.tooltip1");
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.floral_water.tooltip2");
     }
 }

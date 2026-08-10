@@ -59,7 +59,7 @@ public class DilutedFloralWaterItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
         // 简介行 + 使用方式行（分行）
-        tooltip.add(Component.translatable("item.sweatyfeet.diluted_floral_water.tooltip1"));
-        tooltip.add(Component.translatable("item.sweatyfeet.diluted_floral_water.tooltip2"));
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.diluted_floral_water.tooltip1");
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.diluted_floral_water.tooltip2");
     }
 }

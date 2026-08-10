@@ -95,7 +95,7 @@ public class SweatBottleItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip,
                                 TooltipFlag flag) {
         // 简介行 + 使用方式行（分行）
-        tooltip.add(Component.translatable("item.sweatyfeet.sweat_bottle.tooltip1"));
-        tooltip.add(Component.translatable("item.sweatyfeet.sweat_bottle.tooltip2"));
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip1");
+        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip2");
     }
 }
