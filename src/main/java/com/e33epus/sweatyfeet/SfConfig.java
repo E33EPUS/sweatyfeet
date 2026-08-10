@@ -65,7 +65,7 @@ public final class SfConfig {
         ENABLE_FUNGUS = builder.comment("是否启用真菌感染（false = 只到 3 级汗脚为止）")
             .define("enable_fungus", true);
         FUNGUS_DELAY_SECONDS = builder.comment("3 级后再继续穿多少秒触发真菌感染")
-            .defineInRange("fungus_delay_seconds", 20, 1, 86400);
+            .defineInRange("fungus_delay_seconds", 30, 1, 86400);
         FUNGUS_DAMAGE_ENABLED = builder.comment("真菌是否缓慢扣血（magic 伤害，无视护甲，可致死）")
             .define("fungus_damage_enabled", true);
         FUNGUS_DAMAGE_INTERVAL_SECONDS = builder.comment("真菌扣血间隔（秒）")
