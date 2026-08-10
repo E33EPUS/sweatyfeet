@@ -105,7 +105,7 @@ public final class SoakSkinClient {
             && player.tickCount % 20 == 0) {
             ModNetworking.reportTint(tintStr);
         }
-        drainReady(id, base);
+        drainReady(id, base, tintStr);
         Entry e = CACHE.get(id);
         // 配置肤色变了：旧改图作废（之前 CACHE 不记 tint，改配置永不生效——取色器"没用"根因）
         if (e != null && e.base().equals(base) && !e.tint().equals(tintStr)) {
@@ -139,8 +139,10 @@ public final class SoakSkinClient {
         return null;
     }
 
-    /** 后台下载完成的图在渲染线程注册成 DynamicTexture（resolve 顺带驱动） */
-    private static void drainReady(UUID id, ResourceLocation base) {
+    /** 后台下载完成的图在渲染线程注册成 DynamicTexture（resolve 顺带驱动）。
+     *  tint 用 resolve 算好的最终色（广播 > 本地配置）——之前误读 SfConfig，
+     *  跨端同步的广播色根本没进改图，且缓存键永远对不上 → 每 20 tick 重拉重生成。 */
+    private static void drainReady(UUID id, ResourceLocation base, String tintStr) {
         NativeImage img;
         synchronized (READY) {
             img = READY.remove(id);
@@ -148,16 +150,15 @@ public final class SoakSkinClient {
         if (img == null) {
             return;
         }
-        String tint = SfConfig.SOAK_UNDRESS_TINT.get();
-        int tintRgb = parseTint(tint);
+        int tintRgb = parseTint(tintStr);
         if (tintRgb == 0) {
             tintRgb = autoSampleAndPersist(img); // 首次：读指定像素并写入配置
-            tint = SfConfig.SOAK_UNDRESS_TINT.get(); // 采样成功会更新配置；失败保持空
+            tintStr = SfConfig.SOAK_UNDRESS_TINT.get(); // 采样成功会更新配置；失败保持空
         }
         NativeImage undressed = buildUndressed(img, tintRgb);
         ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "soak_skin/" + id);
         Minecraft.getInstance().getTextureManager().register(rl, new DynamicTexture(undressed));
-        CACHE.put(id, new Entry(base, rl, tint));
+        CACHE.put(id, new Entry(base, rl, tintStr));
     }
 
     private static void requestFetch(UUID id, Player player, String url) {
@@ -470,5 +471,18 @@ public final class SoakSkinClient {
             sb.append(String.format("%02x", x));
         }
         return sb.toString();
+    }
+
+    /** 玩家下线清理缓存（防 UUID 复用后 FAILED/PENDING 卡死 + 长期会话内存泄漏） */
+    public static void clearFor(UUID id) {
+        synchronized (READY) {
+            READY.remove(id);
+        }
+        synchronized (PENDING) {
+            PENDING.remove(id);
+            FAILED.remove(id);
+        }
+        CACHE.remove(id);
+        LAST_LOGGED.remove(id);
     }
 }

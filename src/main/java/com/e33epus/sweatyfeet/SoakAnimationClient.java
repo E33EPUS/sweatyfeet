@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 /**
  * 坐姿泡脚动画（纯客户端表现）：骑在泡脚椅座位上 + 赤脚 → 腿小幅摆动、身体后仰轻晃。
  * 座位 NBT（basinPos）不同步客户端，这里只判"骑着座位 + 赤脚"，洗没洗由服务端算。
- * 需要 player-animator 前置，没装只是没动画，玩法不受影响（ModList 守卫 + optional 依赖）。
+ * 需要 player-animator 前置（required 依赖，没装客户端不加载）。
  */
 @EventBusSubscriber(modid = SweatyFeet.MOD_ID, value = Dist.CLIENT)
 public final class SoakAnimationClient {
@@ -58,5 +58,11 @@ public final class SoakAnimationClient {
         } else if (layer.getAnimation() != null) {
             layer.setAnimation(null);
         }
+    }
+
+    /** 玩家下线：清掉 SoakSkinClient 的皮肤缓存（UUID 复用防 FAILED/PENDING 卡死） */
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+        SoakSkinClient.clearFor(event.getEntity().getUUID());
     }
 }

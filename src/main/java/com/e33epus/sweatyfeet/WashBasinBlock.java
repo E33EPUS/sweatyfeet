@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * 洗脚盆：半格高的木盆（底 + 四壁，中空）。三态：空 / 有水 / 浑水。
  * - 水桶右键空盆 → 倒水（消耗水桶给空桶），盆变"有水"
  * - 空桶右键有水盆 → 舀水，盆变空
- * - 空桶右键浑水盆 → 收"xxx的洗脚水"（3d 做）
+ * - 空桶右键浑水盆 → 收"xxx的洗脚水"
  * - 空手右键（赤脚 + 盆有水 + 有汗脚）→ 开始/继续泡脚（累计计时，离开暂停，
  *   满 wash_seconds 洗完 → 清汗脚 + 盆变浑水）；穿鞋提示脱鞋、没汗脚提示。
  * 与 models/block/wash_basin{,_water,_dirty}.json 视觉一致：底 1px + 四壁到 5px，壁厚 2px。

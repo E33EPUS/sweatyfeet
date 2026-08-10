@@ -113,6 +113,7 @@
     "sweatyfeet.picker.noskin": "Skin not loaded yet, try again shortly",
     "sweatyfeet.picker.noskin2": "Read the in-game skin texture; if it still fails, check skin server network",
     "sweatyfeet.picker.open": "Eyedropper...",
+    "sweatyfeet.picker.cancel": "Cancel",
     "sweatyfeet.config.soak_undress_tint.desc": "e.g. #C68863; empty = auto-sample from the player's skin.",
     "sweatyfeet.config.sneeze_particles.desc": "Whether the fungus infection spawns sneeze particles.",
     "sweatyfeet.config.debug_show_ticks": "Show wear ticks (action bar)",

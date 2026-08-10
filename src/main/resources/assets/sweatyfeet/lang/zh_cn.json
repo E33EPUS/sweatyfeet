@@ -113,6 +113,7 @@
     "sweatyfeet.picker.noskin": "皮肤还没加载好，稍等再试",
     "sweatyfeet.picker.noskin2": "读取了游戏内的皮肤纹理；若仍失败，检查皮肤站网络",
     "sweatyfeet.picker.open": "滴管取色…",
+    "sweatyfeet.picker.cancel": "取消",
     "sweatyfeet.config.soak_undress_tint.desc": "如 #C68863；留空 = 自动从玩家皮肤采样。",
     "sweatyfeet.config.sneeze_particles.desc": "真菌感染是否打喷嚏粒子。",
     "sweatyfeet.config.debug_show_ticks": "显示穿戴计时（action bar）",

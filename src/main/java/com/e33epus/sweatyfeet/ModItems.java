@@ -18,15 +18,15 @@ public final class ModItems {
     public static final DeferredItem<SweatBottleItem> SWEAT_BOTTLE =
         ITEMS.register("sweat_bottle", rl -> new SweatBottleItem(new Item.Properties().stacksTo(16)));
 
-    /** 饮品：工作台合成汗液瓶+材料产出，类型存 DRINK_TYPE 组件 */
+    /** 饮品：发酵靴 3 级倒汗产物，类型存 DRINK_TYPE 组件 */
     public static final DeferredItem<SweatDrinkItem> SWEAT_DRINK =
         ITEMS.register("sweat_drink", rl -> new SweatDrinkItem(new Item.Properties().stacksTo(16)));
 
-    /** 花露水：真菌唯一快捷解药，右键喷在身上清真菌（水瓶+铃兰+萤石粉合成） */
+    /** 花露水：真菌治疗"两步走"第一步——倒进清水盆变药水洗脚水（水瓶 + 任意两种小花合成） */
     public static final DeferredItem<SweatRepellentItem> FLORAL_WATER =
         ITEMS.register("floral_water", rl -> new SweatRepellentItem(new Item.Properties().stacksTo(16)));
 
-    /** 洗脚水桶：空桶右键浑水盆收集，喝 = 反胃+扣血+概率真菌（整蛊） */
+    /** 洗脚水桶：空桶右键浑水盆收集，喝 = 只弹"醇香"提示（整蛊，喝完回空桶） */
     public static final DeferredItem<WashWaterBucketItem> WASH_WATER_BUCKET =
         ITEMS.register("wash_water_bucket", rl -> new WashWaterBucketItem(new Item.Properties().stacksTo(1)));
 

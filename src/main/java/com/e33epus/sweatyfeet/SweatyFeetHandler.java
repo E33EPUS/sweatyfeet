@@ -145,17 +145,20 @@ public final class SweatyFeetHandler {
         if (level.getGameTime() % 20 != 0) {
             return; // 每秒扫一次
         }
-        if (SfConfig.WASH_BOOTS_ENABLED.get()) {
-            int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
-            for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
-                if (!(e instanceof ItemEntity itemEntity) || !itemEntity.isInWater()) {
-                    continue;
-                }
-                ItemStack stack = itemEntity.getItem();
-                if (!stack.is(ItemTags.FOOT_ARMOR) || !stack.has(ModDataComponents.SWEAT.get())) {
-                    continue;
-                }
-                // 泡洗计时随等级递增（1 级 T_base，3 级 3×）；组件累加，冒水花粒子
+        // 单次全扫（泡洗 + 丢地污染合并，避免两次遍历全维度实体）：
+        // 1) 汗靴扔水里泡洗（受 WASH_BOOTS_ENABLED 配置）
+        // 2) 二级及以上汗靴丢地污染：绿粒子 + 附近玩家（含丢者本人）反胃 + 生化武器进度
+        double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
+        boolean washEnabled = SfConfig.WASH_BOOTS_ENABLED.get();
+        int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
+        for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
+            if (!(e instanceof ItemEntity itemEntity)) {
+                continue;
+            }
+            ItemStack stack = itemEntity.getItem();
+            // 泡洗：带汗液组件的靴子泡水里累计计时还原
+            if (washEnabled && itemEntity.isInWater()
+                && stack.is(ItemTags.FOOT_ARMOR) && stack.has(ModDataComponents.SWEAT.get())) {
                 SweatData data = stack.get(ModDataComponents.SWEAT.get());
                 int need = washBootsTicks * (data.level() + 1);
                 int washed = stack.getOrDefault(ModDataComponents.SWEAT_WASH_TICKS.get(), 0) + 20;
@@ -174,17 +177,10 @@ public final class SweatyFeetHandler {
                     }
                 }
             }
-        }
-        // 二级及以上汗靴丢地污染：绿粒子 + 附近玩家（含丢者本人）反胃（二级就触发，用户定案）
-        double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
-        for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
-            if (!(e instanceof ItemEntity itemEntity)) {
-                continue;
-            }
-            ItemStack stack = itemEntity.getItem();
+            // 丢地污染：二级及以上汗靴（用户定案二级触发）
             SweatData data = stack.get(ModDataComponents.SWEAT.get());
             if (data == null || data.level() < 2) {
-                continue; // 二级及以上汗靴污染环境（用户定案二级触发）
+                continue;
             }
             level.sendParticles(ParticleTypes.COMPOSTER,
                 itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
@@ -400,6 +396,9 @@ public final class SweatyFeetHandler {
                 && totalTicks % REFRESH_INTERVAL == 0) {
                 player.addEffect(new MobEffectInstance(ModEffects.FOOT_FUNGUS, MobEffectInstance.INFINITE_DURATION, 0, false, true));
                 player.setData(ModAttachments.FUNGUS, true); // 持久化真菌
+                // 触发后穿戴计时归零：真菌治好后再穿需重新积累 3 级 + 延迟窗口
+                // （totalTicks 是累计总时长，不归零则 totalTicks 早已超阈值 → 治好即秒感染）
+                WEAR_TICKS.put(player.getUUID(), 0);
             }
         }
 
@@ -594,6 +593,18 @@ public final class SweatyFeetHandler {
         if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp) {
             PatchouliBookGiver.tryGiveBook(sp);
         }
+    }
+
+    /** 玩家下线：清掉该玩家全部内存态（长期服 UUID 累积泄漏；双端事件都触发，客户端跑无害） */
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+        UUID id = event.getEntity().getUUID();
+        WEAR_TICKS.remove(id);
+        DEGRADE_TICKS.remove(id);
+        WASH_TICKS.remove(id);
+        BASIN_TICKS.remove(id);
+        BASIN_POS.remove(id);
+        HELD_L3.remove(id);
     }
 
     @SubscribeEvent

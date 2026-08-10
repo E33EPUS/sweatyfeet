@@ -17,8 +17,7 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
 /**
- * 饮品（工作台合成：汗液瓶 + 材料 = 对应 buff 饮品，类型存 DRINK_TYPE 组件）。
- * 先验证速度/力量两种，架构按类型扩展（加类型 + 加配方 + 加 lang key）。
+ * 饮品（发酵靴 3 级倒汗产物；类型存 DRINK_TYPE 组件，架构按类型扩展）。
  * 喝 = 原版药水式（仰头动画 + 咕嘟音效 + 回空玻璃瓶）。
  */
 public class SweatDrinkItem extends Item {
