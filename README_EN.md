@@ -3,7 +3,7 @@
 <h1 align="center">Sweaty Feet</h1>
 
 <p align="center">
-  <em>Wear boots too long and your feet get sweaty! A prank survival mod</em>
+  <em>Wear boots too long and your feet get sweaty — take them off and wash!</em>
 </p>
 
 <p align="center">
@@ -15,19 +15,48 @@
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
-Wearing boots too long makes your feet sweat. Sweaty Feet escalates through three levels, and at level 3 your stinky feet can catch a foot fungus — health drain, sneezing, and it spreads to your friends. Pour the sweat into glass bottles, brew buff drinks from fermented boots, and cure it all by soaking your feet on a stool. All prank, no serious — perfect for griefing your friends on a server.
+---
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Gameplay](#gameplay)
+- [FAQ](#faq)
+- [Development](#development)
+- [Feedback](#feedback)
+- [License](#license)
+
+---
+
+## Introduction
+
+Wearing boots too long makes your feet sweat. Sweaty Feet escalates through three levels, and at level 3 your stinky feet can catch a foot fungus — health drain, sneezing, and it spreads to your friends. Pour the sweat into glass bottles, brew buff drinks from fermented boots, and cure it all by soaking your feet on a stool.
+
+---
+
+## Requirements
+
+| Dependency | Type | Notes |
+|---|---|---|
+| Minecraft | Required | 1.21.1 |
+| NeoForge | Required | 21.1+ |
+| Java | Required | 21+ |
+| Patchouli | Optional | You'll receive the "Sweaty Feet Guide" book on joining a world; everything else works without it |
+| player-animator | Optional | Soaking animation (stool sitting); gameplay unaffected without it |
 
 ---
 
 ## Installation
 
-- Requirements: Minecraft **1.21.1** + NeoForge **21.1.x** + Java 21
-- Download the JAR from [Releases](https://github.com/E33EPUS/sweatyfeet/releases), drop it into `.minecraft/mods/`, and launch the game
-- You'll receive a "Sweaty Feet Guide" book on joining a world (requires [Patchouli](https://www.curseforge.com/minecraft/mc-mods/patchouli)); all mechanics live inside the book
+1. Download the JAR from [Releases](https://github.com/E33EPUS/sweatyfeet/releases)
+2. Drop it into `.minecraft/mods/`
+3. Launch the game
 
 ---
 
-## Gameplay loop
+## Gameplay
 
 ```
 Wear boots → 30/60/90 s → Sweaty Feet level 1/2/3 (boots rename, sweat particles)
@@ -38,24 +67,65 @@ Wear boots → 30/60/90 s → Sweaty Feet level 1/2/3 (boots rename, sweat parti
         Clean water washes Sweaty Feet; add floral water to make medicinal water → cures fungus (only cure)
 ```
 
+Press **J** in-game to open the config screen (Sweaty Feet / Fungus / Items & Drinks / Visuals), or read the handbook in your inventory for details.
+
 ---
 
-## Configuration
+## FAQ
 
-Press **J** in-game to open the config screen: Sweaty Feet / Fungus / Items & Drinks / Visuals, plus an eyedropper to pick your seated skin tint.
+### How do I cure foot fungus?
+
+The only way: pour floral water into a clean basin (turns it medicinal), sit on a stool, take off your boots and soak your feet. Taking boots off, pouring sweat or sleeping won't cure it.
+
+### How do I get rid of Sweaty Feet?
+
+Soaking washes it away directly; taking your boots off only downgrades it over time (level 1 sticks until washed).
+
+### How do I get a sweat bottle?
+
+While wearing sweaty boots, hold a sweaty boot in your main hand + an empty glass bottle in your offhand, then sneak + right-click. Fermented boots (leather boots + sugar) at level 3 pour a Sweat Drink instead.
+
+### How do I get the guide book?
+
+You receive the "Sweaty Feet Guide" automatically when you join a world (requires Patchouli). Without Patchouli everything else still works.
+
+### Do I need it on a server?
+
+Recommended: fungus damage, spread and advancement logic run server-side. Single-player / LAN needs no extra setup.
+
+### Can I put it in a modpack?
+
+Yes, MIT license — no extra permission needed.
 
 ---
 
 ## Development
 
 ```bash
-gradlew build
+git clone https://github.com/E33EPUS/sweatyfeet.git
+cd sweatyfeet
+./gradlew build
 ```
 
 Output: `build/libs/sweatyfeet-NeoForge-1.21.1-0.1.1.jar`
+
+Run tests: `./gradlew test --offline -PrunTests`
+
+---
+
+## Feedback
+
+Report issues at [Issues](https://github.com/E33EPUS/sweatyfeet/issues), ideally with:
+
+- Mod version + Minecraft version + NeoForge version
+- Relevant mod list
+- `.minecraft/logs/latest.log`
+- Screenshots / video + reproducible steps
 
 ---
 
 ## License
 
-MIT License, Copyright (c) 2026 E33EPUS
+[MIT License](LICENSE)
+
+Copyright &copy; 2026 E33EPUS
