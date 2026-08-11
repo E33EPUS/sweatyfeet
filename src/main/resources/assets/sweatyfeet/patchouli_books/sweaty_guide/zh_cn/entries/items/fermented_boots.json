@@ -1,9 +1,13 @@
 {
-    "name": "发酵靴",
-    "icon": "sweatyfeet:fermented_boots",
-    "category": "sweatyfeet:items",
-    "sortnum": 4,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:fermented_boots", "text": "用于制作醇厚的汗液饮品。$(br2)需靴子达到 3 级（靴子等级固化在汗靴上，脱鞋再穿不丢）——副手空瓶、潜行 + 右键倒出。$(br2)皮革靴 + 糖合成。" }
-    ]
+  "name": "发酵靴",
+  "icon": "sweatyfeet:fermented_boots",
+  "category": "sweatyfeet:items",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:fermented_boots",
+      "text": "用于制作醇厚的汗液饮品。$(br2)需靴子达到 3 级（靴子等级固化在汗靴上，脱鞋再穿不丢）——副手空瓶、潜行 + 右键倒出。$(br2)护甲：1 点（同皮革），直接显示在 tooltip 上。$(br2)皮革靴 + 糖合成。"
+    }
+  ]
 }

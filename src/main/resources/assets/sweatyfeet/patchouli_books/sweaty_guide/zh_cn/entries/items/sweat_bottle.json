@@ -1,9 +1,18 @@
 {
-    "name": "汗液瓶",
-    "icon": "sweatyfeet:sweat_bottle",
-    "category": "sweatyfeet:items",
-    "sortnum": 0,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "充满汗液的瓶子。主手持汗靴、副手持空瓶，潜行+右键倒汗获得。$(br2)喝：1级回半格饱食度，2级反胃10秒，3级中毒3秒。" }
-    ]
+  "name": "汗液瓶",
+  "icon": "sweatyfeet:sweat_bottle",
+  "category": "sweatyfeet:items",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:sweat_bottle",
+      "text": "充满汗液的瓶子。主手持汗靴、副手持空瓶，潜行+右键倒汗获得。$(br2)$(bold)质变$()：1-2 级永远倒出普通瓶；汗脚 3 级时汗液发生质变——瓶子带上汗靴材质的风味（见风味图鉴），保留完整的三级效果，名字不再显示等级。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:sweat_bottle",
+      "text": "$(bold)喝$()：恢复 1 点饥饿值（醇厚风味翻倍 2 点），2 级反胃，3 级中毒——风味效果叠加（见风味图鉴）。$(br2)效果和饱食度会直接显示在瓶子的 tooltip 上，与原版药水一致。"
+    }
+  ]
 }

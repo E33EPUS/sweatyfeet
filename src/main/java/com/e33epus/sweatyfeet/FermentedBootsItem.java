@@ -21,8 +21,5 @@ public class FermentedBootsItem extends ArmorItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip,
                                 TooltipType flag) {
-        // 简介行 + 条件行（分行）
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.fermented_boots.tooltip1");
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.fermented_boots.tooltip2");
     }
 }

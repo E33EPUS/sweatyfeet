@@ -67,13 +67,17 @@ public class SweatBottleItem extends Item {
         return effects;
     }
 
-    /** 写药水组件（tooltip 自动显示效果；无效果的瓶不写，保持原色） */
+    /** 写药水+饱食度组件（tooltip 自动显示效果/时长/饥饿值；无效果的瓶不写药水组件） */
     public static void setPotionContents(ItemStack stack, int lvl, String flavor) {
         List<StatusEffectInstance> effects = effectsFor(lvl, flavor);
         if (!effects.isEmpty()) {
             stack.set(DataComponentTypes.POTION_CONTENTS,
                 new PotionContentsComponent(Optional.empty(), Optional.empty(), effects));
         }
+        // FOOD 组件仅驱动 tooltip 的"恢复 X 饥饿值"；饱食度应用仍在 finishUsing 手动（喝药水语义）
+        stack.set(DataComponentTypes.FOOD,
+            new net.minecraft.component.type.FoodComponent(
+                "leather".equals(flavor) ? 2 : 1, 0.1F, true, 1.6F, Optional.empty(), List.of()));
     }
 
     @Override
@@ -157,8 +161,5 @@ public class SweatBottleItem extends Item {
         if (flavor != null) {
             SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.flavor_desc." + flavor);
         }
-        // 简介行 + 使用方式行（分行）
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip1");
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_bottle.tooltip2");
     }
 }

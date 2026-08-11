@@ -137,8 +137,5 @@ public class SweatDrinkItem extends Item {
         if (pc != null) {
             pc.buildTooltip(tooltip::add, 1.0F, 20.0F);
         }
-        // 简介行 + 使用方式行（分行）
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_drink.tooltip1");
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_drink.tooltip2");
     }
 }
