@@ -501,6 +501,7 @@ public final class SweatyFeetHandler {
         }
         if (consecutive >= washTicksFor(player) && player.hasEffect(ModEffects.SWEATY_FEET)) {
             player.removeEffect(ModEffects.SWEATY_FEET);
+            player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN); // 洗清汗脚：二级汗脚刷的缓慢一并清（防 300s 残留）
             player.setData(ModAttachments.SWEAT_STATE, -1); // 洗清汗脚：持久化归零
             DEGRADE_TICKS.remove(id);
             WASH_TICKS.remove(id);
@@ -588,6 +589,7 @@ public final class SweatyFeetHandler {
         if (t >= washTicksFor(player)) {
             // 洗完：清汗脚（药水还清真菌） + 盆变浑水
             player.removeEffect(ModEffects.SWEATY_FEET);
+            player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN); // 洗清汗脚：二级汗脚刷的缓慢一并清（防 300s 残留）
             player.setData(ModAttachments.SWEAT_STATE, -1); // 泡脚洗清：持久化归零
             // 健康生活：成功洗了一次汗脚（盆泡脚路径）
             if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
