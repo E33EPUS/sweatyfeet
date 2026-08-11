@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -138,4 +139,22 @@ class SweatyFeetHandlerTest {
         unknown.set(ModDataComponents.DRINK_TYPE.get(), "bogus");
         assertEquals("speed", SweatDrinkItem.readType(unknown)); // 未知类型归一化到 speed
     }
+    @Disabled("minecraft-junit 环境无 FML 配置加载，SfConfig.get() 不可用（生产运行时已覆盖；Fabric 端同理由跳过）")
+    @Test
+    void bottleEffectsByLevelAndFlavor() {
+        // 0.1.4 三级质变：1 级无效果；2 级反胃；3 级反胃+毒；3 级风味叠加风味效果
+        assertTrue(SweatBottleItem.effectsFor(1, null).isEmpty());
+        var lvl2 = SweatBottleItem.effectsFor(2, null);
+        assertEquals(1, lvl2.size());
+        assertEquals(net.minecraft.world.effect.MobEffects.CONFUSION, lvl2.get(0).getEffect());
+        var lvl3 = SweatBottleItem.effectsFor(3, null);
+        assertEquals(2, lvl3.size());
+        assertEquals(net.minecraft.world.effect.MobEffects.POISON, lvl3.get(1).getEffect());
+        var sulfur = SweatBottleItem.effectsFor(3, "netherite");
+        assertEquals(3, sulfur.size());
+        assertEquals(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, sulfur.get(2).getEffect());
+        var iron = SweatBottleItem.effectsFor(3, "iron");
+        assertEquals(net.minecraft.world.effect.MobEffects.WEAKNESS, iron.get(2).getEffect());
+    }
+
 }

@@ -56,4 +56,31 @@ public final class SweatyFeetClient {
             tintIndex == 0 ? 0xFF3F76E4 : 0xFFFFFFFF;
         event.register(waterTint, ModBlocks.WASH_BASIN.get());
     }
+
+    /** 风味瓶/饮品药水色（tintIndex 0 = layer0，vanilla 药水语义）：
+     *  醇厚=棕、铁锈=红褐、金贵=亮黄、凛冽=青蓝、硫磺=橙金(火抗药水色)、饮品=麦金 */
+    @SubscribeEvent
+    public static void onItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
+        net.minecraft.client.color.item.ItemColor tint = (stack, tintIndex) -> {
+            if (tintIndex != 0) {
+                return -1;
+            }
+            String flavor = stack.get(ModDataComponents.SWEAT_FLAVOR.get());
+            if (flavor != null) {
+                return switch (flavor) {
+                    case "leather" -> 0xFF8B5A2B;
+                    case "iron" -> 0xFFB7410E;
+                    case "gold" -> 0xFFFFD700;
+                    case "diamond" -> 0xFF4FC3F7;
+                    case "netherite" -> 0xFFE49A3A;
+                    default -> -1;
+                };
+            }
+            if (stack.is(ModItems.SWEAT_DRINK.get())) {
+                return 0xFFF5C542; // 汗液饮品：麦金
+            }
+            return -1;
+        };
+        event.register(tint, ModItems.SWEAT_BOTTLE.get(), ModItems.SWEAT_DRINK.get());
+    }
 }

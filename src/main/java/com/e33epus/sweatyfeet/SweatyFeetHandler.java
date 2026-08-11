@@ -786,23 +786,30 @@ public final class SweatyFeetHandler {
             // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
             ItemStack drink = new ItemStack(ModItems.SWEAT_DRINK.get());
             drink.set(ModDataComponents.DRINK_TYPE.get(), "fermented");
+            SweatDrinkItem.setPotionContents(drink);
             drink.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_drink.owned",
                 player.getGameProfile().getName()));
             if (!player.getInventory().add(drink)) {
                 player.drop(drink, false);
             }
         } else {
-            // 汗液瓶：等级 + 风味（按汗靴材质）写入组件，名字带风味（lang key 显示）
+            // 三级质变（0.1.4）：1-2 级永远普通瓶；3 级按靴子材质出风味瓶（名字无等级、保留三级毒+风味效果）。
+            // 其他 mod 靴子/未知材质 = plain → 普通三级瓶（带等级，兼容）。
             String flavor = flavorIdFor(main);
+            boolean flavored = lvl == 3 && !"plain".equals(flavor);
             ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE.get());
             bottle.set(ModDataComponents.SWEAT_LEVEL.get(), lvl);
-            if (!"plain".equals(flavor)) {
+            SweatBottleItem.setPotionContents(bottle, lvl, flavored ? flavor : null);
+            if (flavored) {
                 bottle.set(ModDataComponents.SWEAT_FLAVOR.get(), flavor);
+                bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned_flavored",
+                    player.getGameProfile().getName(),
+                    Component.translatable("item.sweatyfeet.flavor." + flavor)));
+            } else {
+                bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned_plain",
+                    player.getGameProfile().getName(),
+                    romanLevel(data.level())));
             }
-            bottle.set(DataComponents.CUSTOM_NAME, Component.translatable("item.sweatyfeet.sweat_bottle.owned",
-                player.getGameProfile().getName(),
-                Component.translatable("item.sweatyfeet.flavor." + flavor),
-                romanLevel(data.level())));
             if (!player.getInventory().add(bottle)) {
                 player.drop(bottle, false);
             }
