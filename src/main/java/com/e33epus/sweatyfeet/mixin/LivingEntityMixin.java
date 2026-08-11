@@ -18,12 +18,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * 汗脚 2/3 级时改成配置的保留值（默认 0.85），玩家松键后衰减慢 = 真滑行，
  * 和原版冰面同源、双端一致（travel 双端都跑）。
  * 之前的 PlayerTickEvent.Post 乘动量方案无效：摩擦衰减在 travel 内先发生，Post 太晚且被下一 tick 输入重置。
- * @Redirect handler 追加调用方参数（LivingEntity）拿宿主。
+ * @Redirect handler 参数顺序：target 方法参数 → 调用点方法（travel）参数 → 调用点 this
+ * （travel(Vec3d) 的参数在前，this 在后——错位会 InvalidInjectionException，实测崩溃）。
  */
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getSlipperiness()F"))
-    private float sweatyfeet$slideFriction(Block block, LivingEntity entity) {
+    private float sweatyfeet$slideFriction(Block block, net.minecraft.util.math.Vec3d movementInput, LivingEntity entity) {
         if (entity instanceof PlayerEntity player) {
             StatusEffectInstance sf = player.getStatusEffect(ModEffects.SWEATY_FEET);
             if (sf != null && sf.getAmplifier() >= 1 && SfConfig.SLIDE_ENABLED) {
