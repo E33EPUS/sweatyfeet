@@ -19,7 +19,7 @@ public final class SweatyFeetClient implements ClientModInitializer {
     public static final KeyBinding OPEN_CONFIG = new KeyBinding(
         "key.sweatyfeet.open_config", GLFW.GLFW_KEY_J, "key.categories.sweatyfeet");
 
-    private SweatyFeetClient() {
+    public SweatyFeetClient() {
     }
 
     @Override
