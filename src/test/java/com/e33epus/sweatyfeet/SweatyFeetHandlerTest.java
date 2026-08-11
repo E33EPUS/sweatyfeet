@@ -142,4 +142,22 @@ class SweatyFeetHandlerTest {
         unknown.set(ModDataComponents.DRINK_TYPE, "bogus");
         assertEquals("speed", SweatDrinkItem.readType(unknown)); // 未知类型归一化到 speed
     }
+    @Disabled("Fabric 纯 JUnit 无法初始化状态效果注册表（StatusEffect.<clinit> 需要 Fabric Loader；NeoForge 端保留）")
+    @Test
+    void bottleEffectsByLevelAndFlavor() {
+        // 0.1.4 三级质变：1 级无效果；2 级反胃；3 级反胃+毒；3 级风味叠加风味效果
+        assertTrue(SweatBottleItem.effectsFor(1, null).isEmpty());
+        var lvl2 = SweatBottleItem.effectsFor(2, null);
+        assertEquals(1, lvl2.size());
+        assertEquals(net.minecraft.entity.effect.StatusEffects.NAUSEA, lvl2.get(0).getEffectType());
+        var lvl3 = SweatBottleItem.effectsFor(3, null);
+        assertEquals(2, lvl3.size());
+        assertEquals(net.minecraft.entity.effect.StatusEffects.POISON, lvl3.get(1).getEffectType());
+        var sulfur = SweatBottleItem.effectsFor(3, "netherite");
+        assertEquals(3, sulfur.size());
+        assertEquals(net.minecraft.entity.effect.StatusEffects.FIRE_RESISTANCE, sulfur.get(2).getEffectType());
+        var iron = SweatBottleItem.effectsFor(3, "iron");
+        assertEquals(net.minecraft.entity.effect.StatusEffects.WEAKNESS, iron.get(2).getEffectType());
+    }
+
 }

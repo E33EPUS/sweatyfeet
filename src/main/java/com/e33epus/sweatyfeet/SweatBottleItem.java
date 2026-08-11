@@ -1,5 +1,10 @@
 package com.e33epus.sweatyfeet;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.text.Text;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
@@ -40,6 +45,37 @@ public class SweatBottleItem extends Item {
         return Math.max(1, Math.min(3, lvl));
     }
 
+    /** 按等级+风味构造药水效果列表（POTION_CONTENTS 显示 + finishUsing 应用共用，写入时固化） */
+    public static List<StatusEffectInstance> effectsFor(int lvl, String flavor) {
+        List<StatusEffectInstance> effects = new ArrayList<>();
+        if (lvl >= 2) {
+            effects.add(new StatusEffectInstance(StatusEffects.NAUSEA, SfConfig.BOTTLE_NAUSEA_SECONDS * 20, 0));
+        }
+        if (lvl >= 3) {
+            effects.add(new StatusEffectInstance(StatusEffects.POISON, SfConfig.DRINK_POISON_SECONDS * 20, 0));
+        }
+        // 风味附加效果（0.1.2+）：材质特性演绎，叠在等级效果之上；无风味（plain）不加
+        if (flavor != null) {
+            switch (flavor) {
+                case "iron" -> effects.add(new StatusEffectInstance(StatusEffects.WEAKNESS, 15 * 20, 0));          // 铁锈：锈到没力气
+                case "gold" -> effects.add(new StatusEffectInstance(StatusEffects.LUCK, 60 * 20, 0));              // 金贵：金=好运
+                case "diamond" -> effects.add(new StatusEffectInstance(StatusEffects.RESISTANCE, 20 * 20, 0)); // 凛冽：硬=耐打
+                case "netherite" -> effects.add(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 30 * 20, 0)); // 硫磺：下界火抗
+                default -> { /* 未知/plain：无附加 */ }
+            }
+        }
+        return effects;
+    }
+
+    /** 写药水组件（tooltip 自动显示效果；无效果的瓶不写，保持原色） */
+    public static void setPotionContents(ItemStack stack, int lvl, String flavor) {
+        List<StatusEffectInstance> effects = effectsFor(lvl, flavor);
+        if (!effects.isEmpty()) {
+            stack.set(DataComponentTypes.POTION_CONTENTS,
+                new PotionContentsComponent(Optional.empty(), Optional.empty(), effects));
+        }
+    }
+
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
         return 32;
@@ -70,20 +106,26 @@ public class SweatBottleItem extends Item {
             if (entity instanceof net.minecraft.server.network.ServerPlayerEntity sp) {
                 net.minecraft.advancement.criterion.Criteria.CONSUME_ITEM.trigger(sp, stack);
             }
-            if (lvl >= 2) {
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, SfConfig.BOTTLE_NAUSEA_SECONDS * 20, 0));
-            }
-            if (lvl >= 3) {
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, SfConfig.DRINK_POISON_SECONDS * 20, 0));
-            }
-            // 风味附加效果（0.1.2+）：材质特性演绎，叠在等级效果之上；无风味（plain）不加
-            if (flavor != null) {
-                switch (flavor) {
-                    case "iron" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 15 * 20, 0));          // 铁锈：锈到没力气
-                    case "gold" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 60 * 20, 0));              // 金贵：金=好运
-                    case "diamond" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 20 * 20, 0)); // 凛冽：硬=耐打
-                    case "netherite" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 30 * 20, 0)); // 硫磺：下界火抗
-                    default -> { /* 未知/plain：无附加 */ }
+            PotionContentsComponent pc = stack.get(DataComponentTypes.POTION_CONTENTS);
+            if (pc != null) {
+                // 0.1.4+：效果在倒汗时固化进组件（与 tooltip 显示一致，配置改动只影响新瓶）
+                pc.forEachEffect(entity::addStatusEffect);
+            } else {
+                // fallback：旧瓶（0.1.3-）无组件，按等级老逻辑
+                if (lvl >= 2) {
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, SfConfig.BOTTLE_NAUSEA_SECONDS * 20, 0));
+                }
+                if (lvl >= 3) {
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, SfConfig.DRINK_POISON_SECONDS * 20, 0));
+                }
+                if (flavor != null) {
+                    switch (flavor) {
+                        case "iron" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 15 * 20, 0));
+                        case "gold" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 60 * 20, 0));
+                        case "diamond" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 20 * 20, 0));
+                        case "netherite" -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 30 * 20, 0));
+                        default -> { /* 未知/plain：无附加 */ }
+                    }
                 }
             }
             // 音效：1 级像吃东西（回饱食度），2/3 级像喝药水
@@ -105,6 +147,11 @@ public class SweatBottleItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, java.util.List<Text> tooltip,
                                 TooltipType flag) {
+        // 药水效果行（0.1.4+：POTION_CONTENTS 自动显示效果+时长，与喝下去的效果一致）
+        PotionContentsComponent pc = stack.get(DataComponentTypes.POTION_CONTENTS);
+        if (pc != null) {
+            pc.buildTooltip(tooltip::add, 1.0F, 20.0F);
+        }
         // 风味 lore（倒汗时按靴子材质写入组件；无组件 = 朴素瓶不显示）
         String flavor = stack.get(ModDataComponents.SWEAT_FLAVOR);
         if (flavor != null) {

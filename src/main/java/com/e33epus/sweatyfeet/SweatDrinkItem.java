@@ -1,5 +1,10 @@
 package com.e33epus.sweatyfeet;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.sound.SoundEvents;
@@ -34,6 +39,29 @@ public class SweatDrinkItem extends Item {
         };
     }
 
+    /** 按类型构造 buff 效果列表并写药水组件（tooltip 自动显示；与 finishUsing 应用一致，写入时固化） */
+    public static void setPotionContents(ItemStack stack) {
+        String type = readType(stack);
+        int ticks = SfConfig.DRINK_BUFF_SECONDS * 20;
+        List<StatusEffectInstance> effects = new ArrayList<>();
+        if ("fermented".equals(type)) {
+            // 汗液饮品（发酵靴 3 级产物）：迅捷 + 跳跃提升 + 力量 + 幸运
+            effects.add(new StatusEffectInstance(StatusEffects.SPEED, ticks, 0));
+            effects.add(new StatusEffectInstance(StatusEffects.JUMP_BOOST, ticks, 0));
+            effects.add(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, 0));
+            effects.add(new StatusEffectInstance(StatusEffects.LUCK, ticks, 0));
+        } else {
+            RegistryEntry<StatusEffect> effect = effectForType(type);
+            if (effect != null) {
+                effects.add(new StatusEffectInstance(effect, ticks, 0));
+            }
+        }
+        if (!effects.isEmpty()) {
+            stack.set(DataComponentTypes.POTION_CONTENTS,
+                new PotionContentsComponent(Optional.empty(), Optional.empty(), effects));
+        }
+    }
+
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
         return 32;
@@ -58,17 +86,24 @@ public class SweatDrinkItem extends Item {
             if (entity instanceof net.minecraft.server.network.ServerPlayerEntity sp) {
                 net.minecraft.advancement.criterion.Criteria.CONSUME_ITEM.trigger(sp, stack);
             }
-            int ticks = SfConfig.DRINK_BUFF_SECONDS * 20;
-            if ("fermented".equals(readType(stack))) {
-                // 汗液饮品（发酵靴 3 级产物）：迅捷 + 跳跃提升 + 力量 + 幸运
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, ticks, 0));
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, ticks, 0)); // 1.21.1 跳跃提升字段名 JUMP
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, 0));
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, ticks, 0));
+            PotionContentsComponent pc = stack.get(DataComponentTypes.POTION_CONTENTS);
+            if (pc != null) {
+                // 0.1.4+：buff 在倒汗时固化进组件（与 tooltip 显示一致）
+                pc.forEachEffect(entity::addStatusEffect);
             } else {
-                RegistryEntry<StatusEffect> effect = effectForType(readType(stack));
-                if (effect != null) {
-                    entity.addStatusEffect(new StatusEffectInstance(effect, ticks, 0));
+                // fallback：旧饮品（0.1.3-）无组件，按类型老逻辑
+                int ticks = SfConfig.DRINK_BUFF_SECONDS * 20;
+                if ("fermented".equals(readType(stack))) {
+                    // 汗液饮品（发酵靴 3 级产物）：迅捷 + 跳跃提升 + 力量 + 幸运
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, ticks, 0));
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, ticks, 0)); // 1.21.1 跳跃提升字段名 JUMP
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, 0));
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, ticks, 0));
+                } else {
+                    RegistryEntry<StatusEffect> effect = effectForType(readType(stack));
+                    if (effect != null) {
+                        entity.addStatusEffect(new StatusEffectInstance(effect, ticks, 0));
+                    }
                 }
             }
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
@@ -97,6 +132,11 @@ public class SweatDrinkItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, java.util.List<Text> tooltip,
                                 TooltipType flag) {
+        // 药水效果行（0.1.4+：POTION_CONTENTS 自动显示 buff+时长）
+        PotionContentsComponent pc = stack.get(DataComponentTypes.POTION_CONTENTS);
+        if (pc != null) {
+            pc.buildTooltip(tooltip::add, 1.0F, 20.0F);
+        }
         // 简介行 + 使用方式行（分行）
         SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_drink.tooltip1");
         SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.sweat_drink.tooltip2");

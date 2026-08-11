@@ -773,21 +773,28 @@ public final class SweatyFeetHandler {
             // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
             ItemStack drink = new ItemStack(ModItems.SWEAT_DRINK);
             drink.set(ModDataComponents.DRINK_TYPE, "fermented");
+            SweatDrinkItem.setPotionContents(drink);
             drink.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("item.sweatyfeet.sweat_drink.owned",
                 player.getGameProfile().getName()));
             player.getInventory().offerOrDrop(drink);
         } else {
-            // 汗液瓶：等级 + 风味（按汗靴材质）写入组件，名字带风味（lang key 显示）
+            // 三级质变（0.1.4）：1-2 级永远普通瓶；3 级按靴子材质出风味瓶（名字无等级、保留三级毒+风味效果）。
+            // 其他 mod 靴子/未知材质 = plain → 普通三级瓶（带等级，兼容）。
             String flavor = flavorIdFor(main);
+            boolean flavored = lvl == 3 && !"plain".equals(flavor);
             ItemStack bottle = new ItemStack(ModItems.SWEAT_BOTTLE);
             bottle.set(ModDataComponents.SWEAT_LEVEL, lvl);
-            if (!"plain".equals(flavor)) {
+            SweatBottleItem.setPotionContents(bottle, lvl, flavored ? flavor : null);
+            if (flavored) {
                 bottle.set(ModDataComponents.SWEAT_FLAVOR, flavor);
+                bottle.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("item.sweatyfeet.sweat_bottle.owned_flavored",
+                    player.getGameProfile().getName(),
+                    Text.translatable("item.sweatyfeet.flavor." + flavor)));
+            } else {
+                bottle.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("item.sweatyfeet.sweat_bottle.owned_plain",
+                    player.getGameProfile().getName(),
+                    romanLevel(data.level())));
             }
-            bottle.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("item.sweatyfeet.sweat_bottle.owned",
-                player.getGameProfile().getName(),
-                Text.translatable("item.sweatyfeet.flavor." + flavor),
-                romanLevel(data.level())));
             player.getInventory().offerOrDrop(bottle);
         }
 

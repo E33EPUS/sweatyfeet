@@ -23,7 +23,6 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 
 /**
  * 洗脚盆：半格高的木盆（底 + 四壁，中空）。三态：空 / 有水 / 浑水。
@@ -35,7 +34,7 @@ import net.minecraft.util.shape.VoxelShapes;
  * 与 models/block/wash_basin{,_water,_dirty}.json 视觉一致：底 1px + 四壁到 5px，壁厚 2px。
  */
 public class WashBasinBlock extends Block {
-    private static final VoxelShape SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0);
 
     public enum Filled implements net.minecraft.util.StringIdentifiable {
         EMPTY, WATER, DIRTY, MEDICINAL;

@@ -50,6 +50,29 @@ public final class SweatyFeetClient implements ClientModInitializer {
         // 盆里的清水面 tint 成主世界水蓝（vanilla water_still 是灰白贴图靠 tint 上色）
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) ->
             tintIndex == 0 ? 0xFF3F76E4 : 0xFFFFFFFF, ModBlocks.WASH_BASIN);
+
+        // 风味瓶/饮品药水色（tintIndex 0 = layer0，vanilla 药水语义）：
+        // 醇厚=棕、铁锈=红褐、金贵=亮黄、凛冽=青蓝、硫磺=橙金(火抗药水色)、饮品=麦金
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (tintIndex != 0) {
+                return -1;
+            }
+            String flavor = stack.get(ModDataComponents.SWEAT_FLAVOR);
+            if (flavor != null) {
+                return switch (flavor) {
+                    case "leather" -> 0xFF8B5A2B;
+                    case "iron" -> 0xFFB7410E;
+                    case "gold" -> 0xFFFFD700;
+                    case "diamond" -> 0xFF4FC3F7;
+                    case "netherite" -> 0xFFE49A3A;
+                    default -> -1;
+                };
+            }
+            if (stack.isOf(ModItems.SWEAT_DRINK)) {
+                return 0xFFF5C542; // 汗液饮品：麦金
+            }
+            return -1;
+        }, ModItems.SWEAT_BOTTLE, ModItems.SWEAT_DRINK);
     }
 
     /** 汗脚等级角标：与 vanilla renderStatusEffectOverlay 同一套布局重算图标位置，在图标右上角叠画 I/II/III */

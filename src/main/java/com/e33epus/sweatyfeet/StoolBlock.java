@@ -18,7 +18,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 
 /**
  * 凳子：可放置、空手右键坐上去（隐形 SeatEntity）。
@@ -28,7 +27,7 @@ import net.minecraft.util.shape.VoxelShapes;
  */
 public class StoolBlock extends HorizontalFacingBlock {
     /** 座面 8px 高，整格碰撞（坐上去脚踩凳面） */
-    private static final VoxelShape SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 
     public static final MapCodec<StoolBlock> CODEC = createCodec(StoolBlock::new);
 

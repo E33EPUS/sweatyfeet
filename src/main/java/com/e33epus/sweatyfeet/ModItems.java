@@ -68,24 +68,25 @@ public final class ModItems {
             .displayName(Text.translatable("itemGroup.sweatyfeet"))
             .icon(() -> new ItemStack(SWEAT_BOTTLE))
             .entries((params, output) -> {
-                // 汗液瓶 1/2/3 级（带等级组件）
+                // 汗液瓶 1/2/3 级（0.1.4 质变：1-2 级只有普通瓶，3 级才按材质出风味瓶）
                 for (int lvl = 1; lvl <= 3; lvl++) {
                     ItemStack bottle = new ItemStack(SWEAT_BOTTLE);
                     bottle.set(ModDataComponents.SWEAT_LEVEL, lvl);
+                    SweatBottleItem.setPotionContents(bottle, lvl, null);
                     output.add(bottle);
                 }
-                // 风味汗液瓶：5 种靴子材质风味 × 3 级全组合（用户：等级与风味叠加，每种都要能拿到）
+                // 三级质变风味瓶：5 种靴子材质风味 × 3 级（质变产物，名字无等级）
                 for (String flavor : new String[]{"leather", "iron", "gold", "diamond", "netherite"}) {
-                    for (int lvl = 1; lvl <= 3; lvl++) {
-                        ItemStack flavored = new ItemStack(SWEAT_BOTTLE);
-                        flavored.set(ModDataComponents.SWEAT_LEVEL, lvl);
-                        flavored.set(ModDataComponents.SWEAT_FLAVOR, flavor);
-                        output.add(flavored);
-                    }
+                    ItemStack flavored = new ItemStack(SWEAT_BOTTLE);
+                    flavored.set(ModDataComponents.SWEAT_LEVEL, 3);
+                    flavored.set(ModDataComponents.SWEAT_FLAVOR, flavor);
+                    SweatBottleItem.setPotionContents(flavored, 3, flavor);
+                    output.add(flavored);
                 }
                 // 饮品（发酵靴 3 级倒汗产物：汗液饮品，正面 buff）
                 ItemStack fermented = new ItemStack(SWEAT_DRINK);
                 fermented.set(ModDataComponents.DRINK_TYPE, "fermented");
+                SweatDrinkItem.setPotionContents(fermented);
                 output.add(fermented);
                 // 发酵靴
                 output.add(new ItemStack(FERMENTED_BOOTS));
