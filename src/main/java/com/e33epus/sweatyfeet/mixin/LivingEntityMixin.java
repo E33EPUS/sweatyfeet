@@ -3,11 +3,13 @@ package com.e33epus.sweatyfeet.mixin;
 import com.e33epus.sweatyfeet.ModEffects;
 import com.e33epus.sweatyfeet.SfConfig;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -18,13 +20,27 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * 汗脚 2/3 级时改成配置的保留值（默认 0.85），玩家松键后衰减慢 = 真滑行，
  * 和原版冰面同源、双端一致（travel 双端都跑）。
  * 之前的 PlayerTickEvent.Post 乘动量方案无效：摩擦衰减在 travel 内先发生，Post 太晚且被下一 tick 输入重置。
- * @Redirect handler 参数顺序：target 方法参数 → 调用点方法（travel）参数 → 调用点 this
- * （travel(Vec3d) 的参数在前，this 在后——错位会 InvalidInjectionException，实测崩溃）。
+ *
+ * @Redirect 参数规则（实锤崩溃教训）：handler = target 方法 this + target 参数 + 调用点方法参数，
+ * 调用点方法的 this 不追加（(Block, Vec3d, LivingEntity) 报 1 unexpected additional argument）。
+ * 拿宿主实体 = 双 @Redirect：getWorld() 的 target this 就是 LivingEntity，顺带存 ThreadLocal，
+ * getSlipperiness() 的 handler 读（travel 内 getWorld() 先于 getSlipperiness()，顺序有保证）。
  */
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
+    /** 当前正在 travel 的实体（tick 线程串行，ThreadLocal 隔离渲染/服务端线程） */
+    @Unique
+    private static final ThreadLocal<LivingEntity> TRAVELING = new ThreadLocal<>();
+
+    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getWorld()Lnet/minecraft/world/World;"))
+    private World sweatyfeet$captureTraveling(LivingEntity entity, Vec3d movementInput) {
+        TRAVELING.set(entity);
+        return entity.getWorld();
+    }
+
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getSlipperiness()F"))
-    private float sweatyfeet$slideFriction(Block block, net.minecraft.util.math.Vec3d movementInput, LivingEntity entity) {
+    private float sweatyfeet$slideFriction(Block block, Vec3d movementInput) {
+        LivingEntity entity = TRAVELING.get();
         if (entity instanceof PlayerEntity player) {
             StatusEffectInstance sf = player.getStatusEffect(ModEffects.SWEATY_FEET);
             if (sf != null && sf.getAmplifier() >= 1 && SfConfig.SLIDE_ENABLED) {
