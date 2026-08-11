@@ -27,14 +27,14 @@
     }
   ],
   "depends": {
-    "fabricloader": ">=0.16.0",
+    "fabricloader": ">=0.15.11",
     "minecraft": "1.21.1",
     "java": ">=21",
-    "fabric-api": "*",
-    "playeranimator": ">=2.0.0"
+    "fabric-api": ">=0.116.0",
+    "playeranimator": ">=2.0.4"
   },
   "recommends": {
-    "patchouli": "*",
+    "patchouli": ">=1.21.1-92",
     "modmenu": ">=11.0.0"
   }
 }

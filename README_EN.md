@@ -41,7 +41,7 @@ Wearing boots too long makes your feet sweat. Sweaty Feet escalates through thre
 | Dependency | Type | Notes |
 |---|---|---|
 | Minecraft | Required | 1.21.1 |
-| Fabric Loader | Required | 0.16+ |
+| Fabric Loader | Required | 0.15.11+ |
 | Fabric API | Required | 0.116.x+ |
 | Java | Required | 21+ |
 | Patchouli | Optional | Receives the Sweaty Feet Guide on join; everything else works without it |

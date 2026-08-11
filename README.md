@@ -41,7 +41,7 @@
 | 依赖 | 类型 | 说明 |
 |---|---|---|
 | Minecraft | 必需 | 1.21.1 |
-| Fabric Loader | 必需 | 0.16+ |
+| Fabric Loader | 必需 | 0.15.11+ |
 | Fabric API | 必需 | 0.116.x+ |
 | Java | 必需 | 21+ |
 | Patchouli | 可选 | 装了进世界自动收到《Sweaty Feet 攻略本》，没装其余功能正常 |
