@@ -1,9 +1,0 @@
-{
-    "name": "洗脚水桶",
-    "icon": "sweatyfeet:wash_water_bucket",
-    "category": "sweatyfeet:items",
-    "sortnum": 3,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:wash_water_bucket", "text": "刚洗完脚的浑水。空桶右键浑浊的洗脚盆收集。$(br2)喝：只弹「醇香」提示 + 打嗝，没有实际效果（整蛊），喝完回空桶。" }
-    ]
-}

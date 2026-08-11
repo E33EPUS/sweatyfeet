@@ -1,9 +1,0 @@
-{
-    "name": "花露水",
-    "icon": "sweatyfeet:floral_water",
-    "category": "sweatyfeet:items",
-    "sortnum": 2,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:floral_water", "text": "右键装了清水的洗脚盆，把盆水变成$(bold)药水洗脚水$()（治真菌的关键一步）。$(br2)$(bold)直接喝没有用$()——花露水要倒进盆里泡脚才生效。$(br2)$(italic)现实中花露水无法去除脚部真菌！若感染真菌请及时就医。" }
-    ]
-}

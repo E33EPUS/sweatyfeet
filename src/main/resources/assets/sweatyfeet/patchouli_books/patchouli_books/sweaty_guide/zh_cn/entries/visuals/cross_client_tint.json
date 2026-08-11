@@ -1,9 +1,0 @@
-{
-    "name": "跨端颜色同步",
-    "icon": "sweatyfeet:floral_water",
-    "category": "sweatyfeet:visuals",
-    "sortnum": 1,
-    "pages": [
-        { "type": "patchouli:text", "text": "坐凳时本地玩家每 20 tick 上报自己配置的肤色，服务端广播给同维度所有玩家，各端渲染时用广播来的颜色——保证所有人看到同一个下半身颜色。$(br2)离凳停报；新玩家最多等 1 秒收到。" }
-    ]
-}

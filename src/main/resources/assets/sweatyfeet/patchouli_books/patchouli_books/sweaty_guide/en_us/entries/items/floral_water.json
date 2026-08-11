@@ -1,9 +1,0 @@
-{
-    "name": "Floral Water",
-    "icon": "sweatyfeet:floral_water",
-    "category": "sweatyfeet:items",
-    "sortnum": 2,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:floral_water", "text": "Right-click a water-filled basin to turn its water $(bold)medicinal$() — the key step to curing foot fungus.$(br2)$(bold)Drinking it does nothing$() — pour it into the basin and soak instead.$(br2)$(italic)In real life, floral water cannot cure foot fungus! If you have a fungal infection, see a doctor." }
-    ]
-}

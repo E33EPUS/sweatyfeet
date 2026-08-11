@@ -1,9 +1,0 @@
-{
-    "name": "洗脚盆",
-    "icon": "sweatyfeet:wash_basin",
-    "category": "sweatyfeet:recipes",
-    "sortnum": 3,
-    "pages": [
-        { "type": "patchouli:crafting", "recipe": "sweatyfeet:wash_basin", "text": "任意木板 3×3。" }
-    ]
-}

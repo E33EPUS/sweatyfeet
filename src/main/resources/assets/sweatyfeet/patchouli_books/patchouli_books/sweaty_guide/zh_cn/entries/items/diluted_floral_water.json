@@ -1,9 +1,0 @@
-{
-    "name": "稀释的花露水",
-    "icon": "sweatyfeet:diluted_floral_water",
-    "category": "sweatyfeet:items",
-    "sortnum": 7,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:diluted_floral_water", "text": "加了花露水的洗脚水。空桶右键药水洗脚水盆收集。$(br2)可倒回空盆变回药水洗脚水；可以喝（有点苦，喝完回空桶）。" }
-    ]
-}

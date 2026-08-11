@@ -1,9 +1,0 @@
-{
-    "name": "花露水",
-    "icon": "sweatyfeet:floral_water",
-    "category": "sweatyfeet:recipes",
-    "sortnum": 0,
-    "pages": [
-        { "type": "patchouli:crafting", "recipe": "sweatyfeet:floral_water", "text": "任意水瓶 + 任意两种小花（可同种）。" }
-    ]
-}

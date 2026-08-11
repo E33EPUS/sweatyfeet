@@ -1,9 +1,0 @@
-{
-    "name": "手持汗靴的副作用",
-    "icon": "sweatyfeet:fermented_boots",
-    "category": "sweatyfeet:overview",
-    "sortnum": 5,
-    "pages": [
-        { "type": "patchouli:text", "text": "手里拿着$(bold)二级及以上$()的汗靴，你会$(bold)持续反胃$()（屏幕晃动、视野恶心）" }
-    ]
-}

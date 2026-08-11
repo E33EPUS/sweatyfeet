@@ -1,9 +1,0 @@
-{
-    "name": "Sweat Drink",
-    "icon": "sweatyfeet:sweat_drink",
-    "category": "sweatyfeet:items",
-    "sortnum": 1,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_drink", "text": "Aged sweat — unforgettable. Hold level-3 fermented boots in your main hand and an empty bottle in your offhand, then sneak + right-click to pour.$(br2)Drink: Speed, Jump Boost, Strength and Luck for 30 s each." }
-    ]
-}

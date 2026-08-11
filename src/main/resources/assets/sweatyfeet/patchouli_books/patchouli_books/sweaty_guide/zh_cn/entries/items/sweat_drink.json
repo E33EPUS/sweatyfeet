@@ -1,9 +1,0 @@
-{
-    "name": "汗液饮品",
-    "icon": "sweatyfeet:sweat_drink",
-    "category": "sweatyfeet:items",
-    "sortnum": 1,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_drink", "text": "汗液陈酿，令人流连忘返。主手持三级发酵靴、副手持空瓶，潜行+右键倒出。$(br2)喝：迅捷+跳跃提升+力量+幸运 30秒。" }
-    ]
-}

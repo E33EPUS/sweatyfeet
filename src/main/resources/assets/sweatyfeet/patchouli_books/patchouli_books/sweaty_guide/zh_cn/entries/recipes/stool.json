@@ -1,9 +1,0 @@
-{
-    "name": "凳子",
-    "icon": "sweatyfeet:stool",
-    "category": "sweatyfeet:recipes",
-    "sortnum": 2,
-    "pages": [
-        { "type": "patchouli:crafting", "recipe": "sweatyfeet:stool", "text": "有序合成：任意木半砖居中，右下角 + 左下角各一根木棍。" }
-    ]
-}

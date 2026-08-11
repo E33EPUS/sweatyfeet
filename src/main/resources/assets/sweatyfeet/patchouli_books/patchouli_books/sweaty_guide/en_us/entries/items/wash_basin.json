@@ -1,9 +1,0 @@
-{
-    "name": "Wash Basin",
-    "icon": "sweatyfeet:wash_basin",
-    "category": "sweatyfeet:items",
-    "sortnum": 5,
-    "pages": [
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:wash_basin", "text": "A wooden basin for washing feet.$(br2)Right-click with a water bucket to fill it with clean water for washing.$(br2)You must take off your boots and sit on a stool to soak." }
-    ]
-}

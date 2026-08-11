@@ -1,9 +1,0 @@
-{
-    "name": "Floral Water",
-    "icon": "sweatyfeet:floral_water",
-    "category": "sweatyfeet:recipes",
-    "sortnum": 0,
-    "pages": [
-        { "type": "patchouli:crafting", "recipe": "sweatyfeet:floral_water", "text": "Any water bottle + any two small flowers (can be the same type)." }
-    ]
-}
