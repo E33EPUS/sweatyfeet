@@ -123,7 +123,7 @@ public class WashBasinBlock extends Block {
             if (filled == Filled.DIRTY) {
                 if (!level.isClient) {
                     level.setBlockState(pos, state.with(FILLED, Filled.EMPTY));
-                    ItemStack dirtyWater = new ItemStack(ModItems.SWEAT_DRINK);
+                    ItemStack dirtyWater = new ItemStack(ModItems.WASH_WATER_BUCKET);
                     dirtyWater.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME,
                         Text.translatable("item.sweatyfeet.wash_water_bucket.owned", player.getName()));
                     player.setStackInHand(hand, dirtyWater);
@@ -136,7 +136,7 @@ public class WashBasinBlock extends Block {
                 // 药水洗脚水也能用桶接走（之前落 FAIL = 接不起来的根因），收成"稀释的花露水"
                 if (!level.isClient) {
                     level.setBlockState(pos, state.with(FILLED, Filled.EMPTY));
-                    player.setStackInHand(hand, new ItemStack(ModItems.SWEAT_BOTTLE));
+                    player.setStackInHand(hand, new ItemStack(ModItems.DILUTED_FLORAL_WATER));
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }

@@ -647,8 +647,6 @@ public final class SweatyFeetHandler {
         }
     }
 
-    /** 起身（或被拆椅子弹下来）：座位实体清掉（tick 里无乘客自清理兜底），会话保留暂停 */
-    /** 进世界：装了 patchouli 就发一本 Sweaty Feet 手册（每次进世界都发，背包可能多本自己丢） */
     /**
      * 脱鞋后的汗脚降级：每级倒计时 degrade_seconds，到头降一级重新计时，
      * 1 级到头则彻底消除。原版效果机制做不到（到头直接消失），这里手动管理。
@@ -744,7 +742,9 @@ public final class SweatyFeetHandler {
         // 瓶等级 = 汗靴的等级（存在 SweatData 里：汗化时靴子等级固化，倒汗时按它产瓶）
         // 之前用 WEAR_TICKS 内存态算等级：计时随脱鞋清零，导致二级/三级汗脚只能倒出一级瓶
         int lvl = data.level() + 1;
-        offhand.decrement(1);
+        if (!player.isCreative()) {
+            offhand.decrement(1); // NeoForge 版 consume(1, player) 创造模式不消耗，语义对齐
+        }
         if (lvl == 3 && main.isOf(ModItems.FERMENTED_BOOTS)) {
             // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
             ItemStack drink = new ItemStack(ModItems.SWEAT_DRINK);
