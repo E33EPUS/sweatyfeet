@@ -60,9 +60,10 @@ public class SweatBottleItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         int lvl = getLevel(stack);
+        String flavor = stack.get(ModDataComponents.SWEAT_FLAVOR.get());
         if (entity instanceof Player player) {
-            // 1 级：回半格饱食度
-            player.getFoodData().eat(1, 0.1F);
+            // 1 级：回半格饱食度；醇厚（皮革）发酵更顶饱 → 翻倍
+            player.getFoodData().eat("leather".equals(flavor) ? 2 : 1, 0.1F);
         }
         if (!level.isClientSide) {
             // 有点咸...：喝汗液瓶进度（consume_item 必须显式 trigger，且要在 stack.consume 前传本体）
@@ -74,6 +75,16 @@ public class SweatBottleItem extends Item {
             }
             if (lvl >= 3) {
                 entity.addEffect(new MobEffectInstance(MobEffects.POISON, SfConfig.DRINK_POISON_SECONDS.get() * 20, 0));
+            }
+            // 风味附加效果（0.1.2+）：材质特性演绎，叠在等级效果之上；无风味（plain）不加
+            if (flavor != null) {
+                switch (flavor) {
+                    case "iron" -> entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 15 * 20, 0));          // 铁锈：锈到没力气
+                    case "gold" -> entity.addEffect(new MobEffectInstance(MobEffects.LUCK, 60 * 20, 0));              // 金贵：金=好运
+                    case "diamond" -> entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 20, 0)); // 凛冽：硬=耐打
+                    case "netherite" -> entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30 * 20, 0)); // 硫磺：下界火抗
+                    default -> { /* 未知/plain：无附加 */ }
+                }
             }
             // 音效：1 级像吃东西（回饱食度），2/3 级像喝药水
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),

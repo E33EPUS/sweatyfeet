@@ -7,6 +7,7 @@
         { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "汗液瓶的风味取决于$(bold)汗靴的材质$()——靴子越名贵，汗越有层次。集齐五种风味可解锁进度「从夯到拉」。" },
         { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)醇厚$()（皮革靴）：像一坛没盖紧的老酒——皮革在靴子里发酵了整场冒险。$(br2)$(bold)铁锈$()（铁靴）：像雨里跑了一整天的铁匠围裙，锈味和汗味一起滴答。" },
         { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)金贵$()（金靴）：连汗都是金色的——但你不该好奇它尝起来怎么样。$(br2)$(bold)凛冽$()（钻靴）：清冽得像钻石——又冷又硬，闻一口打个寒颤。" },
-        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)硫磺$()（下界合金靴）：下界的硫磺混着岩浆的热气，闻一口像被猪灵揍了一拳。" }
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:sweat_bottle", "text": "$(bold)硫磺$()（下界合金靴）：下界的硫磺混着岩浆的热气，闻一口像被猪灵揍了一拳。$(br2)五种风味都挂在物品 tooltip 上，喝之前先看清效果。" },
+        { "type": "patchouli:text", "text": "$(bold)喝的效果$()（叠在等级效果之上）：$(br)醇厚——回饱食度翻倍。$(br)铁锈——虚弱 15 秒。$(br)金贵——幸运 60 秒。$(br)凛冽——抗性提升 20 秒。$(br)硫磺——火焰抗性 30 秒。$(br2)铁锈是唯一的负面风味——便宜材料，汗也差劲。" }
     ]
 }
