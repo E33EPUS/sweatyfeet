@@ -32,7 +32,7 @@
 
 ## Introduction
 
-Wearing boots too long makes your feet sweat. Sweaty Feet escalates through three levels, and at level 3 your stinky feet can catch a foot fungus — health drain, sneezing, and it spreads to your friends. Pour the sweat into glass bottles, brew buff drinks from fermented boots, and cure it all by soaking your feet on a stool.
+Wearing boots too long makes your feet sweat. Sweaty Feet escalates through three levels, and at level 3 your stinky feet can catch a foot fungus — health drain, sneezing, and it spreads to your friends. Pour the sweat into glass bottles (each carries a flavor effect based on the boot material), brew buff drinks from fermented boots, and cure it all by soaking your feet on a stool.
 
 ---
 
@@ -62,7 +62,7 @@ Wearing boots too long makes your feet sweat. Sweaty Feet escalates through thre
 Wear boots → 2/4/6 min → Sweaty Feet level 1/2/3 (boots rename, sweat particles)
   ├─ Keep wearing at level 3 → Foot fungus (drain / sneeze / spread / smell when barefoot)
   ├─ Pour sweat (sweaty boot + empty bottle in offhand + sneak right-click) → sweat bottle, boots clean
-  │     Fermented boots at level 3 pour a Sweat Drink (four buffs)
+  │     Bottles carry a flavor effect by boot material (see FAQ); fermented boots at level 3 pour a Sweat Drink (four buffs)
   └─ Soak feet: sit on a stool, take off boots, soak in a basin
         Clean water washes Sweaty Feet; add floral water to make medicinal water → cures fungus (only cure)
 ```
@@ -84,6 +84,10 @@ Soaking washes it away directly; taking your boots off only downgrades it over t
 ### How do I get a sweat bottle?
 
 While wearing sweaty boots, hold a sweaty boot in your main hand + an empty glass bottle in your offhand, then sneak + right-click. Fermented boots (leather boots + sugar) at level 3 pour a Sweat Drink instead.
+
+### What are the sweat bottle flavors?
+
+Based on the boot material: leather is Rich (double hunger), iron Rusty (Weakness), gold Gilded (Luck), diamond Crisp (Resistance), netherite Sulfurous (Fire Resistance). Collect all five to unlock the "From Funky to Rank" advancement.
 
 ### How do I get the guide book?
 
