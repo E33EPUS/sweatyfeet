@@ -34,7 +34,6 @@ public final class SfConfig {
     public static int SMELL_RANGE = 5;
     // 效果时长（秒）
     public static int EFFECT_SECONDS = 300;
-    public static int THROW_DEBUFF_SECONDS = 5;
     public static int DRINK_POISON_SECONDS = 3;
     public static int BOTTLE_NAUSEA_SECONDS = 10;
     public static int DRINK_BUFF_SECONDS = 30;
@@ -84,7 +83,6 @@ public final class SfConfig {
             SMELL_ENABLED = getBool(root, "smell_enabled", true);
             SMELL_RANGE = getInt(root, "smell_range", 5);
             EFFECT_SECONDS = getInt(root, "effect_seconds", 300);
-            THROW_DEBUFF_SECONDS = getInt(root, "throw_debuff_seconds", 5);
             DRINK_POISON_SECONDS = getInt(root, "drink_poison_seconds", 3);
             BOTTLE_NAUSEA_SECONDS = getInt(root, "bottle_nausea_seconds", 10);
             DRINK_BUFF_SECONDS = getInt(root, "drink_buff_seconds", 30);
@@ -126,7 +124,6 @@ public final class SfConfig {
         root.addProperty("smell_enabled", SMELL_ENABLED);
         root.addProperty("smell_range", SMELL_RANGE);
         root.addProperty("effect_seconds", EFFECT_SECONDS);
-        root.addProperty("throw_debuff_seconds", THROW_DEBUFF_SECONDS);
         root.addProperty("drink_poison_seconds", DRINK_POISON_SECONDS);
         root.addProperty("bottle_nausea_seconds", BOTTLE_NAUSEA_SECONDS);
         root.addProperty("drink_buff_seconds", DRINK_BUFF_SECONDS);

@@ -734,16 +734,40 @@ public final class SweatyFeetHandler {
 
         // 双端都取消：客户端若只 return，会继续 Item.use → ArmorItem.use → swapWithEquipmentSlot
         // 把主手汗靴【预测性】穿到脚上，产生"幽灵汗靴"，随后被服务端同步纠正消失。
+        // use 事件取消后不会发 use 包（doItemUse 里 FAIL 直接 return，无 fallback 发包），
+        // 服务端收不到包 → 产瓶逻辑永不执行 → 这里补发一个 C2S 倒汗请求，服务端在包 handler 里产瓶。
         if (player.getWorld().isClient) {
+            ModNetworking.requestPour();
             return true;
         }
 
-        // 以下仅服务端执行
+        performPourServer(player, main, data);
+        return true;
+    }
+
+    /** C2S 倒汗请求：服务端重新验证（防作弊）后产瓶 + 还原靴子 */
+    public static void pourRequested(ServerPlayerEntity player) {
+        ItemStack main = player.getMainHandStack();
+        if (!main.isIn(ItemTags.FOOT_ARMOR)) {
+            return;
+        }
+        SweatData data = main.get(ModDataComponents.SWEAT);
+        if (data == null) {
+            return;
+        }
+        if (!player.getOffHandStack().isOf(Items.GLASS_BOTTLE)) {
+            return;
+        }
+        performPourServer(player, main, data);
+    }
+
+    /** 服务端倒汗本体：产瓶/饮品 + 还原靴子（use 事件路径与 C2S 路径共用） */
+    private static void performPourServer(PlayerEntity player, ItemStack main, SweatData data) {
         // 瓶等级 = 汗靴的等级（存在 SweatData 里：汗化时靴子等级固化，倒汗时按它产瓶）
         // 之前用 WEAR_TICKS 内存态算等级：计时随脱鞋清零，导致二级/三级汗脚只能倒出一级瓶
         int lvl = data.level() + 1;
         if (!player.isCreative()) {
-            offhand.decrement(1); // NeoForge 版 consume(1, player) 创造模式不消耗，语义对齐
+            player.getOffHandStack().decrement(1); // NeoForge 版 consume(1, player) 创造模式不消耗，语义对齐
         }
         if (lvl == 3 && main.isOf(ModItems.FERMENTED_BOOTS)) {
             // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
@@ -781,7 +805,6 @@ public final class SweatyFeetHandler {
             player.getGameProfile().getName() + " poured: lvl=" + lvl
             + (lvl == 3 && main.isOf(ModItems.FERMENTED_BOOTS) ? " (drink)" : " (bottle)")
             + ", boots restored");
-        return true;
     }
 
     /** 汗化：写组件（存原名）+ 改名「充满<玩家名>汗液的<原名>（等级X）」+ 挂汗脚 1 级 */

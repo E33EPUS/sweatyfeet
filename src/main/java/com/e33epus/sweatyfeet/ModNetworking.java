@@ -32,6 +32,8 @@ public final class ModNetworking {
         PayloadTypeRegistry.playC2S().register(ReportTint.TYPE, ReportTint.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncTint.TYPE, SyncTint.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ReportTint.TYPE, ReportTint::handle);
+        PayloadTypeRegistry.playC2S().register(PourRequest.TYPE, PourRequest.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PourRequest.TYPE, PourRequest::handle);
     }
 
     /** 客户端注册 S2C 接收（只在 client entrypoint 调） */
@@ -50,6 +52,29 @@ public final class ModNetworking {
             return;
         }
         ClientPlayNetworking.send(new ReportTint(hex));
+    }
+
+    /** 客户端请求服务端倒汗（潜行+右键汗靴）：use 事件取消后不会发包，服务端必须靠这个 C2S 才知道 */
+    public static void requestPour() {
+        ClientPlayNetworking.send(new PourRequest());
+    }
+
+    /** C2S：倒汗请求（空载荷；服务端重新验证汗靴+玻璃瓶） */
+    public record PourRequest() implements CustomPayload {
+        public static final CustomPayload.Id<PourRequest> TYPE =
+            new CustomPayload.Id<>(Identifier.of(SweatyFeet.MOD_ID, "pour_request"));
+        public static final PacketCodec<ByteBuf, PourRequest> STREAM_CODEC =
+            PacketCodec.of((payload, buf) -> {
+            }, buf -> new PourRequest());
+
+        @Override
+        public CustomPayload.Id<PourRequest> getId() {
+            return TYPE;
+        }
+
+        public static void handle(PourRequest payload, ServerPlayNetworking.Context ctx) {
+            ctx.server().execute(() -> SweatyFeetHandler.pourRequested(ctx.player()));
+        }
     }
 
     /** C2S：本地玩家上报自己的 tint */

@@ -74,12 +74,14 @@ public final class ModItems {
                     bottle.set(ModDataComponents.SWEAT_LEVEL, lvl);
                     output.add(bottle);
                 }
-                // 风味示例瓶（5 种靴子材质对应风味，等级 1）
+                // 风味汗液瓶：5 种靴子材质风味 × 3 级全组合（用户：等级与风味叠加，每种都要能拿到）
                 for (String flavor : new String[]{"leather", "iron", "gold", "diamond", "netherite"}) {
-                    ItemStack flavored = new ItemStack(SWEAT_BOTTLE);
-                    flavored.set(ModDataComponents.SWEAT_LEVEL, 1);
-                    flavored.set(ModDataComponents.SWEAT_FLAVOR, flavor);
-                    output.add(flavored);
+                    for (int lvl = 1; lvl <= 3; lvl++) {
+                        ItemStack flavored = new ItemStack(SWEAT_BOTTLE);
+                        flavored.set(ModDataComponents.SWEAT_LEVEL, lvl);
+                        flavored.set(ModDataComponents.SWEAT_FLAVOR, flavor);
+                        output.add(flavored);
+                    }
                 }
                 // 饮品（发酵靴 3 级倒汗产物：汗液饮品，正面 buff）
                 ItemStack fermented = new ItemStack(SWEAT_DRINK);
