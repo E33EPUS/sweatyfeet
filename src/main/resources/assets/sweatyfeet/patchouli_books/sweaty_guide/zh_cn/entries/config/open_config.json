@@ -1,0 +1,10 @@
+{
+    "name": "J 键与配置界面",
+    "icon": "minecraft:comparator",
+    "category": "sweatyfeet:config",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)按 J$() 打开 Sweaty Feet 配置界面。$(br2)界面左侧是可折叠的分类树，右侧是具体配置项" },
+        { "type": "patchouli:text", "text": "按键冲突时游戏会弹出红字提示，可在原版按键设置里改。$(br2)$(bold)服务端配置$()（等级时长、真菌、数值）由服主设定；$(bold)客户端配置$()（表现、取色）各端独立。" }
+    ]
+}

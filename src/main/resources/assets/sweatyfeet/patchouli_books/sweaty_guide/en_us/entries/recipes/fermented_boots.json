@@ -1,0 +1,9 @@
+{
+    "name": "Fermented Boots",
+    "icon": "sweatyfeet:fermented_boots",
+    "category": "sweatyfeet:recipes",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:crafting", "recipe": "sweatyfeet:fermented_boots", "text": "Leather boots + sugar." }
+    ]
+}

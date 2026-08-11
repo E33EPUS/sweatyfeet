@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "minecraft:potion" },
+        { "tag": "minecraft:small_flowers" },
+        { "tag": "minecraft:small_flowers" }
+    ],
+    "result": {
+        "id": "sweatyfeet:floral_water",
+        "count": 1
+    }
+}

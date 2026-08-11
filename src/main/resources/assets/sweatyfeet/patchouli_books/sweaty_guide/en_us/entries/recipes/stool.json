@@ -1,0 +1,9 @@
+{
+    "name": "Stool",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:recipes",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:crafting", "recipe": "sweatyfeet:stool", "text": "Shaped: any wooden slab in the middle, one stick in each of the bottom corners." }
+    ]
+}

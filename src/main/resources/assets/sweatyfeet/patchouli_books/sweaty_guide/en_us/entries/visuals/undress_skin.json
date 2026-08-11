@@ -1,0 +1,10 @@
+{
+    "name": "Sitting Undress",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:visuals",
+    "sortnum": 0,
+    "pages": [
+        { "type": "patchouli:text", "text": "While sitting on a stool, the $(bold)lower half of your skin is replaced with your chosen skin color$() (the pants second layer disappears) — purely a client-side visual, and other players see it too.$(br2)Color: config screen → Visuals → eyedropper, pick one pixel from your own skin." },
+        { "type": "patchouli:text", "text": "The first time you sit, a default skin color is sampled automatically; you can change it anytime.$(br2)If no skin loader is installed or the skin can't be fetched, it falls back to a default skin color." }
+    ]
+}

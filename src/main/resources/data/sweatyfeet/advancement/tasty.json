@@ -1,0 +1,19 @@
+{
+    "criteria": {
+        "drink": {
+            "trigger": "minecraft:consume_item",
+            "conditions": {
+                "item": { "items": "sweatyfeet:wash_water_bucket" }
+            }
+        }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.tasty.description" },
+        "icon": { "count": 1, "id": "sweatyfeet:wash_water_bucket" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.tasty.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["drink"]]
+}

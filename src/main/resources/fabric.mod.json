@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "sweatyfeet",
+  "version": "${version}",
+  "name": "Sweaty Feet",
+  "description": "Wearing boots too long makes your feet sweaty... and stinky. Soak your feet, pour the sweat, cure the fungus!",
+  "authors": [
+    "E33EPUS"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.e33epus.sweatyfeet.SweatyFeet"
+    ],
+    "client": [
+      "com.e33epus.sweatyfeet.SweatyFeetClient"
+    ],
+    "modmenu": [
+      "com.e33epus.sweatyfeet.integration.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "sweatyfeet.mixins.json",
+      "environment": "*"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "playeranimator": ">=2.0.0"
+  },
+  "recommends": {
+    "patchouli": "*",
+    "modmenu": ">=11.0.0"
+  }
+}

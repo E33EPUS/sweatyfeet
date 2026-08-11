@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "healthy": { "trigger": "minecraft:impossible" }
+    },
+    "display": {
+        "announce_to_chat": true,
+        "description": { "translate": "advancements.sweatyfeet.healthy.description" },
+        "icon": { "count": 1, "id": "minecraft:water_bucket" },
+        "show_toast": true,
+        "title": { "translate": "advancements.sweatyfeet.healthy.title" }
+    },
+    "parent": "sweatyfeet:root",
+    "requirements": [["healthy"]]
+}

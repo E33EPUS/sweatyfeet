@@ -1,0 +1,10 @@
+{
+    "name": "Washing & Curing",
+    "icon": "sweatyfeet:wash_basin",
+    "category": "sweatyfeet:overview",
+    "sortnum": 4,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Water washes Sweaty Feet; medicinal water cures fungus.$()$(br2)Way one: $(bold)soak barefoot in water$() — with Sweaty Feet, wade into any water and the soak timer counts up by level (wearing boots while in water just reminds you to take them off).$(br2)Way two: sit on a stool, take off your boots, and $(bold)right-click an adjacent water-filled basin with an empty hand$()." },
+        { "type": "patchouli:text", "text": "When done: Sweaty Feet (and fungus, if medicinal) is cured, and the basin water turns $(bold)dirty$() — scoop it up with a bucket for \"X's dirty foot-washing water\".$(br2)$(bold)Degrading$(): after taking boots off, Sweaty Feet drops one level every so often (host-adjustable) down to level 1, then stays — $(bold)only washing fully clears it$().$(br2)For how the basin works step by step, see \"Mechanics → Using the Wash Basin\"." }
+    ]
+}

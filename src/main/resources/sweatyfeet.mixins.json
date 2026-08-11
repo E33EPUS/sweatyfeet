@@ -1,0 +1,17 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.e33epus.sweatyfeet.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "LivingEntityMixin",
+        "PlayerEntityMixin"
+    ],
+    "client": [
+        "client.AbstractClientPlayerMixin",
+        "client.ItemStackSweatHintMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

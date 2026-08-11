@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.kosmx.player-anim</groupId>
+  <artifactId>player-animation-lib-fabric</artifactId>
+  <version>2.0.4+1.21.1</version>
+  <packaging>jar</packaging>
+  <name>Player Animator (Fabric)</name>
+  <description>Local mirror of Modrinth playeranimator 2.0.4+1.21.1 (fabric). Original: https://cdn.modrinth.com/data/gedNE4y2/versions/CkedfDp3/player-animation-lib-fabric-2.0.4%2B1.21.1.jar</description>
+</project>

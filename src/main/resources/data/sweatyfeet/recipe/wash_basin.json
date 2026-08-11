@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PPP",
+        "P P",
+        "PPP"
+    ],
+    "key": {
+        "P": { "tag": "minecraft:planks" }
+    },
+    "result": {
+        "id": "sweatyfeet:wash_basin"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "name": "洗脚盆",
+    "icon": "sweatyfeet:wash_basin",
+    "category": "sweatyfeet:items",
+    "sortnum": 5,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:wash_basin", "text": "洗脚专用木盆。$(br2)手持水桶右键，填充清水以洗脚。$(br2)需脱鞋+坐在凳子上才能泡。" }
+    ]
+}
