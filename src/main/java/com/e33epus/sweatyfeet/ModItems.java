@@ -1,15 +1,21 @@
 package com.e33epus.sweatyfeet;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.List;
+import java.util.Map;
 
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS =
@@ -34,10 +40,27 @@ public final class ModItems {
     public static final DeferredItem<DilutedFloralWaterItem> DILUTED_FLORAL_WATER =
         ITEMS.register("diluted_floral_water", rl -> new DilutedFloralWaterItem(new Item.Properties().stacksTo(1)));
 
-    /** 发酵靴：皮革靴+糖合成，穿它汗脚发酵——3 级倒汗产出"汗液饮品"（正面 buff） */
+    /** 发酵靴专用盔甲材质：护甲 1（同皮革）、附魔 15（同皮革）、皮革音效/修复材料；
+     *  纹理走 mod 自带 fermented_boots_layer_1.png（浅棕成品靴，不靠染色） */
+    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS =
+        DeferredRegister.create(Registries.ARMOR_MATERIAL, SweatyFeet.MOD_ID);
+
+    public static final Holder<ArmorMaterial> FERMENTED_MATERIAL =
+        ARMOR_MATERIALS.register("fermented", () -> new ArmorMaterial(
+            Map.of(ArmorItem.Type.BOOTS, 1),
+            15,
+            net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_LEATHER,
+            () -> net.minecraft.world.item.crafting.Ingredient.of(Items.LEATHER),
+            List.of(new ArmorMaterial.Layer(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "fermented_boots"))),
+            0.0F, 0.0F));
+
+    /** 发酵靴：皮革靴+糖合成，穿它汗脚发酵——3 级倒汗产出"汗液饮品"（正面 buff）。
+     *  自定义 ArmorMaterial：原版 LEATHER 材质 + 不在 dyeable tag → 渲染时用白色上色
+     *  灰白线稿 = 看起来像铁靴（用户实测）。自定义材质 dyeable=false + 自绘浅棕纹理。 */
     public static final DeferredItem<FermentedBootsItem> FERMENTED_BOOTS =
         ITEMS.register("fermented_boots", rl -> new FermentedBootsItem(
-            net.minecraft.world.item.ArmorMaterials.LEATHER,
+            FERMENTED_MATERIAL,
             ArmorItem.Type.BOOTS,
             new Item.Properties()));
 
@@ -87,5 +110,6 @@ public final class ModItems {
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
         CREATIVE_TABS.register(modBus);
+        ARMOR_MATERIALS.register(modBus);
     }
 }
