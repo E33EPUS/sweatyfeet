@@ -4,7 +4,7 @@
     "category": "sweatyfeet:overview",
     "sortnum": 0,
     "pages": [
-        { "type": "patchouli:text", "text": "Put on $(bold)any boots$() (leather, iron, gold, diamond or netherite — any work) and the wear-time clock starts.$(br2)After enough cumulative wear time, boots become $(bold)sweaty$(): renamed to \"X's sweaty boots\" and you gain the $(bold)Sweaty Feet$() effect." },
+        { "type": "patchouli:text", "text": "Put on $(bold)any boots$() (leather, chainmail, iron, gold, diamond or netherite — boots from other mods work too) and the wear-time clock starts.$(br2)After enough cumulative wear time, boots become $(bold)sweaty$(): renamed to \"X's sweaty boots\" and you gain the $(bold)Sweaty Feet$() effect." },
         { "type": "patchouli:text", "text": "How long counts as \"long enough\" is set by the host — 2 minutes by default.$(br2)Once boots are sweaty, their level is baked in: $(bold)taking them off and re-wearing keeps the level$() — it only ever goes up.$(br2)$(bold)Easter egg$(): the Nether is hot — wearing boots there sweats you twice as fast." }
     ]
 }
