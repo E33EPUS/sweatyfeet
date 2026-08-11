@@ -151,7 +151,11 @@ public final class SweatyFeetHandler {
         double smellRangeSq = (double) SfConfig.SMELL_RANGE.get() * SfConfig.SMELL_RANGE.get();
         boolean washEnabled = SfConfig.WASH_BOOTS_ENABLED.get();
         int washBootsTicks = SfConfig.WASH_BOOTS_SECONDS.get() * 20;
-        for (net.minecraft.world.entity.Entity e : level.getEntities().getAll()) {
+        // 单次全扫（泡洗 + 丢地污染合并）：用 EntityType.ITEM + AABB.INFINITE 走
+        // section 类型索引（只遍历物品实体），不再 getAll() 全维度扫所有实体类型
+        for (net.minecraft.world.entity.Entity e :
+                level.getEntities(net.minecraft.world.entity.EntityType.ITEM,
+                    net.minecraft.world.phys.AABB.INFINITE, ignored -> true)) {
             if (!(e instanceof ItemEntity itemEntity)) {
                 continue;
             }

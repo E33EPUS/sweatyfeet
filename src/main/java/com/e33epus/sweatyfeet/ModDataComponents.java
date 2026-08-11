@@ -58,12 +58,12 @@ public final class ModDataComponents {
                 .persistent(Codec.STRING)
                 .networkSynchronized(ByteBufCodecs.STRING_UTF8));
 
-    /** 汗靴泡水清洗计时（瞬态，不落盘：物品扔水里泡洗进度，洗一半存档不保留） */
+    /** 汗靴泡水清洗计时（瞬态：服务端内部用，客户端不需要 → 不 networkSynchronized，
+     *  泡洗中每秒 +20 写组件不会触发物品同步包） */
     public static final Supplier<DataComponentType<Integer>> SWEAT_WASH_TICKS =
         DATA_COMPONENT_TYPES.registerComponentType("sweat_wash_ticks",
             builder -> builder
-                .persistent(Codec.INT)
-                .networkSynchronized(ByteBufCodecs.INT));
+                .persistent(Codec.INT));
 
     private ModDataComponents() {
     }
