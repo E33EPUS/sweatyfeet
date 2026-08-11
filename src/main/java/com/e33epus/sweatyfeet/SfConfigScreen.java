@@ -18,6 +18,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 
 import net.minecraft.text.Text;
 import net.minecraft.screen.ScreenTexts;
@@ -456,7 +457,11 @@ public class SfConfigScreen extends Screen {
                 width / 2 + 112, height - 26, c().configLabel(), false);
 
         if (tooltipKey != null)
-            g.drawTooltip(textRenderer, Text.translatable(tooltipKey), mouseX, mouseY);
+            // wrap like e33chat: the single-Text overload renders one unwrapped line
+            // and long English descriptions overflow the screen
+            g.drawTooltip(textRenderer,
+                textRenderer.wrapLines(Text.translatable(tooltipKey), 190),
+                HoveredTooltipPositioner.INSTANCE, mouseX, mouseY);
     }
 
     private void drawTriangle(DrawContext g, int x, int y, boolean down, int color) {
