@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
@@ -750,14 +751,37 @@ public final class SweatyFeetHandler {
             rcb.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
         }
         if (player.level().isClientSide) {
+            // 取消 use 后客户端不会发 UseItem 包 → 服务端收不到 → 产瓶逻辑永不执行（b1b74b6 的 FAIL 修法
+            // 在修掉"倒汗后立刻装备"的同时把倒汗本身也弄死了）。这里补发 C2S 倒汗请求，服务端在包 handler 里产瓶。
+            ModNetworking.requestPour();
             return;
         }
 
-        // 以下仅服务端执行
+        performPourServer(player, main, data);
+    }
+
+    /** C2S 倒汗请求：服务端重新验证（防作弊）后产瓶 + 还原靴子 */
+    public static void pourRequested(ServerPlayer player) {
+        ItemStack main = player.getMainHandItem();
+        if (!main.is(ItemTags.FOOT_ARMOR)) {
+            return;
+        }
+        SweatData data = main.get(ModDataComponents.SWEAT.get());
+        if (data == null) {
+            return;
+        }
+        if (!player.getOffhandItem().is(Items.GLASS_BOTTLE)) {
+            return;
+        }
+        performPourServer(player, main, data);
+    }
+
+    /** 服务端倒汗本体：产瓶/饮品 + 还原靴子（use 事件路径与 C2S 路径共用） */
+    private static void performPourServer(Player player, ItemStack main, SweatData data) {
         // 瓶等级 = 汗靴的等级（存在 SweatData 里：汗化时靴子等级固化，倒汗时按它产瓶）
         // 之前用 WEAR_TICKS 内存态算等级：计时随脱鞋清零，导致二级/三级汗脚只能倒出一级瓶
         int lvl = data.level() + 1;
-        offhand.consume(1, player);
+        player.getOffhandItem().consume(1, player);
         if (lvl == 3 && main.is(ModItems.FERMENTED_BOOTS.get())) {
             // 发酵靴汗脚 3 级：汗液+糖发酵成熟 → 产"xxx的汗液饮品"（正面 buff）
             ItemStack drink = new ItemStack(ModItems.SWEAT_DRINK.get());

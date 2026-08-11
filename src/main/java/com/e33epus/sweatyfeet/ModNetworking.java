@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -36,6 +37,7 @@ public final class ModNetworking {
         PayloadRegistrar r = event.registrar("1");
         r.playToServer(ReportTint.TYPE, ReportTint.STREAM_CODEC, ReportTint::handle);
         r.playToClient(SyncTint.TYPE, SyncTint.STREAM_CODEC, SyncTint::handle);
+        r.playToServer(PourRequest.TYPE, PourRequest.STREAM_CODEC, PourRequest::handle);
     }
 
     /** 渲染某玩家时优先用广播来的色；没有返回 null（走本地配置） */
@@ -49,6 +51,34 @@ public final class ModNetworking {
             return;
         }
         PacketDistributor.sendToServer(new ReportTint(hex));
+    }
+
+    /** 客户端请求服务端倒汗（潜行+右键汗靴）：use 事件取消后不会发 UseItem 包，服务端必须靠这个 C2S 才知道 */
+    public static void requestPour() {
+        PacketDistributor.sendToServer(new PourRequest());
+    }
+
+    /** C2S：倒汗请求（空载荷；服务端重新验证汗靴+玻璃瓶） */
+    public record PourRequest() implements CustomPacketPayload {
+        public static final Type<PourRequest> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(SweatyFeet.MOD_ID, "pour_request"));
+        public static final StreamCodec<ByteBuf, PourRequest> STREAM_CODEC =
+            StreamCodec.of((payload, buf) -> {
+            }, buf -> new PourRequest());
+
+        @Override
+        public Type<PourRequest> type() {
+            return TYPE;
+        }
+
+        public static void handle(PourRequest payload, IPayloadContext ctx) {
+            ctx.enqueueWork(() -> {
+                Player p = ctx.player();
+                if (p instanceof ServerPlayer sp) {
+                    SweatyFeetHandler.pourRequested(sp);
+                }
+            });
+        }
     }
 
     /** C2S：本地玩家上报自己的 tint */

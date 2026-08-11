@@ -27,7 +27,6 @@ public final class SfConfig {
     public static final ModConfigSpec.IntValue SMELL_RANGE;
     // 效果时长（秒）
     public static final ModConfigSpec.IntValue EFFECT_SECONDS;
-    public static final ModConfigSpec.IntValue THROW_DEBUFF_SECONDS;
     public static final ModConfigSpec.IntValue DRINK_POISON_SECONDS;
     public static final ModConfigSpec.IntValue BOTTLE_NAUSEA_SECONDS;
     public static final ModConfigSpec.IntValue DRINK_BUFF_SECONDS;
@@ -89,8 +88,6 @@ public final class SfConfig {
         builder.comment("效果时长（秒）。").push("durations");
         EFFECT_SECONDS = builder.comment("汗脚 debuff 单次时长（秒），穿着期间持续刷新")
             .defineInRange("effect_seconds", 300, 1, 86400);
-        THROW_DEBUFF_SECONDS = builder.comment("被汗液瓶砸中后挂汗脚 1 级的时长（秒）")
-            .defineInRange("throw_debuff_seconds", 5, 1, 86400);
         DRINK_POISON_SECONDS = builder.comment("三级汗液瓶中毒时长（秒）")
             .defineInRange("drink_poison_seconds", 3, 1, 86400);
         BOTTLE_NAUSEA_SECONDS = builder.comment("二级汗液瓶反胃时长（秒）")

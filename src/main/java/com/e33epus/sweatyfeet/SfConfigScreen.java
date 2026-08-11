@@ -173,8 +173,6 @@ public class SfConfigScreen extends Screen {
         item.add(new Opt("sweatyfeet.config.wash_boots_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.WASH_BOOTS_SECONDS.get()), 1, 86400, 6, SfConfig.WASH_BOOTS_SECONDS::set), null));
         item.add(Opt.header("sweatyfeet.config.section.bottle"));
-        item.add(new Opt("sweatyfeet.config.throw_debuff_seconds",
-            y -> mkIntBox(y, String.valueOf(SfConfig.THROW_DEBUFF_SECONDS.get()), 1, 86400, 6, SfConfig.THROW_DEBUFF_SECONDS::set), null));
         item.add(new Opt("sweatyfeet.config.bottle_nausea_seconds",
             y -> mkIntBox(y, String.valueOf(SfConfig.BOTTLE_NAUSEA_SECONDS.get()), 1, 86400, 6, SfConfig.BOTTLE_NAUSEA_SECONDS::set), null));
         item.add(new Opt("sweatyfeet.config.drink_poison_seconds",
@@ -233,7 +231,6 @@ public class SfConfigScreen extends Screen {
         tracked.add(track(SfConfig.SMELL_ENABLED));
         tracked.add(track(SfConfig.SMELL_RANGE));
         tracked.add(track(SfConfig.EFFECT_SECONDS));
-        tracked.add(track(SfConfig.THROW_DEBUFF_SECONDS));
         tracked.add(track(SfConfig.DRINK_POISON_SECONDS));
         tracked.add(track(SfConfig.BOTTLE_NAUSEA_SECONDS));
         tracked.add(track(SfConfig.DRINK_BUFF_SECONDS));
