@@ -1,0 +1,13 @@
+{
+  "name": "Fermented Boots",
+  "icon": "sweatyfeet:fermented_boots",
+  "category": "sweatyfeet:items",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:fermented_boots",
+      "text": "Used to brew the rich Sweat Drink.$(br2)Needs the boots to reach level 3 (the level is baked into the sweaty boots — taking them off and re-wearing keeps it); hold them in your main hand + an empty bottle in your offhand, sneak + right-click to pour.$(br2)Armor: 1 (same as leather), shown on the tooltip.$(br2)Crafted from leather boots + sugar."
+    }
+  ]
+}

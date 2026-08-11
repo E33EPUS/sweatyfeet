@@ -1,0 +1,10 @@
+{
+    "name": "Pouring Sweat & Drinks",
+    "icon": "sweatyfeet:sweat_drink",
+    "category": "sweatyfeet:overview",
+    "sortnum": 3,
+    "pages": [
+        { "type": "patchouli:text", "text": "Hold a $(bold)sweaty boot in your main hand$() + an $(bold)empty glass bottle in your offhand$(), then $(bold)sneak + right-click$() to pour: you get one bottle per boot level, and the boots turn clean again.$(br2)Each bottle carries a $(bold)flavor$() based on the boot material — leather is Rich, iron Rusty, gold Gilded, diamond Crisp, netherite Sulfurous (see \"Items → Flavor Almanac\").$(br2)Drinking a sweat bottle: level 1 restores half a hunger shank, level 2 nauseates for 10 s, level 3 poisons for 3 s." },
+        { "type": "patchouli:text", "text": "$(bold)Fermented boots$() (leather boots + sugar) at level 3 pour a $(bold)Sweat Drink$(): grants Speed, Jump Boost, Strength and Luck for 30 s each.$(br2)Pouring only extracts the sweat — the boots turn clean again, but your Sweaty Feet stays (and fungus is never cured by pouring; only medicinal soak works)." }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Sweat Bottle",
+  "icon": "sweatyfeet:sweat_bottle",
+  "category": "sweatyfeet:items",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:sweat_bottle",
+      "text": "A bottle full of sweat. Hold a sweaty boot in your main hand and an empty bottle in your offhand, then sneak + right-click to pour.$(br2)$(bold)Transmutation$(): tiers 1-2 always pour plain bottles. At tier 3 the sweat transmutes — the bottle takes on the flavor of the boot material (see the Flavor Almanac), keeps the full tier-3 effect, and the level no longer shows in the name."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "sweatyfeet:sweat_bottle",
+      "text": "$(bold)Drink$(): restores 1 hunger (2 if Rich/leather flavor), tier 2 nauseates, tier 3 poisons — flavor effects on top (listed in the Flavor Almanac).$(br2)Effects and hunger are shown right on the bottle's tooltip, exactly as vanilla potions do."
+    }
+  ]
+}

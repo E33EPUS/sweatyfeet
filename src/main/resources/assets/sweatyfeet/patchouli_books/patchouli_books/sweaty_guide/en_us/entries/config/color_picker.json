@@ -1,0 +1,10 @@
+{
+    "name": "Eyedropper Color Picker",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:config",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:text", "text": "Config screen → Visuals → $(bold)eyedropper$(): opens a preview of your skin; click one pixel to use that color for the lower body while sitting.$(br2)A default color is also sampled automatically the first time you sit down; change it manually anytime." },
+        { "type": "patchouli:text", "text": "$(bold)Priority$(): the broadcast color (from other players, or from yourself while sitting) wins over the local config.$(br2)After changing the color, both you and other players see the updated sitting lower body." }
+    ]
+}

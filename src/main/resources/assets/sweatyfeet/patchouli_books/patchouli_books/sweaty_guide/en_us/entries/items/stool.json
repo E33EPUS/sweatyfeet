@@ -1,0 +1,9 @@
+{
+    "name": "Stool",
+    "icon": "sweatyfeet:stool",
+    "category": "sweatyfeet:items",
+    "sortnum": 6,
+    "pages": [
+        { "type": "patchouli:spotlight", "item": "sweatyfeet:stool", "text": "A stool built for foot-washing — right-click to sit on it.$(br2)While seated your facing is locked and turning is clamped to 180° (90° each way); press Shift to stand up. Pair it with a wash basin." }
+    ]
+}

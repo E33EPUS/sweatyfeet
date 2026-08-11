@@ -1,0 +1,9 @@
+{
+    "name": "Cross-Client Tint",
+    "icon": "sweatyfeet:floral_water",
+    "category": "sweatyfeet:visuals",
+    "sortnum": 1,
+    "pages": [
+        { "type": "patchouli:text", "text": "While sitting, the local player reports their configured skin color every 20 ticks; the server broadcasts it to everyone in the same dimension, and each client renders the lower body with the broadcast color — so everybody sees the same color.$(br2)Reporting stops when you stand up; new players catch up within about a second." }
+    ]
+}

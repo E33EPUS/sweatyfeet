@@ -1,0 +1,11 @@
+{
+    "name": "Fungus Mechanics",
+    "icon": "sweatyfeet:fermented_boots",
+    "category": "sweatyfeet:mechanics",
+    "sortnum": 2,
+    "pages": [
+        { "type": "patchouli:text", "text": "$(bold)Trigger$(): keep wearing boots for 60 s (default, host-adjustable) after reaching sweat level 3.$(br2)$(bold)Effects$(): walk 15% slower, sneeze every 3 seconds, and take periodic damage that ignores armor (it can be lethal — hosts can disable it).$(br2)$(bold)It never goes away$(): taking boots off, pouring sweat or waiting won't clear it." },
+        { "type": "patchouli:text", "text": "$(bold)Spread$(): while barefoot you infect players nearby, and the newly infected stay infected and can spread it further.$(br2)$(bold)Smell$(): only while barefoot — green particles that nauseate nearby players; $(bold)wearing boots kills the stench$().$(br2)Fungus, damage, spread and smell can all be toggled in the config." },
+        { "type": "patchouli:text", "text": "$(bold)Cure$(): pour floral water into a water basin to turn it medicinal, sit on a stool, take your boots off and soak until done — it also washes away Sweaty Feet at the same time. This is the $(bold)only$() way to cure it." }
+    ]
+}
