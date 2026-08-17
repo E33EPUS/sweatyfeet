@@ -454,7 +454,7 @@ public class SfConfigScreen extends Screen {
             g.drawString(font, Component.translatable("sweatyfeet.config.changed", changed),
                 width / 2 + 112, height - 26, c().configLabel(), false);
 
-        if (tooltipKey != null)
+        if (tooltipKey != null && net.minecraft.client.resources.language.I18n.exists(tooltipKey))
             g.renderTooltip(font, font.split(Component.translatable(tooltipKey), 190), mouseX, mouseY);
     }
 
