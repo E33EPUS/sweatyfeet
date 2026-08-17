@@ -8,9 +8,7 @@ import net.minecraft.util.Identifier;
  * 16×16 PNG，与 e33chat 的 gui/dark 资源一致。
  */
 public enum SfUiElement {
-    CONFIG_BG("config_bg"),
     DIVIDER("divider"),
-    INPUT_BG("input_bg"),
     SCROLLBAR_TRACK("scrollbar_track"),
     SCROLLBAR_THUMB("scrollbar_thumb"),
     HOVER_BG("hover_bg");

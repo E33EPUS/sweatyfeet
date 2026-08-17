@@ -34,6 +34,8 @@ public final class SweatyFeetClient implements ClientModInitializer {
         ClientKeyHandler.init();
         ModRenderers.init();
         ModNetworking.initClient();
+        // 泡脚动画 tick 处理器 + 下线清理（init 内部自带 PA 加载守卫；NeoForge 端由 @EventBusSubscriber 自动注册）
+        SoakAnimationClient.init();
 
         // 汗脚等级角标：vanilla 效果图标渲染完后叠画 I/II/III（图标右上角）
         HudRenderCallback.EVENT.register((ctx, tickCounter) -> drawSweatLevelBadge(ctx));

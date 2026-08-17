@@ -453,7 +453,7 @@ public class SfConfigScreen extends Screen {
             g.drawText(textRenderer, Text.translatable("sweatyfeet.config.changed", changed),
                 width / 2 + 112, height - 26, c().configLabel(), false);
 
-        if (tooltipKey != null)
+        if (tooltipKey != null && net.minecraft.client.resource.language.I18n.hasTranslation(tooltipKey))
             // wrap like e33chat: the single-Text overload renders one unwrapped line
             // and long English descriptions overflow the screen
             g.drawTooltip(textRenderer,

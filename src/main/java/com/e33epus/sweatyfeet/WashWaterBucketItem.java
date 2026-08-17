@@ -62,8 +62,7 @@ public class WashWaterBucketItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, java.util.List<Text> tooltip,
                                 TooltipType flag) {
-        // 简介行 + 使用方式行（分行）
+        // 简介行（用户定：1 行即可，使用方式并入简介）
         SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.wash_water_bucket.tooltip1");
-        SweatyTooltips.addIfPresent(tooltip, "item.sweatyfeet.wash_water_bucket.tooltip2");
     }
 }
