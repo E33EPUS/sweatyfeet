@@ -15,34 +15,14 @@
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
+> Version history: see [CHANGELOG.md](CHANGELOG.md)
+
 ---
-
-## Changelog
-
-### 0.1.6
-- Undress skin pipeline optimized: prefetch on login, offline default-skin fallback (offline players get undress too), 8s download timeout, 60s cooldown auto-retry
-- Fix: skin flashing to the default skin while sitting (default-skin fallback now limited to truly offline players)
-- debug_undress logs only on state change (no per-frame spam)
-- Cleanup: dead tooltip refs, orphan lang keys, unused GUI textures; fixed raw key showing on config hover
-
-### 0.1.5
-- Sweat bottles now carry a food component: the tooltip shows "Restores X Hunger" (1 point, doubled to 2 by the Rich flavor), exactly like vanilla food
-- Drink item tooltips trimmed: effects are auto-shown by the potion component, flavor lore stays as pure flavor text, details moved to the guidebook
-- Guidebook updated: transmutation, hunger, fermented-boots armor
-
-### 0.1.4
-- **Tier-3 transmutation**: tiers 1-2 always pour plain bottles; at tier 3 the sweat transmutes and the bottle takes on the flavor of the boot material (no level in the name, full tier-3 effects kept); boots from other mods still pour plain tier-3 bottles (compat)
-- Flavored bottles are tinted per flavor (Sulfurous = golden potion, Crisp = cyan, ...); the drink is wheat-gold
-- Pouring now goes through a custom network packet (use-event cancellation meant the server never heard about it); creative tab has all variants; fixed basin/stool collision boxes (they were one chunk big)
-
-### 0.1.3
-- ⚙ config button on the inventory screen (no prerequisites); I/II/III tier badge on the sweaty-feet HUD icon
-- All creative-tab variants; removed the dropped "thrown bottle debuff" config
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Gameplay](#gameplay)
+- [Gameplay at a Glance](#gameplay-at-a-glance)
 - [Item Guide](#item-guide)
 - [Configuration](#configuration)
 - [Guidebook](#guidebook)
@@ -53,7 +33,6 @@
 - [Development](#development)
 - [Feedback](#feedback)
 - [License](#license)
-- [Screenshots (WIP)](#screenshots-wip)
 
 ---
 
@@ -71,81 +50,15 @@ Wearing boots too long makes your feet sweat: three escalating tiers, and a tier
 
 ---
 
-## Gameplay
+## Gameplay at a Glance
 
-### Three-tier sweat
+- **Three-tier sweat**: 2/4/6 minutes of cumulative boot-wearing; tier 2 slides, tier 3 nauseates while held and pollutes the ground; the Nether doubles the rate; pouring does not cure it — only soaking does
+- **Tier-3 transmutation**: at tier 3, poured sweat transmutes into five flavored bottles by boot material — different colors and bonus effects, the core of the collection
+- **Fungus infection**: keep wearing boots past tier 3 and you catch a fungus — damage over time, sneezes, barefoot stink, contagion; the only cure is floral-water soaking
+- **Soaking & washing**: sit on a stool and soak for 15 s to clear sweaty feet and cure fungus; throw sweaty boots into water for 15 s to wash them clean
+- **Fermented drink**: wearing Fermented Boots ferments your sweat; tier-3 pouring yields a positive buff drink (Speed / Jump Boost / Strength / Luck)
 
-Wear any boots long enough and they "sweatify" — renamed to "〈Player's〉Sweaty 〈Original Name〉 (Tier X)", with sweat particles and the Sweaty Feet effect:
-
-| Tier | Wear time | Effects |
-| --- | --- | --- |
-| 1 | 120 s | Sweat particles; pouring makes a tier-1 bottle |
-| 2 | 240 s | + sliding (reduced friction, ice-like) |
-| 3 | 360 s | + nausea while holding the sweaty boots; dropping them spreads green stink particles and nauseates nearby players (including you) |
-
-- **Nether**: the heat doubles the sweat rate (prank easter egg)
-- **Taking the boots off**: the effect stays; it degrades one tier every 60 s and vanishes from tier 1
-- **Pouring does not cure the effect** — only soaking does
-
-### Pouring & transmutation
-
-Sweaty boots in the main hand + empty glass bottle in the offhand + sneak + right-click → boots restored, bottle produced.
-
-**Transmutation (0.1.4+)**:
-
-| Sweat tier | Result |
-| --- | --- |
-| 1-2 | Plain bottle (tier I/II in the name, no flavor) |
-| 3 + vanilla/this-mod boots | **Flavored bottle** (transmuted: no tier in the name, full tier-3 effects + flavor bonus, tinted per flavor) |
-| 3 + other mods' boots | Plain tier-3 bottle (tier III in the name, unknown-material compat) |
-| 3 + Fermented Boots | Sweat Drink (positive buffs, below) |
-
-### Flavor Almanac
-
-| Boot material | Flavor | Bottle color | Bonus effect |
-| --- | --- | --- | --- |
-| Leather | Rich | Brown | Double hunger restored (2 points) |
-| Iron | Rusty | Rust brown | Weakness for 15 s (the only negative flavor — cheap material, cheap sweat) |
-| Gold | Gilded | Bright yellow | Luck for 60 s |
-| Diamond | Crisp | Cyan | Resistance for 20 s |
-| Netherite | Sulfurous | Golden orange (fire-resistance potion color) | Fire Resistance for 30 s |
-
-Collect all five flavors to unlock the "From Funky to Rank" advancement.
-
-### Bottle effects
-
-| Tier | Drinking |
-| --- | --- |
-| 1 | Restores 1 hunger (half a shank), some saturation |
-| 2 | + Nausea for 10 s |
-| 3 | + Poison for 3 s (flavored bottles stack the flavor bonus on top) |
-
-Effects and hunger show right on the bottle's tooltip, exactly like vanilla potions.
-
-### Fungus infection
-
-Keep wearing boots 60 s past tier 3 → fungus infection:
-
-- 1 damage every 3 s (magic damage, ignores armor)
-- Sneeze particles (toggleable)
-- **Contagious**: players standing within 3 blocks catch it (checked every 3 s); barefoot stink nauseates within 5 blocks
-- **Only cure**: pour Floral Water into a basin with water → medicinal wash water → soak your feet
-
-### Soaking & washing
-
-1. Place a **Wash Basin**, fill it with a **water bucket** (or scoop with an empty bucket; potions go in directly)
-2. Sit on a **Stool** (right-click, boots come off automatically)
-3. Soak barefoot in the water for 15 s → sweat cleared, basin turns dirty (scoop it with an empty bucket for a Wash Water Bucket)
-4. Floral Water (water bottle + any two small flowers) poured into the basin → medicinal wash water that cures fungus
-
-**Washing boots**: throw sweaty boots into water for 15 s and they wash clean (configurable).
-
-### Fermented Boots & Sweat Drink
-
-- **Craft**: leather boots + sugar
-- Wearing them ferments your sweat; **tier-3 pouring** produces "〈Player's〉 Sweat Drink" (not a bottle)
-- Armor: 1 (same as leather), shown on the tooltip
-- **Drink**: 30 s of Speed + Jump Boost + Strength + Luck
+> Full mechanics, values and recipes (Flavor Almanac, per-tier effects) live in the in-game **Guidebook** — press **H**. This page is just the gameplay overview.
 
 ---
 
@@ -201,7 +114,9 @@ You get a **Sweaty Feet Guidebook** (Patchouli) on entering the world: 7 chapter
 
 - **Modpack-friendly** (MIT, credit the source)
 - Install on both client and server (gameplay logic runs server-side, animation/rendering client-side)
-- The server config file is authoritative; client config only affects local display (e.g. skin tint)
+- **Server config is authoritative**: in multiplayer the server's `config/sweatyfeet-server.toml` wins; client config only affects local display (e.g. skin tint)
+- LAN / offline servers: undress automatically falls back to the player's default skin, so it works offline too
+- Failed skin downloads auto-retry with a 60 s cooldown — no restart needed
 - No known conflicts with common mods (e33chat bubbles, Modern UI, Xaero's maps, ...)
 
 ---
@@ -221,7 +136,7 @@ Sweaty boots in the main hand + empty glass bottle in the offhand + sneak + righ
 That's the transmutation mechanic (0.1.4+): tiers 1-2 pour plain bottles only. **Tier-3** pouring transmutes the bottle by boot material.
 
 **What do the bottle colors mean?**
-One potion color per flavor (Sulfurous = golden, Crisp = cyan, ...); the color matches the bonus effect — see the Flavor Almanac above.
+One potion color per flavor (Sulfurous = golden, Crisp = cyan, ...); the color matches the bonus effect — see the Flavor Almanac in the guidebook.
 
 **Do Fermented Boots have armor?**
 Yes — 1 point, same as leather, shown on the tooltip.
@@ -258,9 +173,3 @@ GitHub Issues: `github.com/E33EPUS/sweatyfeet/issues` (attach latest.log and the
 ## License
 
 MIT
-
----
-
-## Screenshots (WIP)
-
-> Placeholder for screenshots: sweat particles / transmuted flavored bottles / fungus infection / soaking animation / config screen
