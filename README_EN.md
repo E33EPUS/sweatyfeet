@@ -99,10 +99,16 @@ You get a **Sweaty Feet Guidebook** (Patchouli) on entering the world: 7 chapter
 
 - Minecraft **1.21.1**
 - **Fabric Loader** ≥ 0.15.11 (Java 21)
+
+**Required dependencies**
+
 - **Fabric API** ≥ 0.116.0
-- **player-animator** ≥ 2.0.4 (soaking animation prerequisite)
-- **ModMenu** (optional, recommended — one config entry point)
-- **Patchouli** (optional — installs the guidebook; gameplay works without it)
+- **player-animator** ≥ 2.0.4 (drives the soak-sit animation; for 1.21.1 the matching build is `2.0.4+1.21.1`)
+
+**Optional dependencies**
+
+- **ModMenu** (recommended — one config entry point)
+- **Patchouli** — installs the in-game guidebook (7 chapters, 29 entries); gameplay works without it
 
 ## Installation
 
