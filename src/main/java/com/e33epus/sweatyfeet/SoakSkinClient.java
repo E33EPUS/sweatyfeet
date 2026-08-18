@@ -207,9 +207,10 @@ public final class SoakSkinClient {
                 } catch (Exception ignored) {
                 }
             }
-            // ② 资源包内默认皮肤：离线玩家（textureUrl 为 null）的 skin.texture() 直接指向
-            //    minecraft:textures/entity/player/{slim,wide}/... —— 零网络直读，离线也有脱裤
-            if (img == null) {
+            // ② 资源包内默认皮肤：仅真正离线玩家（无 URL）才用默认皮肤兜底。
+            //    注意：在线玩家皮肤异步加载中，texture RL 暂时也是默认皮肤路径——
+            //    若这里无条件读，坐凳瞬间会基于默认皮肤生成改图 = "变回未加载的默认皮肤" bug。
+            if (img == null && (fetchUrl == null || fetchUrl.isBlank())) {
                 img = tryResource(textureRl);
             }
             // ③ 磁盘缓存 → 带超时下载（在线玩家；国内网络差不挂死，靠缓存/①/②兜底）
@@ -276,7 +277,11 @@ public final class SoakSkinClient {
             skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(player.getGameProfile());
         } catch (Exception ignored) {
         }
-        if (skin != null && skin.texture() != null) {
+        // 仅当真实皮肤 URL 已知才预取下载（在线玩家纹理属性未就绪时为 null，不预取）；
+        // 真离线玩家（textureUrl 恒 null）留到坐凳时由 resolve 走默认皮肤兜底，
+        // 避免进世界秒坐凳时基于"未就绪的默认皮肤"生成改图 = 坐凳瞬间变默认皮肤。
+        if (skin != null && skin.texture() != null
+            && skin.textureUrl() != null && !skin.textureUrl().isBlank()) {
             requestFetch(id, player, skin.textureUrl(), skin.texture());
         }
     }
