@@ -11,13 +11,19 @@
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge-orange">
   <img alt="Side" src="https://img.shields.io/badge/Side-Client%20%2B%20Server-blue">
   <img alt="Java" src="https://img.shields.io/badge/Java-21%2B-yellow">
-  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.5-informational">
+  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.6-informational">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
 ---
 
 ## Changelog
+
+### 0.1.6
+- Undress skin pipeline optimized: prefetch on login, offline default-skin fallback (offline players get undress too), 8s download timeout, 60s cooldown auto-retry
+- Fix: skin flashing to the default skin while sitting (default-skin fallback now limited to truly offline players)
+- debug_undress logs only on state change (no per-frame spam)
+- Cleanup: dead tooltip refs, orphan lang keys, unused GUI textures; fixed raw key showing on config hover
 
 ### 0.1.5
 - Sweat bottles now carry a food component: the tooltip shows "Restores X Hunger" (1 point, doubled to 2 by the Rich flavor), exactly like vanilla food
@@ -185,7 +191,7 @@ You get a **Sweaty Feet Guidebook** (Patchouli) on entering the world: 7 chapter
 
 ## Installation
 
-1. Download `sweatyfeet-NeoForge-1.21.1-0.1.5.jar` from the `Neoforge-1.21.1` branch
+1. Download `sweatyfeet-NeoForge-1.21.1-0.1.6.jar` from the `Neoforge-1.21.1` branch
 2. Drop it into `.minecraft/mods/`
 3. Launch (install on **both** client and server)
 
