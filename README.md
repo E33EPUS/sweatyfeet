@@ -99,8 +99,14 @@
 
 - Minecraft **1.21.1**
 - **NeoForge** 21.1.x（Java 21）
-- **player-animator** ≥ 2.0.4（泡脚动画前置，[Modrinth](https://modrinth.com/mod/playeranimator)）
-- **Patchouli**（可选，装了就发手册；不装不影响玩法）
+
+**必需依赖**
+
+- **player-animator** ≥ 2.0.4（泡脚坐下动画依赖；1.21.1 对应版本 `2.0.4+1.21.1`，[Modrinth](https://modrinth.com/mod/playeranimator)）
+
+**可选依赖**
+
+- **Patchouli**（帕秋莉手册——装了就发游戏内手册，7 章 29 条目；不装不影响玩法）
 
 ## 安装方式
 

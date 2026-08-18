@@ -99,8 +99,14 @@ You get a **Sweaty Feet Guidebook** (Patchouli) on entering the world: 7 chapter
 
 - Minecraft **1.21.1**
 - **NeoForge** 21.1.x (Java 21)
-- **player-animator** ≥ 2.0.4 (soaking animation prerequisite, [Modrinth](https://modrinth.com/mod/playeranimator))
-- **Patchouli** (optional — installs the guidebook; gameplay works without it)
+
+**Required dependencies**
+
+- **player-animator** ≥ 2.0.4 (drives the soak-sit animation; for 1.21.1 the matching build is `2.0.4+1.21.1`, [Modrinth](https://modrinth.com/mod/playeranimator))
+
+**Optional dependencies**
+
+- **Patchouli** — installs the in-game guidebook (7 chapters, 29 entries); gameplay works without it
 
 ## Installation
 
