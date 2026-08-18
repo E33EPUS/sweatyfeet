@@ -64,5 +64,10 @@ public final class SoakAnimationClient {
                 SoakSkinClient.clearFor(client.player.getUuid());
             }
         });
+
+        // 进世界预热：后台拉取本地玩家皮肤，坐下时改图通常已就绪（脱裤不再等首次下载）
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            SoakSkinClient.prefetch(client.player);
+        });
     }
 }
