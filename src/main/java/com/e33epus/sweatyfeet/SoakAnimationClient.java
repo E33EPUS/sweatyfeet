@@ -65,4 +65,10 @@ public final class SoakAnimationClient {
     public static void onPlayerLoggedOut(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
         SoakSkinClient.clearFor(event.getEntity().getUUID());
     }
+
+    /** 进世界预热：后台拉取本地玩家皮肤，坐下时改图通常已就绪（脱裤不再等首次下载） */
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingIn event) {
+        SoakSkinClient.prefetch(event.getPlayer());
+    }
 }

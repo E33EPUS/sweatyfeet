@@ -64,9 +64,11 @@ public final class SoakSkinClient {
     }
 
     private static final Map<UUID, Entry> CACHE = new HashMap<>();
-    private static final Map<UUID, ResourceLocation> LAST_LOGGED = new HashMap<>();
+    private static final Map<UUID, String> LAST_LOG_STATE = new HashMap<>();
     private static final Set<UUID> PENDING = new HashSet<>();
-    private static final Set<UUID> FAILED = new HashSet<>();
+    /** 失败时间戳（ms）：冷却期内不重试，过期后自动重试——网络瞬时故障可自愈 */
+    private static final Map<UUID, Long> FAILED = new HashMap<>();
+    private static final long RETRY_COOLDOWN_MS = 60_000L;
     private static final Map<UUID, NativeImage> READY = new HashMap<>();
     private static final ExecutorService FETCHER = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "sweatyfeet-skin-fetch");
@@ -114,18 +116,20 @@ public final class SoakSkinClient {
             e = null;
         }
         if (SfConfig.DEBUG_UNDRESS.get()) {
-            ResourceLocation cur = e != null && e.base().equals(base) ? e.generated() : null;
-            // 每次调用都记（不只变化时）：能看到缓存命中/未就绪/换肤全状态
-            LAST_LOGGED.put(id, cur);
-            com.mojang.logging.LogUtils.getLogger().info(
-                "[SF] undress resolve {} seat={} tint={} -> {} (base={}, pending={}, failed={})",
-                player.getName().getString(),
-                player.getVehicle() instanceof SeatEntity,
-                tintStr,
-                cur,
-                base,
-                PENDING.contains(id),
-                FAILED.contains(id));
+            // 只打状态变化（none→pending→ready/failed），避免每帧刷屏日志爆炸
+            String state = (e != null && e.base().equals(base)) ? "ready"
+                : PENDING.contains(id) ? "pending"
+                : FAILED.containsKey(id) ? "failed" : "none";
+            if (!state.equals(LAST_LOG_STATE.get(id))) {
+                LAST_LOG_STATE.put(id, state);
+                com.mojang.logging.LogUtils.getLogger().info(
+                    "[SF] undress resolve {} seat={} tint={} state={} (base={})",
+                    player.getName().getString(),
+                    player.getVehicle() instanceof SeatEntity,
+                    tintStr,
+                    state,
+                    base);
+            }
         }
         if (e != null && e.base().equals(base)) {
             return new PlayerSkin(e.generated(), skin.textureUrl(), skin.capeTexture(),
@@ -135,7 +139,7 @@ public final class SoakSkinClient {
             CACHE.remove(id); // 换皮肤了：旧改图作废，重拉
             FAILED.remove(id);
         }
-        requestFetch(id, player, skin.textureUrl());
+        requestFetch(id, player, skin.textureUrl(), skin.texture());
         return null;
     }
 
@@ -161,11 +165,17 @@ public final class SoakSkinClient {
         CACHE.put(id, new Entry(base, rl, tintStr));
     }
 
-    private static void requestFetch(UUID id, Player player, String url) {
+    private static void requestFetch(UUID id, Player player, String url, ResourceLocation textureRl) {
         synchronized (PENDING) {
-            if (PENDING.contains(id) || FAILED.contains(id)) {
+            if (PENDING.contains(id)) {
                 return;
             }
+            // 失败冷却：60s 内不重试，过期自动重试（网络瞬时故障可自愈）
+            Long failedAt = FAILED.get(id);
+            if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_COOLDOWN_MS) {
+                return;
+            }
+            FAILED.remove(id);
             PENDING.add(id);
         }
         String resolvedUrl = url;
@@ -184,8 +194,8 @@ public final class SoakSkinClient {
         final String fetchUrl = resolvedUrl;
         FETCHER.submit(() -> {
             NativeImage img = null;
-            // CSL 本地导入皮肤：textureUrl() 是空串（API 不暴露本地路径，反编译实锤），
-            // 直接读 CSL 默认本地皮肤目录（LocalSkin/skins/<玩家名>.png）
+            // ① CSL 本地导入皮肤：textureUrl() 是空串（API 不暴露本地路径，反编译实锤），
+            //    直接读 CSL 默认本地皮肤目录（LocalSkin/skins/<玩家名>.png）——离线可用
             if (player != null) {
                 try {
                     java.nio.file.Path local = Minecraft.getInstance().gameDirectory.toPath()
@@ -197,7 +207,13 @@ public final class SoakSkinClient {
                 } catch (Exception ignored) {
                 }
             }
-            if (img == null && fetchUrl != null) {
+            // ② 资源包内默认皮肤：离线玩家（textureUrl 为 null）的 skin.texture() 直接指向
+            //    minecraft:textures/entity/player/{slim,wide}/... —— 零网络直读，离线也有脱裤
+            if (img == null) {
+                img = tryResource(textureRl);
+            }
+            // ③ 磁盘缓存 → 带超时下载（在线玩家；国内网络差不挂死，靠缓存/①/②兜底）
+            if (img == null && fetchUrl != null && !fetchUrl.isBlank()) {
                 try {
                     img = loadCached(fetchUrl);
                 } catch (Exception ignored) {
@@ -211,7 +227,7 @@ public final class SoakSkinClient {
             synchronized (PENDING) {
                 PENDING.remove(id);
                 if (img == null) {
-                    FAILED.add(id); // 拉不到不重试，走原皮肤
+                    FAILED.put(id, System.currentTimeMillis()); // 冷却后自动重试
                     if (SfConfig.DEBUG_UNDRESS.get()) {
                         com.mojang.logging.LogUtils.getLogger().info(
                             "[SF] undress fetch FAILED for {} (url={}, local={})",
@@ -223,6 +239,46 @@ public final class SoakSkinClient {
                 }
             }
         });
+    }
+
+    /** 从资源包内读取玩家皮肤展开图（离线默认皮肤 textures/entity/player/...），零网络。
+     *  在线玩家的 texture RL 是 minecraft:skins/<hash>（非资源路径），读不到返回 null 走下载。 */
+    private static NativeImage tryResource(ResourceLocation rl) {
+        if (rl == null) {
+            return null;
+        }
+        try {
+            var res = Minecraft.getInstance().getResourceManager().getResource(rl);
+            if (res.isPresent()) {
+                try (var in = res.get().open()) {
+                    return NativeImage.read(in);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /** 进世界预热：后台拉取本地玩家皮肤（不要求坐凳），坐下时改图通常已就绪。
+     *  走 getInsecureSkin（底层 SkinManager，不经 getSkin mixin——无递归风险）。 */
+    public static void prefetch(Player player) {
+        if (player == null) {
+            return;
+        }
+        UUID id = player.getUUID();
+        synchronized (CACHE) {
+            if (CACHE.containsKey(id)) {
+                return;
+            }
+        }
+        PlayerSkin skin = null;
+        try {
+            skin = Minecraft.getInstance().getSkinManager().getInsecureSkin(player.getGameProfile());
+        } catch (Exception ignored) {
+        }
+        if (skin != null && skin.texture() != null) {
+            requestFetch(id, player, skin.textureUrl(), skin.texture());
+        }
     }
 
     /** 供取色器用：同步加载玩家皮肤展开图（NativeImage），失败返回 null。调用方负责 close。
@@ -281,7 +337,11 @@ public final class SoakSkinClient {
         if (Files.isRegularFile(file)) {
             bytes = Files.readAllBytes(file);
         } else {
-            try (var in = java.net.URI.create(url).toURL().openStream()) {
+            // 下载带 8s 连接/读取超时：网络差不挂死（后台线程，不卡主线程）
+            java.net.URLConnection conn = java.net.URI.create(url).toURL().openConnection();
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            try (var in = conn.getInputStream()) {
                 bytes = in.readAllBytes();
             }
             Files.write(file, bytes);
@@ -483,6 +543,6 @@ public final class SoakSkinClient {
             FAILED.remove(id);
         }
         CACHE.remove(id);
-        LAST_LOGGED.remove(id);
+        LAST_LOG_STATE.remove(id);
     }
 }
