@@ -11,13 +11,20 @@
   <img alt="Loader" src="https://img.shields.io/badge/Loader-Fabric-blueviolet">
   <img alt="Side" src="https://img.shields.io/badge/Side-Client%20%2B%20Server-blue">
   <img alt="Java" src="https://img.shields.io/badge/Java-21%2B-yellow">
-  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.5-informational">
+  <img alt="Version" src="https://img.shields.io/badge/Version-0.1.6-informational">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-brightgreen">
 </p>
 
 ---
 
 ## 更新日志
+
+### 0.1.6
+- **修复泡脚坐下动画在 Fabric 端不生效**：移植时漏调 SoakAnimationClient.init，动画 tick 处理器从未注册（脱裤正常但腿不动）
+- 脱裤皮肤下载链路优化：进世界预下载、离线玩家默认皮肤兜底（离线也有脱裤）、8 秒下载超时、失败 60 秒冷却自动重试
+- 修复坐凳瞬间皮肤闪成默认皮肤（默认皮肤兜底仅限真离线玩家）
+- debug_undress 日志按状态变化输出（不再每帧刷屏）
+- 清理：tooltip 死引用、孤儿语言键、未用 GUI 贴图；修复配置界面悬停显示原始键
 
 ### 0.1.5
 - 汗液瓶注册饱食度组件：tooltip 直接显示「恢复 X 饥饿值」（1 点，醇厚风味翻倍 2 点），与原版食物一致
@@ -187,7 +194,7 @@
 
 ## 安装方式
 
-1. 下载本仓库 `Fabric-1.21.1` 分支的 `sweatyfeet-Fabric-1.21.1-0.1.5.jar`
+1. 下载本仓库 `Fabric-1.21.1` 分支的 `sweatyfeet-Fabric-1.21.1-0.1.6.jar`
 2. 放入整合包的 `.minecraft/mods/`（如 1.21.1-CCB）
 3. 启动游戏（客户端和服务端**都要装**）
 
