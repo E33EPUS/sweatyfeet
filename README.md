@@ -170,7 +170,6 @@
 - 环境：JDK 21 + ModDevGradle
 - 构建 + 测试：`gradlew build test -PrunTests`
 - 测试：26 个单元测试（汗脚降级状态机、倒汗等级/风味分支、洗脚皮肤解析等），JUnit 5
-- 若代理 26561 导致连接失败：`gradlew build -Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=`
 
 ## 问题反馈
 
