@@ -173,7 +173,6 @@
 - 环境：JDK 21 + Loom 1.7.4（player-animator 走本地 libs-repo）
 - 构建 + 测试：`gradlew build test`
 - 测试：26 个单元测试（汗脚降级状态机、倒汗等级/风味分支、洗脚皮肤解析等；3 个需完整 Loader 环境的用例在 NeoForge 端保留）
-- 若代理 26561 导致连接失败：`gradlew build -Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=`
 
 ## 问题反馈
 

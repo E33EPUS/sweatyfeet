@@ -173,7 +173,6 @@ The key may be taken by another mod — rebind it in Options → Controls, or us
 - Toolchain: JDK 21 + Loom 1.7.4 (player-animator from a local libs-repo)
 - Build + test: `gradlew build test`
 - Tests: 26 unit tests (sweat degradation state machine, pour tier/flavor branches, soak-skin resolution, ...; the 3 cases needing a full Loader environment stay on the NeoForge side)
-- Proxy 26561 connection refused? `gradlew build -Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=`
 
 ## Feedback
 
