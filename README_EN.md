@@ -170,7 +170,6 @@ The key may be taken by another mod — rebind it in Options → Controls, or us
 - Toolchain: JDK 21 + ModDevGradle
 - Build + test: `gradlew build test -PrunTests`
 - Tests: 26 unit tests (sweat degradation state machine, pour tier/flavor branches, soak-skin resolution, ...), JUnit 5
-- Proxy 26561 connection refused? `gradlew build -Dhttp.proxyHost= -Dhttps.proxyHost= -Dhttp.proxyPort= -Dhttps.proxyPort=`
 
 ## Feedback
 
